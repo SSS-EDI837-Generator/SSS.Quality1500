@@ -1,4 +1,4 @@
-<Solution>
+﻿<Solution>
   <Project Path="SSS.Quality1500.Business/SSS.Quality1500.Business.csproj" />
   <Project Path="SSS.Quality1500.Common/SSS.Quality1500.Common.csproj" />
   <Project Path="SSS.Quality1500.Data/SSS.Quality1500.Data.csproj" />

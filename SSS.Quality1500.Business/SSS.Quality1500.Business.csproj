@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SSS.Quality1500.Domain\SSS.Quality1500.Domain.csproj" />
+    <ProjectReference Include="..\SSS.Quality1500.Common\SSS.Quality1500.Common.csproj" />
+    <ProjectReference Include="..\SSS.Quality1500.Data\SSS.Quality1500.Data.csproj" />
+  </ItemGroup>
+
 </Project>

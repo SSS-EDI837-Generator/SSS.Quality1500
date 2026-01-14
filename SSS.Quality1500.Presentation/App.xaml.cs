@@ -10,4 +10,3 @@ namespace SSS.Quality1500.Presentation;
 public partial class App : Application
 {
 }
-

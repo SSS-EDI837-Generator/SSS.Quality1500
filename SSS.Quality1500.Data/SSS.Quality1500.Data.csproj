@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
     <PackageReference Include="NDbfReader" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SSS.Quality1500.Domain\SSS.Quality1500.Domain.csproj" />
+    <ProjectReference Include="..\SSS.Quality1500.Common\SSS.Quality1500.Common.csproj" />
   </ItemGroup>
 
 </Project>

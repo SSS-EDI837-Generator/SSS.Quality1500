@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SSS.Quality1500.Business/SSS.Quality1500.Business.csproj" />
+  <Project Path="SSS.Quality1500.Common/SSS.Quality1500.Common.csproj" />
+  <Project Path="SSS.Quality1500.Data/SSS.Quality1500.Data.csproj" />
+  <Project Path="SSS.Quality1500.Domain/SSS.Quality1500.Domain.csproj" />
+  <Project Path="SSS.Quality1500.Presentation/SSS.Quality1500.Presentation.csproj" />
+</Solution>

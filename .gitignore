@@ -13,3 +13,5 @@ publish/
 
 ## Logs
 *.log
+
+.DS_Store

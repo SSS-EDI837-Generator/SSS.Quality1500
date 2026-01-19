@@ -14,8 +14,8 @@
 | Carpeta | Contenido | Ejemplo |
 |---------|-----------|--------|
 | `Views/` | Ventanas y UserControls (XAML) | `MainWindow.xaml` |
-| `ViewModels/` | ViewModels con logica de presentacion | `MainViewModel.cs` |
-| `Models/` | Modelos de vista (wrappers) | `ClaimDisplayModel.cs` |
+| `ViewModels/` | ViewModels con logica de presentacion | `MainViewModel.cs`, `ControlMainViewModel.cs` |
+| `Models/` | ViewModels para binding (pueden usar `ObservableCollection`) | `VkFileRecord.cs` |
 | `Services/` | Servicios de UI (navegacion, dialogos) | `NavigationService.cs` |
 | `Converters/` | IValueConverter para XAML | `BoolToVisibilityConverter.cs` |
 | `Behaviors/` | Behaviors de Interaction | `ScrollIntoViewBehavior.cs` |
@@ -26,32 +26,67 @@
 | `Interfaces/` | Contratos de servicios UI | `IDialogService.cs` |
 | `EventHandlers/` | Handlers de eventos globales | `UnhandledExceptionHandler.cs` |
 
+## ViewModels vs DTOs
+
+### ¿Que va en Presentation/Models?
+**Solo ViewModels especificos de UI** que necesiten:
+- `ObservableCollection<T>` para binding de WPF
+- `INotifyPropertyChanged` para actualizaciones de UI
+- Propiedades calculadas para presentacion
+
+**Ejemplo:** `VkFileRecord.cs` - ViewModel para mostrar informacion de batch en DataGrid
+
+### ¿Que NO va en Presentation/Models?
+❌ **DTOs de negocio** - Esos van en `Business/Models/`
+❌ **Entidades de dominio** - Esas van en `Domain/Models/`
+
+### Conversion DTO → ViewModel
+```csharp
+// Business devuelve List<VdeRecord> (DTO)
+List<VdeRecord> dtos = await vdeService.GetAllAsVdeRecordsAsync("file.dbf");
+
+// Presentation convierte a ObservableCollection para binding
+ObservableCollection<VdeRecord> viewModels = new(dtos);
+```
+
 ## Reglas MVVM
 1. **NO** code-behind (excepto InitializeComponent)
 2. Usar `[ObservableProperty]` y `[RelayCommand]` de CommunityToolkit
 3. Binding bidireccional con `UpdateSourceTrigger=PropertyChanged`
 4. Navegacion via servicios, no en ViewModels directamente
-5. Dialogos via `IDialogService`, no `MessageBox.Show()`
+5. Dialogos via `IDialogService`, no `MessageBox.Show()` (excepto errores criticos)
+6. Presentation puede usar `ObservableCollection`, pero Business/Domain NO
 
 ## Ejemplo de ViewModel
 ```csharp
-public partial class MainViewModel : ObservableObject
+public partial class ControlMainViewModel : ObservableObject
 {
-    private readonly ClaimLoadingService _claimService;
+    private readonly IVdeRecordService _vdeService;
+    
+    // ObservableCollection ES VALIDA en Presentation
+    [ObservableProperty]
+    private ObservableCollection<VkFileRecord> _selectedBatches = new();
     
     [ObservableProperty]
-    private ObservableCollection<ClaimRecord> _claims = [];
-    
-    [ObservableProperty]
-    private bool _isLoading;
+    private bool _isProcessing;
     
     [RelayCommand]
-    private async Task LoadClaimsAsync()
+    private async Task StartProcessAsync()
     {
-        IsLoading = true;
-        var result = await _claimService.LoadClaimsAsync("path.dbf");
-        result.OnSuccess(data => Claims = new(data));
-        IsLoading = false;
+        IsProcessing = true;
+        
+        // Business devuelve List<VdeRecord> (DTO)
+        Result<List<VdeRecord>, string> result = await _vdeService.GetAllAsVdeRecordsAsync(filePath);
+        
+        result.OnSuccess(dtos => 
+        {
+            // Conversion a ObservableCollection para UI
+            SelectedBatches = new ObservableCollection<VkFileRecord>(
+                dtos.Select(dto => MapToViewModel(dto))
+            );
+        });
+        
+        IsProcessing = false;
     }
 }
 ```

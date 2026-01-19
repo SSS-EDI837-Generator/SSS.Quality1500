@@ -1,6 +1,6 @@
 namespace SSS.Quality1500.Presentation.Interfaces;
 
-using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Presentation.Models;
 using System.Collections.ObjectModel;
 using System.Data;
 

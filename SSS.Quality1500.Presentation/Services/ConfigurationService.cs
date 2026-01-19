@@ -8,7 +8,7 @@ using System.Linq;
 using SSS.Quality1500.Presentation.ViewModels;
 using SSS.Quality1500.Domain.Models;
 using SSS.Quality1500.Presentation.Interfaces;
-using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Presentation.Models;
 
 public class ConfigurationService : IUiConfigurationService
     {

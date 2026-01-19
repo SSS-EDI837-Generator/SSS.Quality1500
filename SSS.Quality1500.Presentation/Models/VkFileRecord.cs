@@ -1,8 +1,8 @@
-namespace SSS.Quality1500.Business.Models;
+namespace SSS.Quality1500.Presentation.Models;
 
 /// <summary>
-/// Modelo para representar un registro del archivo VK (DBF)
-/// Usado en la UI para mostrar información de batch
+/// ViewModel para representar un registro del archivo VK (DBF)
+/// Usado exclusivamente en la UI para binding de información de batch
 /// </summary>
 public class VkFileRecord
     {

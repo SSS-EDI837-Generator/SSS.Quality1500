@@ -14,6 +14,7 @@ using SSS.Quality1500.Presentation.Services;
 using SSS.Quality1500.Common;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Presentation.Models;
 
 public partial class ControlMainViewModel : ObservableObject, IDisposable {
     [ObservableProperty] private string _title = "Control de Procesamiento";

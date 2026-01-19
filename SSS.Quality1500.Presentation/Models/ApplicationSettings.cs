@@ -1,34 +1,34 @@
 namespace SSS.Quality1500.Presentation.Models;
 
 /// <summary>
-/// Modelo de configuraci髇 para informaci髇 de la aplicaci髇
-/// Mapea la secci髇 "ApplicationSettings" del appsettings.json
-/// Se usa para configurar informaci髇 de presentaci髇 como t韙ulo de ventana, pantalla About, etc.
+/// Modelo de configuraci贸n para informaci贸n de la aplicaci贸n
+/// Mapea la secci贸n "ApplicationSettings" del appsettings.json
+/// Se usa para configurar informaci贸n de presentaci贸n como t铆tulo de ventana, pantalla About, etc.
 /// </summary>
 public class ApplicationSettings
 {
     /// <summary>
-    /// Nombre de la aplicaci髇 mostrado en la UI
+    /// Nombre de la aplicaci贸n mostrado en la UI
     /// </summary>
     public string ApplicationName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Versi髇 de la aplicaci髇
+    /// Versi贸n de la aplicaci贸n
     /// </summary>
     public string Version { get; set; } = string.Empty;
 
     /// <summary>
-    /// Nombre de la compa耥a desarrolladora
+    /// Nombre de la compa帽铆a desarrolladora
     /// </summary>
     public string CompanyName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Email de soporte t閏nico
+    /// Email de soporte t茅cnico
     /// </summary>
     public string SupportEmail { get; set; } = string.Empty;
 
     /// <summary>
-    /// Descripci髇 de la aplicaci髇
+    /// Descripci贸n de la aplicaci贸n
     /// </summary>
     public string Description { get; set; } = string.Empty;
 }

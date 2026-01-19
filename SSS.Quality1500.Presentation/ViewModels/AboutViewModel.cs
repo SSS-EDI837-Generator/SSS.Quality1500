@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SSS.Quality1500.Presentation.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
     /// <summary>

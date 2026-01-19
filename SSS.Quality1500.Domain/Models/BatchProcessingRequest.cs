@@ -1,5 +1,4 @@
 namespace SSS.Quality1500.Domain.Models;
-using System.Collections.ObjectModel;
 using System.Data;
 
 
@@ -17,9 +16,9 @@ public class BatchProcessingRequest
     public DataTable VdeTable { get; set; }
     
     /// <summary>
-    /// Colección observable donde se almacenarán los batch items
+    /// Lista donde se almacenarán los batch items
     /// </summary>
-    public ObservableCollection<string> BatchList { get; set; }
+    public List<string> BatchList { get; set; }
     
     /// <summary>
     /// Nombre del campo de página (generalmente "V1Page")
@@ -47,7 +46,7 @@ public class BatchProcessingRequest
     /// <param name="vdeTable">Tabla de datos VDE</param>
     /// <param name="batchList">Lista de batches</param>
     /// <param name="pageFieldName">Nombre del campo de página</param>
-    public BatchProcessingRequest(DataTable vdeTable, ObservableCollection<string> batchList, string pageFieldName)
+    public BatchProcessingRequest(DataTable vdeTable, List<string> batchList, string pageFieldName)
     {
         VdeTable = vdeTable ?? throw new ArgumentNullException(nameof(vdeTable));
         BatchList = batchList ?? throw new ArgumentNullException(nameof(batchList));
@@ -63,7 +62,7 @@ public class BatchProcessingRequest
     /// <param name="vdeTable">Tabla de datos VDE</param>
     /// <param name="batchList">Lista de batches</param>
     /// <param name="config">Configuración adicional del procesamiento</param>
-    public BatchProcessingRequest(DataTable vdeTable, ObservableCollection<string> batchList, BatchProcessingConfig config)
+    public BatchProcessingRequest(DataTable vdeTable, List<string> batchList, BatchProcessingConfig config)
     {
         VdeTable = vdeTable ?? throw new ArgumentNullException(nameof(vdeTable));
         BatchList = batchList ?? throw new ArgumentNullException(nameof(batchList));
@@ -83,7 +82,7 @@ public class BatchProcessingRequest
     /// <param name="batchList">Lista de batches</param>
     /// <param name="pageFieldName">Nombre del campo de página</param>
     /// <returns>Nueva instancia de BatchProcessingRequest</returns>
-    public static BatchProcessingRequest Create(DataTable vdeTable, ObservableCollection<string> batchList, string pageFieldName)
+    public static BatchProcessingRequest Create(DataTable vdeTable, List<string> batchList, string pageFieldName)
     {
         return new BatchProcessingRequest(vdeTable, batchList, pageFieldName);
     }

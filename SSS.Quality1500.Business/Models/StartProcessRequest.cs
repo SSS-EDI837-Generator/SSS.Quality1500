@@ -1,6 +1,5 @@
 namespace SSS.Quality1500.Business.Models;
 
-using System.Collections.ObjectModel;
 using System.Data;
 
 
@@ -34,7 +33,7 @@ public class StartProcessRequest
     /// <summary>
     /// Lista de batches seleccionados para procesamiento
     /// </summary>
-    public ObservableCollection<string> SelectedBatches { get; set; }
+    public List<string> SelectedBatches { get; set; }
 
     /// <summary>
     /// Token de cancelación para el proceso
@@ -53,7 +52,7 @@ public class StartProcessRequest
         PathDat = pathDat;
         FileNameOutPut837 = fileNameOutPut837;
         Year = string.Empty;
-        SelectedBatches = new ObservableCollection<string>();
+        SelectedBatches = new List<string>();
     }
 
     /// <summary>
@@ -116,9 +115,9 @@ public class StartProcessRequest
     /// </summary>
     /// <param name="selectedBatches">Lista de batches</param>
     /// <returns>La instancia actual para encadenamiento</returns>
-    public StartProcessRequest WithSelectedBatches(ObservableCollection<string> selectedBatches)
+    public StartProcessRequest WithSelectedBatches(IEnumerable<string> selectedBatches)
     {
-        SelectedBatches = selectedBatches;
+        SelectedBatches = selectedBatches?.ToList() ?? new List<string>();
         return this;
     }
 

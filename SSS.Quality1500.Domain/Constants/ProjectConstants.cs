@@ -21,7 +21,7 @@ public static class ProjectConstants
     public const string V1PAGINA = "V1PAGINA";
 
     // Configuracion de negocio
-    public const string Job = "TSA873D";
+    public const string Job = "SSS";
     public const string Hd = "ND";
     public const int ViewStart = 3;
     public const int CountCamp = 5;

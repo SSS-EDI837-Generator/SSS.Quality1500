@@ -13,6 +13,7 @@ using SSS.Quality1500.Presentation.ViewModels;
 using SSS.Quality1500.Presentation.Views;
 using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Domain.Interfaces;
+using SSS.Quality1500.Presentation.Models;
 
 /// <summary>
 /// Extensiones para configurar servicios de la capa Presentation
@@ -50,6 +51,9 @@ public static class ServiceCollectionExtensions
         // Servicios fundamentales
         services.AddSingleton(configuration);
         services.AddSingleton<ApplicationInitializer>();
+
+        // Configurar IOptions<ApplicationSettings> desde appsettings.json
+        services.Configure<ApplicationSettings>(configuration.GetSection("ApplicationSettings"));
 
         return services;
     }

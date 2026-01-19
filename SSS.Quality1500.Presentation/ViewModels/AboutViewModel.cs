@@ -2,9 +2,11 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Input;
+using SSS.Quality1500.Presentation.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
@@ -26,13 +28,18 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
         [ObservableProperty] private string _description = string.Empty;
 
-        public AboutViewModel()
+        private readonly ApplicationSettings _appSettings;
+
+        public AboutViewModel(IOptions<ApplicationSettings> appSettings)
         {
+            _appSettings = appSettings.Value;
             LoadApplicationInfo();
         }
 
         /// <summary>
-        /// Carga la información de la aplicación desde los metadatos del assembly.
+        /// Carga la información de la aplicación desde appsettings.json y metadatos del assembly.
+        /// ApplicationName, Company y Description vienen de appsettings.json
+        /// Version, BuildDate y Copyright vienen del assembly
         /// Aplica el principio DRY (Don't Repeat Yourself) centralizando la obtención de información.
         /// </summary>
         private void LoadApplicationInfo()
@@ -40,9 +47,20 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
             var assembly = Assembly.GetExecutingAssembly();
             AssemblyName assemblyName = assembly.GetName();
 
-            ApplicationName = GetAssemblyAttribute<AssemblyTitleAttribute>(assembly)?.Title
-                              ?? "My App";
+            // Cargar desde appsettings.json
+            ApplicationName = !string.IsNullOrEmpty(_appSettings.ApplicationName)
+                              ? _appSettings.ApplicationName
+                              : GetAssemblyAttribute<AssemblyTitleAttribute>(assembly)?.Title ?? "My App";
 
+            Company = !string.IsNullOrEmpty(_appSettings.CompanyName)
+                      ? _appSettings.CompanyName
+                      : GetAssemblyAttribute<AssemblyCompanyAttribute>(assembly)?.Company ?? "Applica Company";
+
+            Description = !string.IsNullOrEmpty(_appSettings.Description)
+                          ? _appSettings.Description
+                          : GetAssemblyAttribute<AssemblyDescriptionAttribute>(assembly)?.Description ?? "Dashboard application for processing";
+
+            // Cargar desde assembly (mantener como estaba)
             Version = assemblyName.Version?.ToString()
                       ?? "1.0.0.0";
 
@@ -50,12 +68,6 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
             Copyright = GetAssemblyAttribute<AssemblyCopyrightAttribute>(assembly)?.Copyright
                         ?? $"© {DateTime.Now.Year} Dashboard";
-
-            Company = GetAssemblyAttribute<AssemblyCompanyAttribute>(assembly)?.Company
-                      ?? "Applica Company";
-
-            Description = GetAssemblyAttribute<AssemblyDescriptionAttribute>(assembly)?.Description
-                          ?? "Dashboard application for processing";
         }
 
         /// <summary>

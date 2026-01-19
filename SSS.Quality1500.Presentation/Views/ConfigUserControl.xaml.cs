@@ -1,5 +1,6 @@
 ﻿namespace SSS.Quality1500.Presentation.Views
 {
+    using SSS.Quality1500.Presentation.ViewModels;
     using System;
     using System.Collections.Generic;
     using System.Text;
@@ -18,9 +19,10 @@
     /// </summary>
     public partial class ConfigUserControl : UserControl
     {
-        public ConfigUserControl()
+        public ConfigUserControl(ConfigViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

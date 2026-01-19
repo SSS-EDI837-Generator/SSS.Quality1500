@@ -1,10 +1,23 @@
-﻿namespace SSS.Quality1500.Presentation.ViewModels
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+﻿namespace SSS.Quality1500.Presentation.ViewModels;
 
-    internal class ProcessingViewModel
+using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.Reflection;
+
+using System.Collections.Generic;
+using System.Text;
+
+
+public partial class ProcessingViewModel : ObservableObject
+{
+    [ObservableProperty] private string _labelName = string.Empty;
+
+
+    public ProcessingViewModel()
     {
+
+        LabelName = "Processing View Model";
     }
+
 }
+

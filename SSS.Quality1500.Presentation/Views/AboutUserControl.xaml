@@ -170,7 +170,7 @@
                 BorderBrush="#FFEFF1F3" 
                 BorderThickness="0,1,0,0" 
                 Padding="20,10">
-            <TextBlock Text="SSS Quality - Sistema de procesamiento y análisis de datos" 
+            <TextBlock Text="{Binding Description,Mode=OneWay,UpdateSourceTrigger=PropertyChanged}" 
                        FontSize="12" 
                        Foreground="#FF6C757D" 
                        HorizontalAlignment="Center"/>

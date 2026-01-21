@@ -236,3 +236,12 @@ This is a **reusable template** for creating new WPF applications. Therefore:
 
 ## Documentation
 Each layer has a detailed `LAYER.md` file with specific guidance, examples, and rules. Always consult the relevant LAYER.md when working in a specific layer.
+
+## Documentación Complementaria
+
+Para contexto específico de healthcare y validaciones, consulta los documentos en `docs/`:
+
+- `docs/HEALTHCARE_CONTEXT.md` - Contexto de CMS-1500 y healthcare
+- `docs/VALIDATION_RULES.md` - Reglas de validación de negocio
+- `docs/API_INTEGRATION.md` - Integración con API de NPI
+- `docs/UI_PATTERNS.md` - Patrones de UI para revisión visual

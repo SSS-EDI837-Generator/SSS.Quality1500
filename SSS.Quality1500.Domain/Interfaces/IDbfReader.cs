@@ -1,7 +1,7 @@
 ﻿namespace SSS.Quality1500.Domain.Interfaces;
 
-using SSS.Quality1500.Common;
 using System.Data;
+using SSS.Quality1500.Domain.Models;
 
 /// <summary>
 /// Contrato para lectura de archivos DBF.

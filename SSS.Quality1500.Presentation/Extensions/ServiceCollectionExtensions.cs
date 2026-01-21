@@ -193,7 +193,7 @@ public static class ServiceCollectionExtensions
         services.AddLogCaptureServices(); // Agregar después del logging básico
         services.AddCoreServices(configuration);
         services.AddBusinessServices(configuration);
-        services.AddCommandServices();
+        services.AddCommonServices();
         services.AddInfrastructureServices();
         services.AddUIServices();
 

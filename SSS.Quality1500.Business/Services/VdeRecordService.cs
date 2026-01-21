@@ -6,6 +6,7 @@ using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Mappers;
 using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Domain.Models;
 
 /// <summary>
 /// Service for VDE record operations.
@@ -39,7 +40,7 @@ public class VdeRecordService(IDbfReader dbfReader) : IVdeRecordService
         return dbfReader.ReadDbfFile(filePath);
     }
 
-    public async Task<Result<List<VdeRecord>, string>> GetAllAsVdeRecordsAsync(string filePath)
+    public async Task<Result<List<VdeRecordDto>, string>> GetAllAsVdeRecordsAsync(string filePath)
     {
         Result<DataTable, string> dataTableResult = await dbfReader.GetAllAsDataTableAsync(filePath);
 

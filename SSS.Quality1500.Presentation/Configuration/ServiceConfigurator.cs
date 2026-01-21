@@ -4,10 +4,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using SSS.Quality1500.Presentation.Extensions;
+using SSS.Quality1500.Domain.Interfaces;
 
 public class ServiceConfigurator : IServiceConfigurator
 {
-    public ServiceProvider ConfigureServices(string environment, out IConfiguration configuration)
+    /// <summary>
+    /// Configura todos los servicios de la aplicación.
+    /// Si se proporciona una instancia de LoggerInitializer, se reutiliza en DI (evita doble inicialización).
+    /// </summary>
+    /// <param name="environment">Ambiente de ejecución (Development/Production)</param>
+    /// <param name="configuration">Configuración de la aplicación (out parameter)</param>
+    /// <param name="loggerInitializer">Instancia opcional de LoggerInitializer para reutilizar en DI</param>
+    /// <returns>ServiceProvider configurado</returns>
+    public ServiceProvider ConfigureServices(string environment, out IConfiguration configuration, ILoggerInitializer? loggerInitializer = null)
     {
         // 1. Configurar y cargar configuración de la aplicación
         configuration = ConfigureApplicationConfiguration(environment);
@@ -15,7 +24,14 @@ public class ServiceConfigurator : IServiceConfigurator
         // 2. Crear contenedor de servicios y configurar con extensiones modulares
         var services = new ServiceCollection();
 
-        // 3. Usar método de extensión que configura todos los servicios de forma modular
+        // 3. Si se proporciona una instancia de LoggerInitializer, registrarla como Singleton
+        //    Esto evita crear una segunda instancia cuando ya se inicializó en App.xaml.cs
+        if (loggerInitializer != null)
+        {
+            services.AddSingleton(loggerInitializer);
+        }
+
+        // 4. Usar método de extensión que configura todos los servicios de forma modular
         services.AddPresentationServices(configuration);
 
         return services.BuildServiceProvider();

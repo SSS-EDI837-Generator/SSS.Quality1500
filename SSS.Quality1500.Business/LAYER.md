@@ -13,14 +13,44 @@
 
 | Carpeta | Contenido | Ejemplo |
 |---------|-----------|--------|
-| `Services/` | Casos de uso / Application Services | `VdeRecordService.cs` |
+| `Services/` | Casos de uso / Application Services | `VdeRecordService.cs`, **`LoggerInitializer.cs`** |
 | `Services/Interfaces/` | Contratos de servicios de negocio | `IVdeRecordService.cs` |
-| `Models/` | DTOs de entrada/salida (NO ViewModels) | `VdeRecord.cs`, `StartProcessRequest.cs` |
+| `Models/` | DTOs de entrada/salida (NO ViewModels) | `VdeRecordDto.cs`, `StartProcessRequest.cs` |
 | `Mappers/` | Transformadores DataTable → DTOs | `VdeRecordMapper.cs` |
 | `Events/` | Eventos de aplicacion | `ProgressEvent.cs` |
 | `Aggregates/` | ⚠️ Servicios agregados (actualmente vacio) | Ver seccion "Aggregate Services" |
 | `Aggregates/Abstractions/` | Interfaces de servicios agregados | `IClaimProcessingAggregate.cs` |
 | `Extensions/` | Extensiones y registro DI | `ServiceCollectionExtensions.cs` |
+
+## Servicios de Infraestructura de Aplicación
+
+### LoggerInitializer (Services/LoggerInitializer.cs)
+**Por qué está en Business (no en Common):**
+- Usa `Result<T,E>` de Domain → Business ya depende de Domain
+- Es infraestructura de **aplicación**, no utilidad técnica pura
+- Permite inyección por DI en cualquier capa (reutilizable en template)
+- Common no puede depender de Domain (rompe arquitectura)
+
+```csharp
+// Business/Services/LoggerInitializer.cs
+public class LoggerInitializer : ILoggerInitializer
+{
+    public Result<bool, string> InitializeLogger() // ← Usa Result de Domain
+    {
+        // Configura Serilog...
+    }
+}
+
+// Uso en App.xaml.cs (bootstrap)
+var logger = new LoggerInitializer();
+logger.InitializeLogger();
+
+// Uso por DI (inyección en servicios)
+public MyService(ILoggerInitializer loggerInit)
+{
+    _loggerInit = loggerInit;
+}
+```
 
 ## Reglas
 1. Los servicios de Business **orquestan**, no implementan acceso a datos
@@ -33,7 +63,7 @@
 // Business/Services/VdeRecordService.cs
 public class VdeRecordService(IDbfReader dbfReader) : IVdeRecordService
 {
-    public async Task<Result<List<VdeRecord>, string>> GetAllAsVdeRecordsAsync(string filePath)
+    public async Task<Result<List<VdeRecordDto>, string>> GetAllAsVdeRecordsAsync(string filePath)
     {
         Result<DataTable, string> dataTableResult = await dbfReader.GetAllAsDataTableAsync(filePath);
         
@@ -50,7 +80,7 @@ public class VdeRecordService(IDbfReader dbfReader) : IVdeRecordService
 
 | Tipo | Ubicacion | Proposito | Ejemplo |
 |------|-----------|-----------|--------|
-| **DTO** | `Business/Models/` | Transferir datos entre capas, sin logica de UI | `VdeRecord.cs`, `ProcessingResult.cs` |
+| **DTO** | `Business/Models/` | Transferir datos entre capas, sin logica de UI | `VdeRecordDto.cs`, `ProcessingResult.cs` |
 | **ViewModel** | `Presentation/Models/` | Binding de WPF, puede usar `ObservableCollection` | `VkFileRecord.cs` |
 | **Entity** | `Domain/Models/` | Reglas de negocio intrinsecas | `BatchRecord.cs` |
 
@@ -131,14 +161,38 @@ public class ClaimViewModel(IClaimProcessingAggregate aggregate)
 public static IServiceCollection AddBusinessServices(this IServiceCollection services, IConfiguration config)
 {
     services.AddDataServices(config); // Primero Data
-    
+
     // Servicios de Business
     services.AddTransient<IVdeRecordService, VdeRecordService>();
     services.AddSingleton<IEventAggregator, EventAggregator>();
-    
+
+    // Servicios de infraestructura de aplicación
+    services.AddSingleton<ILoggerInitializer, LoggerInitializer>();
+
     // Aggregate Services (si los usas)
     services.AddTransient<IClaimProcessingAggregate, ClaimProcessingAggregate>();
-    
+
     return services;
+}
+```
+
+**Nota:** Si LoggerInitializer se instancia en App.xaml.cs para bootstrap, se puede reutilizar la misma instancia:
+```csharp
+// ServiceConfigurator.cs
+public ServiceProvider ConfigureServices(
+    string environment,
+    out IConfiguration configuration,
+    ILoggerInitializer? loggerInitializer = null)
+{
+    var services = new ServiceCollection();
+
+    // Reutilizar instancia de bootstrap si existe
+    if (loggerInitializer != null)
+    {
+        services.AddSingleton(loggerInitializer);
+    }
+
+    services.AddPresentationServices(configuration);
+    return services.BuildServiceProvider();
 }
 ```

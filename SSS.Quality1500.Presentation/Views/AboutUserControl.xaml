@@ -42,7 +42,7 @@
                         Height="64" 
                         CornerRadius="8"
                         Margin="0,0,20,0">
-                    <TextBlock Text="SSS" 
+                    <TextBlock Text="APP" 
                                Foreground="White" 
                                FontSize="18" 
                                FontWeight="Bold"

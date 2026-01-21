@@ -8,6 +8,7 @@ using SSS.Quality1500.Common;
 using SSS.Quality1500.Presentation.Configuration;
 using SSS.Quality1500.Presentation.Views;
 using System.Windows;
+using SSS.Quality1500.Domain.Models;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -23,7 +24,7 @@ public partial class App : Application
         var serviceConfigurator = new ServiceConfigurator();
         try
         {
-            // Inicializar logger
+            // Inicializar logger (bootstrap - antes de DI)
             Result<bool, string> loggerResult = loggerInitializer.InitializeLogger();
             if (loggerResult.IsFailure)
             {
@@ -32,8 +33,9 @@ public partial class App : Application
             }
 
             // Configurar servicios de la aplicación
+            // Pasamos la instancia de loggerInitializer para reutilizarla en DI
             string environment = environmentProvider.GetEnvironment();
-            _serviceProvider = serviceConfigurator.ConfigureServices(environment, out IConfiguration _);
+            _serviceProvider = serviceConfigurator.ConfigureServices(environment, out IConfiguration _, loggerInitializer);
 
             Log.Information("Inicialización de la aplicación finalizada correctamente.");
         }

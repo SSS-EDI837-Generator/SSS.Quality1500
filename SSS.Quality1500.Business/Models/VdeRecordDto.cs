@@ -1,6 +1,6 @@
 namespace SSS.Quality1500.Business.Models;
-
-public class VdeRecord
+// Esto es un ejemplo de DTO para los registros VDE
+public class VdeRecordDto
 {
     // Main identifiers
     public string? V0Batchnum { get; set; }

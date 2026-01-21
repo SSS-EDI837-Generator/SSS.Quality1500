@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SSS.Quality1500.Common\SSS.Quality1500.Common.csproj" />
-  </ItemGroup>
-
 </Project>

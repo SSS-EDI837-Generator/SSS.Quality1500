@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSS.Quality1500.Presentation.Views"
         xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
+        
         xmlns:helpers="clr-namespace:SSS.Quality1500.Presentation.Helpers"
         helpers:WindowCloser.EnableWindowClosing="True"
         helpers:KeyPreviewKeyDown.EnableKeyPreviewKeyDown="True"
@@ -13,7 +14,9 @@
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel , IsDesignTimeCreatable=False}"
         Title="{Binding Title}" Height="1000" Width="1000" WindowStartupLocation="CenterScreen">
 
+    
     <Grid Background="Transparent">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

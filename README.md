@@ -9,10 +9,10 @@ Common <- Domain <- Data <- Business <- Presentation
 
 | Capa | Proposito |
 |------|----------|
-| **Domain** | Entidades, reglas de negocio, contratos (interfaces) |
-| **Business** | Casos de uso, orquestacion |
+| **Domain** | Entidades, reglas de negocio, contratos (interfaces), `Result<T,E>` |
+| **Business** | Casos de uso, orquestacion, LoggerInitializer |
 | **Data** | Implementacion de acceso a datos (DBF, SQL, etc.) |
-| **Common** | Utilidades transversales (Result, Logger, etc.) |
+| **Common** | Utilidades transversales (EnvironmentProvider, Version, LazyService) |
 | **Presentation** | UI con WPF + MVVM estricto |
 
 Cada capa tiene un archivo `LAYER.md` con documentacion detallada.

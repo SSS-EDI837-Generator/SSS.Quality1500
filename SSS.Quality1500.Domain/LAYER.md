@@ -4,27 +4,50 @@
 El **corazon del negocio**. Contiene las entidades, reglas de negocio intrinsecas y contratos (interfaces) que definen QUE hace el sistema, sin saber COMO se implementa.
 
 ## Dependencias
-- Solo depende de **Common** (para tipos transversales como `Result<T,E>`)
-- **NO** depende de Data, Business ni Presentation
+- **NO** depende de ninguna otra capa del proyecto (es el núcleo puro)
+- **NO** depende de Data, Business, Presentation ni Common
 - **NO** debe tener referencias a frameworks externos (EF, HTTP, UI)
+- Define `Result<T,E>` como concepto de dominio (no es una utilidad técnica)
 
 ## Estructura de Carpetas
 
 | Carpeta | Contenido | Ejemplo |
 |---------|-----------|--------|
-| `Models/` | Entidades del dominio con reglas de negocio | `BatchRecord.cs`, `ConfigurationSystem.cs` |
+| `Models/` | Entidades del dominio y conceptos fundamentales | `BatchRecord.cs`, `ConfigurationSystem.cs`, **`Result.cs`** |
 | `Enums/` | Enumeraciones del dominio | `ProcessingStatus.cs`, `ClaimType.cs` |
-| `Interfaces/` | Contratos/abstracciones (repositorios, servicios) | `IDbfReader.cs`, `IEventAggregator.cs` |
-| `Constants/` | Constantes de negocio (campos DBF, codigos) | `ProjectConstants.cs` |
+| `Interfaces/` | Contratos/abstracciones (repositorios, servicios) | `IDbfReader.cs`, `IEventAggregator.cs`, `ILoggerInitializer.cs` |
+| `Constants/` | Constantes de negocio (campos DBF, codigos) | `VdeConstants.cs` |
 | `Aggregates/` | ⚠️ Agregados DDD (actualmente vacio) | Ver seccion "Aggregates" |
 | `Aggregates/Abstractions/` | Contratos de agregados | `IClaimAggregate.cs` |
+
+## Archivos Fundamentales
+
+### `Result<TSuccess, TFailure>` (Models/Result.cs)
+**Por qué está en Domain (no en Common):**
+- `Result` es un **concepto de dominio**, no una utilidad técnica
+- Modela el lenguaje ubicuo: "toda operación puede tener éxito o fallar"
+- Define el contrato de TODAS las operaciones del sistema
+- Domain no depende de nadie (es el núcleo puro)
+
+```csharp
+// Uso en contratos de Domain
+public interface IDbfReader
+{
+    Task<Result<DataTable, string>> GetAllAsDataTableAsync(string filePath);
+}
+
+// Uso en implementaciones (Data, Business, Presentation)
+Result<DataTable, string> result = await dbfReader.GetAllAsDataTableAsync("file.dbf");
+result.OnSuccess(data => Process(data))
+      .OnFailure(error => Log(error));
+```
 
 ## Reglas
 1. Las entidades deben validar sus propias reglas intrinsecas
 2. Los contratos (interfaces) definen QUE se necesita, no COMO se obtiene
 3. No usar `async/await` en entidades (son objetos de datos puros)
 4. **NO** usar tipos de UI (ObservableCollection, DataAnnotations, etc.)
-5. **NO** depender de Data, Business o Presentation
+5. **NO** depender de Data, Business, Presentation ni Common
 6. Usar `List<T>` o `IEnumerable<T>` en lugar de colecciones de UI
 
 ## Ejemplo de Entidad

@@ -20,6 +20,7 @@ using SSS.Quality1500.Presentation.Models;
         private new readonly ILogger<MainViewModel> _logger;
         private readonly ApplicationSettings _appSettings;
 
+
         public MainViewModel(
             ILogger<MainViewModel> logger, 
             IViewService viewService,

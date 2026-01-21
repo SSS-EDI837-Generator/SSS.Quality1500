@@ -1,6 +1,7 @@
 using System.Data;
 using SSS.Quality1500.Common;
 using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Domain.Models;
 
 namespace SSS.Quality1500.Business.Services.Interfaces;
 
@@ -38,5 +39,5 @@ public interface IVdeRecordService
     /// <summary>
     /// Reads DBF file and maps to VDE record DTOs
     /// </summary>
-    Task<Result<List<VdeRecord>, string>> GetAllAsVdeRecordsAsync(string filePath);
+    Task<Result<List<VdeRecordDto>, string>> GetAllAsVdeRecordsAsync(string filePath);
 }

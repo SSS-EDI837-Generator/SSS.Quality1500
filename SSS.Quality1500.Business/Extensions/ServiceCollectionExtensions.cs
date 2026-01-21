@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using SSS.Quality1500.Data.Extensions;
 using SSS.Quality1500.Business.Services;
 using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Domain.Interfaces;
 
 /// <summary>
 /// Extensiones para configurar los servicios de la capa Business
@@ -18,6 +19,10 @@ public static class ServiceCollectionExtensions
 
         // Registrar servicios de Business
         services.AddTransient<IVdeRecordService, VdeRecordService>();
+
+        // Registrar LoggerInitializer como Singleton
+        // Nota: Si ya existe una instancia en App.xaml.cs, se puede reutilizar
+        services.AddSingleton<ILoggerInitializer, LoggerInitializer>();
 
         return services;
     }

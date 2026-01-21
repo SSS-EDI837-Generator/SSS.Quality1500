@@ -6,6 +6,7 @@ using SSS.Quality1500.Common;
 using System.Windows;
 using System.Windows.Input;
 using SSS.Quality1500.Presentation.Interfaces;
+using SSS.Quality1500.Domain.Models;
 
 
 /// <summary>

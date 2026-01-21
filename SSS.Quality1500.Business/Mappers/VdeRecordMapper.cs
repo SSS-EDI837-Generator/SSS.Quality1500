@@ -1,130 +1,127 @@
 namespace SSS.Quality1500.Business.Mappers;
 
-using SSS.Quality1500.Common.Constants;
+using SSS.Quality1500.Domain.Constants;
 using SSS.Quality1500.Business.Models;
 using System.Data;
 
 public static class VdeRecordMapper
 {
-    public static List<VdeRecord> MapDataTableToVdeRecords(DataTable dataTable)
+    public static List<VdeRecordDto> MapDataTableToVdeRecords(DataTable dataTable)
     {
         if (dataTable == null)
-            return new List<VdeRecord>();
+            return new List<VdeRecordDto>();
 
-        var records = new List<VdeRecord>();
+        var records = new List<VdeRecordDto>();
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var record = new VdeRecord
+            var record = new VdeRecordDto
             {
                 // Main identifiers
-                V0Batchnum = GetStringValue(row, VdeConstantsUpdated.V0Batchnum),
-                V1Page = GetStringValue(row, VdeConstantsUpdated.V1Page),
-                V0IfName01 = GetStringValue(row, VdeConstantsUpdated.V0IfName01),
-                V0Sequence = GetStringValue(row, VdeConstantsUpdated.V0Sequence),
-                V0Document = GetStringValue(row, VdeConstantsUpdated.V0Document),
+                V0Batchnum = GetStringValue(row, VdeConstants.V0Batchnum),
+                V1Page = GetStringValue(row, VdeConstants.V1Page),
+                V0IfName01 = GetStringValue(row, VdeConstants.V0IfName01),
+                V0Sequence = GetStringValue(row, VdeConstants.V0Sequence),
+                V0Document = GetStringValue(row, VdeConstants.V0Document),
 
                 // Patient information
-                V1Insured = GetStringValue(row, VdeConstantsUpdated.V1Insured),
-                V1Birthday = GetStringValue(row, VdeConstantsUpdated.V1Birthday),
-                V1ClaimCod = GetStringValue(row, VdeConstantsUpdated.V1ClaimCod),
-                V1OtherId = GetStringValue(row, VdeConstantsUpdated.V1OtherId),
-                V1Ispat = GetStringValue(row, VdeConstantsUpdated.V1Ispat),
-                V1IsThere = GetStringValue(row, VdeConstantsUpdated.V1IsThere),
-                V1Zua = GetStringValue(row, VdeConstantsUpdated.V1Zua),
-                V1Sex = GetStringValue(row, VdeConstantsUpdated.V1Sex),
-                V1Oth = GetStringValue(row, VdeConstantsUpdated.V1Oth),
-                V1Patient = GetStringValue(row, VdeConstantsUpdated.V1Patient),
-                V1Originan = GetStringValue(row, VdeConstantsUpdated.V1Originan),
+                V1Insured = GetStringValue(row, VdeConstants.V1Insured),
+                V1Birthday = GetStringValue(row, VdeConstants.V1Birthday),
+                V1ClaimCod = GetStringValue(row, VdeConstants.V1ClaimCod),
+                V1OtherId = GetStringValue(row, VdeConstants.V1OtherId),
+                V1Ispat = GetStringValue(row, VdeConstants.V1Ispat),
+                V1IsThere = GetStringValue(row, VdeConstants.V1IsThere),
+                V1Zua = GetStringValue(row, VdeConstants.V1Zua),
+                V1Sex = GetStringValue(row, VdeConstants.V1Sex),
+                V1Oth = GetStringValue(row, VdeConstants.V1Oth),
+                V1Patient = GetStringValue(row, VdeConstants.V1Patient),
+                V1Originan = GetStringValue(row, VdeConstants.V1Originan),
 
                 // Diagnosis information
-                V4Diag = GetStringValue(row, VdeConstantsUpdated.V4Diag),
-                V414Qual = GetStringValue(row, VdeConstantsUpdated.V414Qual),
-                V415Date = GetStringValue(row, VdeConstantsUpdated.V415Date),
-                V415Qual = GetStringValue(row, VdeConstantsUpdated.V415Qual),
-                V432Plufou = GetStringValue(row, VdeConstantsUpdated.V432Plufou),
-                V432Zcode = GetStringValue(row, VdeConstantsUpdated.V432Zcode),
-                V414Date = GetStringValue(row, VdeConstantsUpdated.V414Date),
+                V4Diag = GetStringValue(row, VdeConstants.V4Diag),
+                V414Qual = GetStringValue(row, VdeConstants.V414Qual),
+                V415Date = GetStringValue(row, VdeConstants.V415Date),
+                V415Qual = GetStringValue(row, VdeConstants.V415Qual),
+                V432Plufou = GetStringValue(row, VdeConstants.V432Plufou),
+                V432Zcode = GetStringValue(row, VdeConstants.V432Zcode),
+                V414Date = GetStringValue(row, VdeConstants.V414Date),
 
                 // Dates
-                V6DateFrom = GetStringValue(row, VdeConstantsUpdated.V6DateFrom),
-                V311Insdat = GetStringValue(row, VdeConstantsUpdated.V311Insdat),
-                V316Patdat = GetStringValue(row, VdeConstantsUpdated.V316Patdat),
-                V316Datewo = GetStringValue(row, VdeConstantsUpdated.V316Datewo),
-                V318Hospda = GetStringValue(row, VdeConstantsUpdated.V318Hospda),
-                V318Reldat = GetStringValue(row, VdeConstantsUpdated.V318Reldat),
+                V6DateFrom = GetStringValue(row, VdeConstants.V6DateFrom),
+                V311Insdat = GetStringValue(row, VdeConstants.V311Insdat),
+                V316Patdat = GetStringValue(row, VdeConstants.V316Patdat),
+                V316Datewo = GetStringValue(row, VdeConstants.V316Datewo),
+                V318Hospda = GetStringValue(row, VdeConstants.V318Hospda),
+                V318Reldat = GetStringValue(row, VdeConstants.V318Reldat),
 
                 // Provider information
-                V133Anpi = GetStringValue(row, VdeConstantsUpdated.V133Anpi),
-                V417Bnpi = GetStringValue(row, VdeConstantsUpdated.V417Bnpi),
-                V417Aprove = GetStringValue(row, VdeConstantsUpdated.V417Aprove),
-                V133Bprovi = GetStringValue(row, VdeConstantsUpdated.V133Bprovi),
-                V133Bqual = GetStringValue(row, VdeConstantsUpdated.V133Bqual),
-                V132Anpi = GetStringValue(row, VdeConstantsUpdated.V132Anpi),
-                V132Bprovi = GetStringValue(row, VdeConstantsUpdated.V132Bprovi),
+                V133Anpi = GetStringValue(row, VdeConstants.V133Anpi),
+                V417Bnpi = GetStringValue(row, VdeConstants.V417Bnpi),
+                V417Aprove = GetStringValue(row, VdeConstants.V417Aprove),
+                V133Bprovi = GetStringValue(row, VdeConstants.V133Bprovi),
+                V133Bqual = GetStringValue(row, VdeConstants.V133Bqual),
+                V132Anpi = GetStringValue(row, VdeConstants.V132Anpi),
+                V132Bprovi = GetStringValue(row, VdeConstants.V132Bprovi),
 
                 // Address information
-                V533Add1 = GetStringValue(row, VdeConstantsUpdated.V533Add1),
-                V533Add2 = GetStringValue(row, VdeConstantsUpdated.V533Add2),
-                V533City = GetStringValue(row, VdeConstantsUpdated.V533City),
-                V533State = GetStringValue(row, VdeConstantsUpdated.V533State),
-                V533Name = GetStringValue(row, VdeConstantsUpdated.V533Name),
-                V533Lastn1 = GetStringValue(row, VdeConstantsUpdated.V533Lastn1),
-                // V533Lastn2 = GetStringValue(row, VdeConstantsUpdated.V533Lastn2),
-                V533Zipcoc = GetStringValue(row, VdeConstantsUpdated.V533Zipcoc),
-                V533Plus4 = GetStringValue(row, VdeConstantsUpdated.V533Plus4),
+                V533Add1 = GetStringValue(row, VdeConstants.V533Add1),
+                V533Add2 = GetStringValue(row, VdeConstants.V533Add2),
+                V533City = GetStringValue(row, VdeConstants.V533City),
+                V533State = GetStringValue(row, VdeConstants.V533State),
+                V533Name = GetStringValue(row, VdeConstants.V533Name),
+                V533Lastn1 = GetStringValue(row, VdeConstants.V533Lastn1),
+                V533Zipcoc = GetStringValue(row, VdeConstants.V533Zipcoc),
+                V533Plus4 = GetStringValue(row, VdeConstants.V533Plus4),
 
                 // Financial information
-                V419Reserv = GetStringValue(row, VdeConstantsUpdated.V419Reserv),
-                V426Patien = GetStringValue(row, VdeConstantsUpdated.V426Patien),
-                V423Priot = GetStringValue(row, VdeConstantsUpdated.V423Priot),
-                V425Federa = GetStringValue(row, VdeConstantsUpdated.V425Federa),
-                V4Ssn = GetStringValue(row, VdeConstantsUpdated.V4Ssn),
-                V4Ein = GetStringValue(row, VdeConstantsUpdated.V4Ein),
-                V428Total = GetStringValue(row, VdeConstantsUpdated.V428Total),
-                V429Amout = GetStringValue(row, VdeConstantsUpdated.V429Amout),
-                V330Balanc = GetStringValue(row, VdeConstantsUpdated.V330Balanc),
+                V419Reserv = GetStringValue(row, VdeConstants.V419Reserv),
+                V426Patien = GetStringValue(row, VdeConstants.V426Patien),
+                V423Priot = GetStringValue(row, VdeConstants.V423Priot),
+                V425Federa = GetStringValue(row, VdeConstants.V425Federa),
+                V4Ssn = GetStringValue(row, VdeConstants.V4Ssn),
+                V4Ein = GetStringValue(row, VdeConstants.V4Ein),
+                V428Total = GetStringValue(row, VdeConstants.V428Total),
+                V429Amout = GetStringValue(row, VdeConstants.V429Amout),
+                V330Balanc = GetStringValue(row, VdeConstants.V330Balanc),
 
                 // Other patient information
-                V39Otherna = GetStringValue(row, VdeConstantsUpdated.V39Otherna),
-                V39Ini = GetStringValue(row, VdeConstantsUpdated.V39Ini),
-                V39Otherla = GetStringValue(row, VdeConstantsUpdated.V39Otherla),
-                // V39Bsex = GetStringValue(row, VdeConstantsUpdated.V39Bsex),
-                V39Botherd = GetStringValue(row, VdeConstantsUpdated.V39Botherd),
-                V39Otherin = GetStringValue(row, VdeConstantsUpdated.V39Otherin),
-                V39Dinspla = GetStringValue(row, VdeConstantsUpdated.V39Dinspla),
+                V39Otherna = GetStringValue(row, VdeConstants.V39Otherna),
+                V39Ini = GetStringValue(row, VdeConstants.V39Ini),
+                V39Otherla = GetStringValue(row, VdeConstants.V39Otherla),
+                V39Botherd = GetStringValue(row, VdeConstants.V39Botherd),
+                V39Otherin = GetStringValue(row, VdeConstants.V39Otherin),
+                V39Dinspla = GetStringValue(row, VdeConstants.V39Dinspla),
 
                 // Insurance information
-                V211Insure = GetStringValue(row, VdeConstantsUpdated.V211Insure),
-                V332Facili = GetStringValue(row, VdeConstantsUpdated.V332Facili),
-                V2Patstatu = GetStringValue(row, VdeConstantsUpdated.V2Patstatu),
-                // V38Empl = GetStringValue(row, VdeConstantsUpdated.V38Empl),
+                V211Insure = GetStringValue(row, VdeConstants.V211Insure),
+                V332Facili = GetStringValue(row, VdeConstants.V332Facili),
+                V2Patstatu = GetStringValue(row, VdeConstants.V2Patstatu),
 
                 // Charges and payments
-                V320Outsid = GetStringValue(row, VdeConstantsUpdated.V320Outsid),
-                V320Charge = GetStringValue(row, VdeConstantsUpdated.V320Charge),
-                V327Accept = GetStringValue(row, VdeConstantsUpdated.V327Accept),
+                V320Outsid = GetStringValue(row, VdeConstants.V320Outsid),
+                V320Charge = GetStringValue(row, VdeConstants.V320Charge),
+                V327Accept = GetStringValue(row, VdeConstants.V327Accept),
 
                 // Record D properties
-                Datefrom = GetStringValue(row, VdeConstantsUpdated.Datefrom),
-                Dateto = GetStringValue(row, VdeConstantsUpdated.Dateto),
-                Diagpoin = GetStringValue(row, VdeConstantsUpdated.Diagpoin),
-                Ndc = GetStringValue(row, VdeConstantsUpdated.Ndc),
-                Unitqual = GetStringValue(row, VdeConstantsUpdated.Unitqual),
-                Unit = GetStringValue(row, VdeConstantsUpdated.Unit),
-                Place = GetStringValue(row, VdeConstantsUpdated.Place),
-                Mod1 = GetStringValue(row, VdeConstantsUpdated.Mod1),
-                Mod2 = GetStringValue(row, VdeConstantsUpdated.Mod2),
-                Mod3 = GetStringValue(row, VdeConstantsUpdated.Mod3),
-                Mod4 = GetStringValue(row, VdeConstantsUpdated.Mod4),
-                Npi = GetStringValue(row, VdeConstantsUpdated.Npi),
-                Cpt = GetStringValue(row, VdeConstantsUpdated.Cpt),
-                Rendprov = GetStringValue(row, VdeConstantsUpdated.Rendprov),
-                Iqual24 = GetStringValue(row, VdeConstantsUpdated.Iqual24),
-                Daysunit = GetStringValue(row, VdeConstantsUpdated.Daysunit),
-                Emg = GetStringValue(row, VdeConstantsUpdated.Emg),
-                Charges = GetStringValue(row, VdeConstantsUpdated.Charges),
-                Abbimabi = GetStringValue(row, VdeConstantsUpdated.Abbimabi)
+                Datefrom = GetStringValue(row, VdeConstants.Datefrom),
+                Dateto = GetStringValue(row, VdeConstants.Dateto),
+                Diagpoin = GetStringValue(row, VdeConstants.Diagpoin),
+                Ndc = GetStringValue(row, VdeConstants.Ndc),
+                Unitqual = GetStringValue(row, VdeConstants.Unitqual),
+                Unit = GetStringValue(row, VdeConstants.Unit),
+                Place = GetStringValue(row, VdeConstants.Place),
+                Mod1 = GetStringValue(row, VdeConstants.Mod1),
+                Mod2 = GetStringValue(row, VdeConstants.Mod2),
+                Mod3 = GetStringValue(row, VdeConstants.Mod3),
+                Mod4 = GetStringValue(row, VdeConstants.Mod4),
+                Npi = GetStringValue(row, VdeConstants.Npi),
+                Cpt = GetStringValue(row, VdeConstants.Cpt),
+                Rendprov = GetStringValue(row, VdeConstants.Rendprov),
+                Iqual24 = GetStringValue(row, VdeConstants.Iqual24),
+                Daysunit = GetStringValue(row, VdeConstants.Daysunit),
+                Emg = GetStringValue(row, VdeConstants.Emg),
+                Charges = GetStringValue(row, VdeConstants.Charges),
+                Abbimabi = GetStringValue(row, VdeConstants.Abbimabi)
             };
 
             records.Add(record);

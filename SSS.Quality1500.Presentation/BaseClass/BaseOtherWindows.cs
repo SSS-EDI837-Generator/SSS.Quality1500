@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using SSS.Quality1500.Common;
+using SSS.Quality1500.Domain.Models;
 using SSS.Quality1500.Presentation.Interfaces;
 
 

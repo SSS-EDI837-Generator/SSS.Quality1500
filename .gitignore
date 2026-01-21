@@ -2,16 +2,50 @@
 bin/
 obj/
 publish/
+out/
+TestResults/
+BenchmarkDotNet.Artifacts/
+
+## NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
 
 ## Visual Studio
 .vs/
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
 
 ## Rider
 .idea/
 
+## VS Code
+.vscode/
+
+## SQLite
+*.db
+*.db-shm
+*.db-wal
+
 ## Logs
+logs/
 *.log
 
+## Environment & Secrets
+
+
+*.pfx
+*.p12
+
+## macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

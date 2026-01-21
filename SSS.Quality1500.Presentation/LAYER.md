@@ -42,11 +42,11 @@
 
 ### Conversion DTO → ViewModel
 ```csharp
-// Business devuelve List<VdeRecord> (DTO)
-List<VdeRecord> dtos = await vdeService.GetAllAsVdeRecordsAsync("file.dbf");
+// Business devuelve List<VdeRecordDto> (DTO)
+List<VdeRecordDto> dtos = await vdeService.GetAllAsVdeRecordsAsync("file.dbf");
 
 // Presentation convierte a ObservableCollection para binding
-ObservableCollection<VdeRecord> viewModels = new(dtos);
+ObservableCollection<VdeRecordDto> viewModels = new(dtos);
 ```
 
 ## Reglas MVVM
@@ -74,9 +74,9 @@ public partial class ControlMainViewModel : ObservableObject
     private async Task StartProcessAsync()
     {
         IsProcessing = true;
-        
-        // Business devuelve List<VdeRecord> (DTO)
-        Result<List<VdeRecord>, string> result = await _vdeService.GetAllAsVdeRecordsAsync(filePath);
+
+        // Business devuelve List<VdeRecordDto> (DTO)
+        Result<List<VdeRecordDto>, string> result = await _vdeService.GetAllAsVdeRecordsAsync(filePath);
         
         result.OnSuccess(dtos => 
         {

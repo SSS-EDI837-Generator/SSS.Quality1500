@@ -4,6 +4,8 @@ using NDbfReader;
 using SSS.Quality1500.Common;
 using SSS.Quality1500.Domain.Constants;
 using SSS.Quality1500.Domain.Interfaces;
+using SSS.Quality1500.Domain.Models;
+
 using System.Data;
 using System.Text;
 
@@ -33,12 +35,12 @@ public class DbfReader : IDbfReader
             using Table db = DbfConnection(filePath);
             DataTable? table = await db.AsDataTableAsync();
 
-            const string page = ProjectConstants.V1PAGINA;
+            const string page = VdeConstants.V1Page;
 
             TotalImages = table?.Rows?.Count ?? 0;
             TotalClaims = table?.Select($"{page} <> '99'").Length ?? 0;
             DataRow? row = table?.Select($"{page} <> '99'")?.FirstOrDefault();
-            Bht = row?[ProjectConstants.V0DOCUMENT].ToString()?.Substring(3, 3) ?? string.Empty;
+            Bht = row?[VdeConstants.V0Document].ToString()?.Substring(3, 3) ?? string.Empty;
 
             return Result<DataTable, string>.Ok(table ?? new DataTable());
         }

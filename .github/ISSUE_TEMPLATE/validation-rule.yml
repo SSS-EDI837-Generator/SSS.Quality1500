@@ -1,0 +1,192 @@
+name: ✅ Validation Rule
+description: Implementar una nueva regla de validación de CMS-1500
+title: "[VAL] - "
+labels: ["validation", "enhancement"]
+assignees:
+  - 
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Nueva Regla de Validación
+        Template para implementar validadores según VALIDATION_RULES.md
+
+  - type: input
+    id: rule-code
+    attributes:
+      label: Código de Regla
+      description: Formato XXX-###
+      placeholder: "Ej: NPI-001, DATE-002, CPT-001"
+    validations:
+      required: true
+
+  - type: input
+    id: rule-name
+    attributes:
+      label: Nombre de la Regla
+      description: Nombre descriptivo
+      placeholder: "Ej: NPI Format Validation, Date Not Future Validation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Categoría
+      description: Tipo de validación
+      options:
+        - "NPI - National Provider Identifier"
+        - "DATE - Fechas de Servicio"
+        - "CPT - Códigos de Procedimiento"
+        - "HCPCS - Healthcare Common Procedure Coding"
+        - "ICD - Códigos de Diagnóstico"
+        - "POS - Place of Service"
+        - "AMT - Montos y Cargos"
+        - "PAT - Información del Paciente"
+        - "INS - Información de Asegurado"
+        - "Otra (especificar)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      description: Nivel de error según ErrorSeverity enum
+      options:
+        - "Critical - Bloquea procesamiento"
+        - "Error - Debe corregirse"
+        - "Warning - Revisar recomendado"
+        - "Info - Informativo"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Fase de Implementación
+      description: Según VALIDATION_RULES.md
+      options:
+        - "Fase 1 - Esta Semana (Prioridad Alta)"
+        - "Fase 2 - Próxima Semana (Prioridad Media)"
+        - "Fase 3 - Futuro (Prioridad Baja)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-rule
+    attributes:
+      label: Regla de Negocio
+      description: Describe la regla en lenguaje de negocio
+      placeholder: |
+        El campo [nombre] debe cumplir con:
+        - [condición 1]
+        - [condición 2]
+        
+        Según estándar CMS-1500, Box [número]...
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-spec
+    attributes:
+      label: Especificación Técnica
+      description: Lógica de validación detallada
+      placeholder: |
+        Validar que:
+        1. Campo no sea null/empty
+        2. Longitud sea exactamente X caracteres
+        3. Formato sea [regex o descripción]
+        4. Rango de valores válidos: [X-Y]
+        
+        Si la validación falla, retornar ValidationError con:
+        - Message: "[mensaje al usuario]"
+        - CurrentValue: [valor actual]
+        - ExpectedValue: "[formato esperado]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-cases
+    attributes:
+      label: Casos de Prueba
+      description: Valores válidos e inválidos para testing
+      placeholder: |
+        Valores Válidos:
+        - "1234567890" (NPI válido)
+        - "01/15/2025" (fecha válida)
+        
+        Valores Inválidos:
+        - "123" (muy corto)
+        - "ABC1234567" (contiene letras)
+        - "01/15/2030" (fecha futura)
+        - null, empty, whitespace
+    validations:
+      required: true
+
+  - type: dropdown
+    id: requires-api
+    attributes:
+      label: ¿Requiere API Externa?
+      description: ¿Necesita llamar a API de NPI o similar?
+      options:
+        - "No - Validación local"
+        - "Sí - API de NPI"
+        - "Sí - Otra API (especificar)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: fields
+    attributes:
+      label: Campos del Formulario CMS-1500
+      description: Qué boxes/campos se validan
+      placeholder: |
+        - Box 17b: Referring Provider NPI
+        - Box 24J: Rendering Provider NPI
+        - Box 33a: Billing Provider NPI
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Archivos a Implementar
+      description: Estructura de archivos según Clean Architecture
+      value: |
+        ```
+        Business/
+        └── Validators/
+            └── [NombreValidator].cs          ← Implementación
+
+        Business.Tests/
+        └── Validators/
+            └── [NombreValidator]Tests.cs     ← Tests unitarios
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Referencias
+      description: Links a documentación oficial
+      placeholder: |
+        - CMS-1500 Form: https://www.cms.gov/...
+        - VALIDATION_RULES.md - Sección [X]
+        - HEALTHCARE_CONTEXT.md - [campo específico]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist de Implementación
+      options:
+        - label: Implementar IValidationRule<T> en Business/Validators/
+        - label: Definir RuleCode, RuleName, Severity
+        - label: Implementar ValidateAsync con Result<bool, ValidationError>
+        - label: Tests unitarios con casos válidos e inválidos
+        - label: Tests con valores null, empty, whitespace
+        - label: Integrar al ValidationEngine
+        - label: Agregar configuración en appsettings.json (si aplica)
+        - label: Documentar regla en VALIDATION_RULES.md
+        - label: Actualizar PLAN_TRABAJO.md

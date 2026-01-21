@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discusiones Generales
+    url: https://github.com/SSS-EDI837-Generator/SSS.Quality1500/discussions
+    about: Para preguntas, ideas, y discusiones generales sobre el proyecto
+  - name: 📖 Documentación
+    url: https://github.com/SSS-EDI837-Generator/SSS.Quality1500/blob/main/README.md
+    about: Consulta la documentación completa del proyecto
+  - name: 📋 Plan de Trabajo
+    url: https://github.com/SSS-EDI837-Generator/SSS.Quality1500/blob/main/PLAN_TRABAJO.md
+    about: Revisa el plan de trabajo completo del proyecto

@@ -1,0 +1,59 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Restore dependencies
+      run: dotnet restore
+      
+    - name: 🏗️ Build
+      run: dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
+      
+    - name: 🧪 Run tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --filter "Category!=Integration"
+      
+    - name: 📊 Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: '**/coverage.cobertura.xml'
+        fail_ci_if_error: false
+        
+  build-quality:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 📦 Restore dependencies
+      run: dotnet restore
+      
+    - name: ✨ Check code formatting
+      run: dotnet format --verify-no-changes --verbosity diagnostic
+      
+    - name: 🔍 Analyze code
+      run: dotnet build /p:RunAnalyzers=true /p:AnalysisMode=All /p:TreatWarningsAsErrors=true

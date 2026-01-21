@@ -1,0 +1,171 @@
+name: 🚀 Feature / Sprint Task
+description: Crear una nueva feature o tarea de sprint según el plan de trabajo
+title: "[FASE X.Y] - "
+labels: ["enhancement", "sprint"]
+assignees:
+  - 
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Template para Features y Tareas de Sprint
+        Usa este template para crear issues basados en el PLAN_TRABAJO.md
+
+  - type: dropdown
+    id: fase
+    attributes:
+      label: Fase del Proyecto
+      description: ¿A qué fase pertenece esta tarea?
+      options:
+        - "FASE 0: Setup y Fundamentos"
+        - "FASE 1: Core Domain y Data Access"
+        - "FASE 2: Business Layer - Validaciones"
+        - "FASE 3: API Integration"
+        - "FASE 4: Presentation Layer - UI Base"
+        - "FASE 5: UI de Revisión de Errores"
+        - "FASE 6: Validaciones Avanzadas"
+        - "FASE 7: Features Avanzadas"
+        - "FASE 8: Testing y Calidad"
+        - "FASE 9: Deployment y Documentación"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Sprint
+      description: ¿A qué sprint pertenece?
+      options:
+        - "Sprint 0.1: Estructura de Proyecto"
+        - "Sprint 0.2: Logging y Configuración"
+        - "Sprint 0.3: CI/CD y Control de Calidad"
+        - "Sprint 1.1: Domain Layer - Entidades Base"
+        - "Sprint 1.2: Data Layer - DBF Reader"
+        - "Sprint 1.3: Data Layer - SQLite Repository"
+        - "Sprint 2.1: Validadores de NPI"
+        - "Sprint 2.2: Validadores de Fechas"
+        - "Sprint 2.3: Servicio de Procesamiento de Claims"
+        - "Sprint 3.1: Cliente HTTP para API de NPI"
+        - "Sprint 3.2: Integración con Validadores"
+        - "Sprint 4.1: Shell y Navegación"
+        - "Sprint 4.2: Vista de Carga de Archivos"
+        - "Sprint 5.1: Servicio de Imágenes"
+        - "Sprint 5.2: Control ZoomableImageControl"
+        - "Sprint 5.3: Vista de Revisión de Errores"
+        - "Sprint 6.1: Validadores CPT/HCPCS"
+        - "Sprint 6.2: Validadores ICD-10"
+        - "Sprint 6.3: Validadores de Montos"
+        - "Sprint 7.1: Exportación de Resultados"
+        - "Sprint 7.2: Batch Processing UI"
+        - "Sprint 7.3: Configuración de Reglas"
+        - "Sprint 8.1: Tests de Integración"
+        - "Sprint 8.2: Performance y Optimización"
+        - "Sprint 8.3: HIPAA Compliance Review"
+        - "Sprint 9.1: Packaging y Deployment"
+        - "Sprint 9.2: Documentación"
+        - "Sprint 9.3: Release Preparation"
+        - "Otra (especificar en descripción)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Capa de Arquitectura
+      description: ¿En qué capa se implementa?
+      options:
+        - "Common"
+        - "Domain"
+        - "Data"
+        - "Business"
+        - "Presentation"
+        - "Múltiples capas"
+        - "N/A (documentación, CI/CD, etc.)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      description: Según PLAN_TRABAJO.md
+      options:
+        - "⭐ Alta (Semanas 1-8)"
+        - "⏳ Media (Semanas 9-16)"
+        - "📌 Baja (Semanas 17+)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: Describe la tarea a realizar
+      placeholder: |
+        Implementar [componente/servicio/validador]...
+        
+        Ver PLAN_TRABAJO.md - [FASE X] - [Sprint X.Y]
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Criterios de Aceptación
+      description: ¿Cuándo se considera completa esta tarea?
+      placeholder: |
+        - [ ] Código implementado según Clean Architecture
+        - [ ] Tests unitarios con coverage > 70%
+        - [ ] Código compila sin warnings
+        - [ ] Máximo 3 parámetros en constructores
+        - [ ] Archivo < 500 líneas
+        - [ ] Documentación XML en APIs públicas
+        - [ ] PR aprobado y merged
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Notas Técnicas
+      description: Consideraciones técnicas, referencias a documentos, etc.
+      placeholder: |
+        Referencias:
+        - CLAUDE.md - [sección]
+        - HEALTHCARE_CONTEXT.md - [sección]
+        - VALIDATION_RULES.md - [regla específica]
+        - API_INTEGRATION.md - [endpoint]
+        
+        Dependencias:
+        - Issue #XX debe completarse primero
+        - Requiere NuGet package: [nombre]
+
+  - type: textarea
+    id: files-to-create
+    attributes:
+      label: Archivos a Crear/Modificar
+      description: Lista de archivos involucrados
+      placeholder: |
+        Crear:
+        - Domain/Models/ClaimRecord.cs
+        - Domain/Interfaces/IClaimRepository.cs
+        
+        Modificar:
+        - Business/Services/ValidationEngine.cs
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist de Calidad
+      description: Verificar antes de cerrar el issue
+      options:
+        - label: Código compila sin warnings
+        - label: Tests unitarios pasan (coverage > 70%)
+        - label: Archivos < 500 líneas
+        - label: Máximo 3 parámetros en constructores
+        - label: Primary constructors usados
+        - label: Namespaces coinciden con carpetas
+        - label: Dependencias entre capas respetadas
+        - label: Logging sin PHI (HIPAA)
+        - label: Comentarios XML en APIs públicas
+        - label: PR review completado

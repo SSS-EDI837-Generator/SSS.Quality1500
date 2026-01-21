@@ -1,0 +1,133 @@
+name: 🐛 Bug Report
+description: Reportar un error o comportamiento inesperado
+title: "[BUG] - "
+labels: ["bug"]
+assignees:
+  - 
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Reporte de Bug
+        Gracias por ayudar a mejorar SSS.Quality1500
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      description: ¿Qué tan crítico es este bug?
+      options:
+        - "🔴 Crítico - Bloquea el uso de la aplicación"
+        - "🟠 Alto - Funcionalidad importante afectada"
+        - "🟡 Medio - Funcionalidad menor afectada"
+        - "🟢 Bajo - Cosmético o mejora"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Capa Afectada
+      description: ¿En qué capa ocurre el error?
+      options:
+        - "Common"
+        - "Domain"
+        - "Data"
+        - "Business"
+        - "Presentation (UI)"
+        - "No estoy seguro"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del Bug
+      description: Describe claramente el problema
+      placeholder: Al intentar [acción], ocurre [error]...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para Reproducir
+      description: ¿Cómo podemos reproducir este bug?
+      placeholder: |
+        1. Abrir la aplicación
+        2. Ir a [vista]
+        3. Hacer clic en [botón]
+        4. Observar error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento Esperado
+      description: ¿Qué debería ocurrir?
+      placeholder: Debería mostrar/hacer/validar...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento Actual
+      description: ¿Qué ocurre realmente?
+      placeholder: En su lugar, muestra error/falla/se cierra...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Mensajes de Error
+      description: Copia logs relevantes (ASEGÚRATE DE NO INCLUIR PHI/DATOS SENSIBLES)
+      placeholder: |
+        ```
+        Error: System.NullReferenceException
+        at SSS.Quality1500.Business.Services.ValidationEngine...
+        ```
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      description: Información del sistema
+      placeholder: |
+        - OS: Windows 11
+        - .NET Version: 10.0
+        - App Version: v0.1.0
+        - Config: Development/Production
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Videos
+      description: Si aplica, agregar capturas de pantalla
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto Adicional
+      description: Cualquier otra información relevante
+      placeholder: |
+        - Ocurre solo con archivos .dbf específicos
+        - Relacionado con issue #XX
+        - Comenzó después de commit XXXXXX
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: He verificado que no es un duplicado de otro issue
+          required: true
+        - label: He eliminado cualquier información sensible (PHI) de los logs
+          required: true
+        - label: He incluido pasos claros para reproducir
+          required: true

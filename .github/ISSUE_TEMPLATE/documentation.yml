@@ -1,0 +1,95 @@
+name: 📚 Documentation
+description: Mejorar o crear documentación del proyecto
+title: "[DOCS] - "
+labels: ["documentation"]
+assignees:
+  - 
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentación
+        Template para tareas de documentación
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Tipo de Documentación
+      options:
+        - "README.md - Actualización"
+        - "CLAUDE.md - Guía de arquitectura"
+        - "WARP.md - Guía de comandos"
+        - "PLAN_TRABAJO.md - Actualización de plan"
+        - "HEALTHCARE_CONTEXT.md - Contexto de negocio"
+        - "VALIDATION_RULES.md - Reglas de validación"
+        - "API_INTEGRATION.md - Integración de APIs"
+        - "UI_PATTERNS.md - Patrones de UI"
+        - "User Manual - Manual de usuario"
+        - "Developer Guide - Guía de desarrollador"
+        - "API Documentation - Comentarios XML"
+        - "Diagramas de Arquitectura"
+        - "Otro (especificar)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - "Alta - Requerida para próximo release"
+        - "Media - Importante pero no urgente"
+        - "Baja - Mejora incremental"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: ¿Qué documentación necesita crearse o actualizarse?
+      placeholder: |
+        Actualizar VALIDATION_RULES.md con:
+        - Nuevas reglas de la Fase 2
+        - Ejemplos de código
+        - Diagrama de flujo de validación
+    validations:
+      required: true
+
+  - type: textarea
+    id: content
+    attributes:
+      label: Contenido Propuesto
+      description: Borrador o outline del contenido
+      placeholder: |
+        ## Nueva Sección
+        
+        ### Subsección 1
+        - Punto 1
+        - Punto 2
+        
+        ### Subsección 2
+        - Código de ejemplo
+        - Diagramas
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Referencias
+      description: Fuentes de información
+      placeholder: |
+        - Issue #XX que implementó la feature
+        - PR #YY con código relevante
+        - Documentación externa: [URL]
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Ortografía y gramática revisadas
+        - label: Links verificados (no rotos)
+        - label: Código de ejemplo compila
+        - label: Screenshots/diagramas incluidos (si aplica)
+        - label: Consistente con otros documentos
+        - label: PR creado y reviewed

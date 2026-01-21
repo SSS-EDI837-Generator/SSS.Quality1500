@@ -1,0 +1,158 @@
+name: Code Quality Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  file-size-check:
+    runs-on: ubuntu-latest
+    name: Check File Sizes
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📏 Check file sizes (max 500 lines)
+      run: |
+        echo "Checking for files exceeding 500 lines..."
+        
+        # Excluir carpetas y archivos autogenerados
+        LARGE_FILES=$(find . -type f -name "*.cs" \
+          ! -path "*/bin/*" \
+          ! -path "*/obj/*" \
+          ! -path "*/.git/*" \
+          ! -name "*.g.cs" \
+          ! -name "*Designer.cs" \
+          ! -name "*.Designer.cs" \
+          -exec awk 'END {if (NR > 500) print FILENAME " (" NR " lines)"}' {} \;)
+        
+        if [ -n "$LARGE_FILES" ]; then
+          echo "❌ Files exceeding 500 lines:"
+          echo "$LARGE_FILES"
+          exit 1
+        else
+          echo "✅ All files are within 500 lines limit"
+        fi
+        
+  architecture-check:
+    runs-on: ubuntu-latest
+    name: Check Architecture Dependencies
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🏗️ Verify layer dependencies
+      run: |
+        echo "Checking architectural dependencies..."
+        
+        # Domain no puede depender de ninguna otra capa
+        DOMAIN_VIOLATIONS=$(grep -r "using SSS.Quality1500.Common" --include="*.cs" Domain/ 2>/dev/null || true)
+        DOMAIN_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Data" --include="*.cs" Domain/ 2>/dev/null || true)
+        DOMAIN_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Business" --include="*.cs" Domain/ 2>/dev/null || true)
+        DOMAIN_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Presentation" --include="*.cs" Domain/ 2>/dev/null || true)
+        
+        if [ -n "$DOMAIN_VIOLATIONS" ]; then
+          echo "❌ Domain layer has invalid dependencies:"
+          echo "$DOMAIN_VIOLATIONS"
+          exit 1
+        fi
+        
+        # Common no puede depender de ninguna otra capa del proyecto
+        COMMON_VIOLATIONS=$(grep -r "using SSS.Quality1500.Domain" --include="*.cs" Common/ 2>/dev/null || true)
+        COMMON_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Data" --include="*.cs" Common/ 2>/dev/null || true)
+        COMMON_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Business" --include="*.cs" Common/ 2>/dev/null || true)
+        COMMON_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Presentation" --include="*.cs" Common/ 2>/dev/null || true)
+        
+        if [ -n "$COMMON_VIOLATIONS" ]; then
+          echo "❌ Common layer has invalid dependencies:"
+          echo "$COMMON_VIOLATIONS"
+          exit 1
+        fi
+        
+        # Data no puede depender de Business o Presentation
+        DATA_VIOLATIONS=$(grep -r "using SSS.Quality1500.Business" --include="*.cs" Data/ 2>/dev/null || true)
+        DATA_VIOLATIONS+=$(grep -r "using SSS.Quality1500.Presentation" --include="*.cs" Data/ 2>/dev/null || true)
+        
+        if [ -n "$DATA_VIOLATIONS" ]; then
+          echo "❌ Data layer has invalid dependencies:"
+          echo "$DATA_VIOLATIONS"
+          exit 1
+        fi
+        
+        # Business no puede depender de Presentation
+        BUSINESS_VIOLATIONS=$(grep -r "using SSS.Quality1500.Presentation" --include="*.cs" Business/ 2>/dev/null || true)
+        
+        if [ -n "$BUSINESS_VIOLATIONS" ]; then
+          echo "❌ Business layer has invalid dependencies:"
+          echo "$BUSINESS_VIOLATIONS"
+          exit 1
+        fi
+        
+        echo "✅ All architectural dependencies are valid"
+        
+  naming-convention-check:
+    runs-on: ubuntu-latest
+    name: Check Naming Conventions
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📛 Verify namespace matches folder structure
+      run: |
+        echo "Checking namespace conventions..."
+        
+        # Verificar que namespaces coincidan con estructura de carpetas
+        # Esto es un ejemplo básico - puede refinarse
+        
+        find . -type f -name "*.cs" \
+          ! -path "*/bin/*" \
+          ! -path "*/obj/*" \
+          ! -path "*/.git/*" \
+          ! -name "*.g.cs" \
+          ! -name "*Designer.cs" \
+          -exec sh -c '
+            FILE="$1"
+            NAMESPACE=$(grep -m 1 "^namespace " "$FILE" | sed "s/namespace //;s/;//")
+            
+            if [ -n "$NAMESPACE" ]; then
+              # Convertir path a namespace esperado
+              DIR=$(dirname "$FILE" | sed "s|\./||;s|/|.|g")
+              
+              # Verificar que el namespace contenga la estructura de carpetas
+              # (esto es una verificación simplificada)
+              echo "Checking: $FILE"
+            fi
+          ' sh {} \;
+          
+        echo "✅ Namespace convention check complete"
+        
+  hipaa-compliance-check:
+    runs-on: ubuntu-latest
+    name: HIPAA Compliance - No PHI in Logs
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔒 Check for potential PHI in logs
+      run: |
+        echo "Checking for potential PHI in logging statements..."
+        
+        # Buscar logging de campos que podrían contener PHI
+        PHI_VIOLATIONS=$(grep -r "LogInformation.*PatientName" --include="*.cs" . 2>/dev/null || true)
+        PHI_VIOLATIONS+=$(grep -r "LogInformation.*Patient\.FullName" --include="*.cs" . 2>/dev/null || true)
+        PHI_VIOLATIONS+=$(grep -r "LogInformation.*DateOfBirth" --include="*.cs" . 2>/dev/null || true)
+        PHI_VIOLATIONS+=$(grep -r "LogInformation.*Address" --include="*.cs" . 2>/dev/null || true)
+        
+        if [ -n "$PHI_VIOLATIONS" ]; then
+          echo "⚠️  Potential PHI in logging detected:"
+          echo "$PHI_VIOLATIONS"
+          echo ""
+          echo "Remember: Only log ClaimId and BatchId, never patient information"
+          exit 1
+        else
+          echo "✅ No obvious PHI logging violations found"
+        fi

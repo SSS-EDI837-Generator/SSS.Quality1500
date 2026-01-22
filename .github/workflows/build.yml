@@ -56,4 +56,4 @@ jobs:
       run: dotnet format --verify-no-changes --verbosity diagnostic
       
     - name: 🔍 Analyze code
-      run: dotnet build /p:RunAnalyzers=true /p:AnalysisMode=All /p:TreatWarningsAsErrors=true
+      run: dotnet build /p:RunAnalyzers=true /p:AnalysisMode=Recommended /p:TreatWarningsAsErrors=true

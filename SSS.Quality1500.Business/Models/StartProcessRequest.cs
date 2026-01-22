@@ -61,7 +61,7 @@ public class StartProcessRequest
     /// <returns>True si la configuración es válida</returns>
     public bool IsValid()
     {
-        return VdeTable != null && 
+        return VdeTable != null &&
                VdeTable.Rows.Count > 0 &&
                !string.IsNullOrWhiteSpace(PathDat) &&
                !string.IsNullOrWhiteSpace(FileNameOutPut837) &&

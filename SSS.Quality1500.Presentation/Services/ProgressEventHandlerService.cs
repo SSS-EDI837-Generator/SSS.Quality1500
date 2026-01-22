@@ -47,16 +47,16 @@ public class ProgressEventHandlerService : IDisposable
     {
         try
         {
-            _logger.LogInformation("Registrando manejadores de eventos de progreso para {ViewModelType}", 
+            _logger.LogInformation("Registrando manejadores de eventos de progreso para {ViewModelType}",
                 viewModel.GetType().Name);
 
             // Crear manejadores específicos
-            var progressHandler = new ProgressEventHandler(viewModel, 
+            var progressHandler = new ProgressEventHandler(viewModel,
                 _loggerFactory.CreateLogger<ProgressEventHandler>(), dispatcher);
-            
-            var metricsHandler = new PerformanceMetricsEventHandler(viewModel, 
+
+            var metricsHandler = new PerformanceMetricsEventHandler(viewModel,
                 _loggerFactory.CreateLogger<PerformanceMetricsEventHandler>(), dispatcher);
-            
+
             var auditHandler = new AuditLoggingEventHandler(
                 _loggerFactory.CreateLogger<AuditLoggingEventHandler>());
 
@@ -70,7 +70,7 @@ public class ProgressEventHandlerService : IDisposable
             _handlers.Add(metricsHandler);
             _handlers.Add(auditHandler);
 
-            _logger.LogInformation("Registrados {HandlerCount} manejadores de eventos de progreso", 
+            _logger.LogInformation("Registrados {HandlerCount} manejadores de eventos de progreso",
                 _handlers.Count);
         }
         catch (Exception ex)

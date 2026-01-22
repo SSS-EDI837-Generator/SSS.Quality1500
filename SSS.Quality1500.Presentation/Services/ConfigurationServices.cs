@@ -1,4 +1,5 @@
 namespace SSS.Quality1500.Presentation.Services;
+
 using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Presentation.Interfaces;
 using SSS.Quality1500.Common.Services;
@@ -20,23 +21,23 @@ public class ConfigurationServices(
     /// Servicio para manejo de vistas de la aplicación
     /// </summary>
     public IViewService ViewService { get; } = viewService ?? throw new ArgumentNullException(nameof(viewService));
-    
+
     /// <summary>
     /// Servicio para lectura de archivos DBF y mapeo a VDE records
     /// </summary>
     public IVdeRecordService VdeRecordService { get; } = vdeRecordService ?? throw new ArgumentNullException(nameof(vdeRecordService));
-    
+
     /// <summary>
     /// Servicio de configuración de UI
     /// </summary>
     public IUiConfigurationService ConfigurationService { get; } = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-    
+
     /// <summary>
     /// Servicio lazy para procesamiento de listas VDE
     /// Se inyectará a través de property injection en el DI container
     /// </summary>
     public LazyService<IVdeListBatch> LazyVdeListBatch { get; init; } = default!;
-    
+
     /// <summary>
     /// Servicio lazy para generación de reportes de batch
     /// Se inyectará a través de property injection en el DI container

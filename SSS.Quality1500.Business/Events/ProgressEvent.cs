@@ -1,4 +1,5 @@
 namespace SSS.Quality1500.Business.Events;
+
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Business.Models;
 

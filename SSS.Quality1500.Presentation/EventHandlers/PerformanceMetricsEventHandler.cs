@@ -45,7 +45,8 @@ public class PerformanceMetricsEventHandler : IEventHandler<ProgressEvent>
     /// <returns>Task que representa la operación asíncrona</returns>
     public async Task Handle(ProgressEvent? progressEvent, CancellationToken cancellationToken = default)
     {
-        try {
+        try
+        {
 
             if (progressEvent?.ProgressInfo == null)
             {
@@ -57,7 +58,7 @@ public class PerformanceMetricsEventHandler : IEventHandler<ProgressEvent>
 
             // Actualizar métricas de forma thread-safe
             ProcessMetrics metrics = UpdateProcessMetrics(processId, progress);
-            
+
             // Actualizar UI con métricas calculadas (no bloqueante)
             await _dispatcher.BeginInvoke(() =>
             {
@@ -70,16 +71,16 @@ public class PerformanceMetricsEventHandler : IEventHandler<ProgressEvent>
                     _logger.LogError(ex, "Error actualizando métricas UI para proceso {ProcessId}", processId);
                 }
             }, DispatcherPriority.Background);
-            
+
             // Completar inmediatamente para evitar bloqueos
             await Task.CompletedTask;
-            
-            _logger.LogTrace("Métricas actualizadas para proceso {ProcessId} - ETA: {ETA}, Velocidad: {Speed} rec/min", 
+
+            _logger.LogTrace("Métricas actualizadas para proceso {ProcessId} - ETA: {ETA}, Velocidad: {Speed} rec/min",
                 processId, metrics.EstimatedTimeToComplete, metrics.ProcessingSpeed);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("Actualización de métricas cancelada para proceso {ProcessId}", progressEvent?.ProcessId  ?? "");
+            _logger.LogDebug("Actualización de métricas cancelada para proceso {ProcessId}", progressEvent?.ProcessId ?? "");
         }
         catch (Exception ex)
         {
@@ -171,7 +172,7 @@ public class PerformanceMetricsEventHandler : IEventHandler<ProgressEvent>
         {
             var eta = metrics.EstimatedTimeToComplete.Value;
             var remainingTime = eta - DateTime.Now;
-            
+
             if (remainingTime.TotalSeconds > 0)
             {
                 _viewModel.ProgressText = $"{progress.Message} - ETA: {eta:HH:mm:ss}";

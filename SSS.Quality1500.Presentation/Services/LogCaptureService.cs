@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Services;
+
 using Microsoft.Extensions.Logging;
 using SSS.Quality1500.Presentation.Interfaces;
 using System.Collections.Concurrent;
@@ -13,7 +14,7 @@ using SSS.Quality1500.Presentation.Models;
 /// Principio: Open/Closed - Extensible para nuevas funcionalidades de log
 /// </summary>
 public class LogCaptureService : ILogCaptureService
-{                                
+{
     private readonly ObservableCollection<LogEntry> _logEntries;
     private readonly ConcurrentQueue<LogEntry> _logQueue;
     private readonly object _lockObject = new object();

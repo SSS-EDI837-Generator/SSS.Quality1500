@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Services;
+
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;

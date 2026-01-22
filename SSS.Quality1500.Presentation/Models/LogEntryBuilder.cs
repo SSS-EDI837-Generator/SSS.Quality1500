@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Models;
+
 using Microsoft.Extensions.Logging;
 
 /// <summary>

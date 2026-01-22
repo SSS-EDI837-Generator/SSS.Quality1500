@@ -8,7 +8,7 @@
     public partial class ConfigViewModel : ObservableObject
     {
         [ObservableProperty] private string _labelName = string.Empty;
-        
+
         public ConfigViewModel()
         {
             LabelName = "Config View Model";

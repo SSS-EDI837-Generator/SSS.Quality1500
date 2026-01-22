@@ -1,0 +1,34 @@
+# EditorConfig for SSS.Quality1500
+# https://editorconfig.org
+
+root = true
+
+[*.cs]
+
+# CA1848: Use LoggerMessage delegates for performance
+# Suppressed: Refactoring all logging requires significant effort, low impact in this application
+dotnet_diagnostic.CA1848.severity = none
+
+# CA1873: Logging argument evaluation expensive when logging disabled
+# Suppressed: Same as CA1848
+dotnet_diagnostic.CA1873.severity = none
+
+# CA1816: GC.SuppressFinalize in Dispose
+# Suppressed: Most classes don't have finalizers, low impact
+dotnet_diagnostic.CA1816.severity = none
+
+# CA1852: Type can be sealed
+# Suppressed: Optimization only, low impact in this application
+dotnet_diagnostic.CA1852.severity = none
+
+# CA1822: Method can be static
+# Suppressed: Would require architecture changes, low impact
+dotnet_diagnostic.CA1822.severity = none
+
+# CA1711: EventHandler suffix reserved
+# Suppressed: Domain uses EventHandler/EventListener naming by design
+dotnet_diagnostic.CA1711.severity = none
+
+# CA1305: IFormatProvider in ToString
+# Suppressed: UI layer uses current locale by design for user-facing strings
+dotnet_diagnostic.CA1305.severity = none

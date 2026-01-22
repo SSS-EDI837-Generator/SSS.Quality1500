@@ -1,4 +1,4 @@
-﻿namespace SSS.Quality1500.Domain.Tests.Models;
+namespace SSS.Quality1500.Domain.Tests.Models;
 
 using FluentAssertions;
 using SSS.Quality1500.Domain.Models;
@@ -7,7 +7,7 @@ using Xunit;
 public sealed class ResultTests
 {
     [Fact]
-    public void Ok_ShouldCreateSuccessResult()
+    public void OkShouldCreateSuccessResult()
     {
         // Arrange & Act
         Result<int, string> result = Result<int, string>.Ok(42);
@@ -18,7 +18,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Fail_ShouldCreateFailureResult()
+    public void FailShouldCreateFailureResult()
     {
         // Arrange & Act
         Result<int, string> result = Result<int, string>.Fail("error");
@@ -29,7 +29,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Match_WithSuccessResult_ShouldCallSuccessFunction()
+    public void MatchWithSuccessResultShouldCallSuccessFunction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Ok(42);
@@ -45,7 +45,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Match_WithFailureResult_ShouldCallFailureFunction()
+    public void MatchWithFailureResultShouldCallFailureFunction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Fail("error");
@@ -61,7 +61,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void OnSuccess_WithSuccessResult_ShouldExecuteAction()
+    public void OnSuccessWithSuccessResultShouldExecuteAction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Ok(42);
@@ -75,7 +75,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void OnSuccess_WithFailureResult_ShouldNotExecuteAction()
+    public void OnSuccessWithFailureResultShouldNotExecuteAction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Fail("error");
@@ -89,7 +89,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void OnFailure_WithFailureResult_ShouldExecuteAction()
+    public void OnFailureWithFailureResultShouldExecuteAction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Fail("error");
@@ -103,7 +103,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void OnFailure_WithSuccessResult_ShouldNotExecuteAction()
+    public void OnFailureWithSuccessResultShouldNotExecuteAction()
     {
         // Arrange
         Result<int, string> result = Result<int, string>.Ok(42);
@@ -121,7 +121,7 @@ public sealed class ResultTests
     [InlineData(42)]
     [InlineData(-1)]
     [InlineData(int.MaxValue)]
-    public void Ok_WithVariousValues_ShouldStoreCorrectly(int value)
+    public void OkWithVariousValuesShouldStoreCorrectly(int value)
     {
         // Arrange & Act
         Result<int, string> result = Result<int, string>.Ok(value);
@@ -130,7 +130,7 @@ public sealed class ResultTests
         result.IsSuccess.Should().BeTrue();
         result.Match(
             onSuccess: v => v.Should().Be(value),
-            onFailure: _ => throw new Exception("Should not reach here")
+            onFailure: _ => throw new InvalidOperationException("Should not reach here")
         );
     }
 }

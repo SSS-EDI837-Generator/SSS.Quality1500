@@ -17,7 +17,7 @@ public partial class MainViewModel : BaseMainWindowsService
     [ObservableProperty] private object? _currentView;
 
     private readonly IViewService _viewService;
-    private new readonly ILogger<MainViewModel> _logger;
+    private readonly ILogger<MainViewModel> _logger;
     private readonly ApplicationSettings _appSettings;
 
 

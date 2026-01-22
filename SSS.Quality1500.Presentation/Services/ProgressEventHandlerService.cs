@@ -19,7 +19,7 @@ public class ProgressEventHandlerService : IDisposable
     private readonly ILogger<ProgressEventHandlerService> _logger;
     private readonly ILoggerFactory _loggerFactory;
     private readonly List<IEventListener<ProgressEvent>> _handlers;
-    private bool _disposed = false;
+    private bool _disposed;
 
     /// <summary>
     /// Constructor primario

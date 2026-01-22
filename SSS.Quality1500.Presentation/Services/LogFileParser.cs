@@ -182,7 +182,7 @@ public static class LogFileParser
             {
                 try
                 {
-                    exception = new Exception(additionalText);
+                    exception = new InvalidOperationException(additionalText);
                 }
                 catch
                 {

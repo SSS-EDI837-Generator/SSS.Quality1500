@@ -48,7 +48,7 @@ public class ConfigurationService : IUiConfigurationService
     public void UpdateConfiguration(
         string vkFile, string datFile, string idxFile, string imgFileIn, string imgFileOut, string pathOut,
         bool is837Stamping, bool isIda, bool isZipper, bool isConduce, bool isBackup,
-        bool isConduceDummy, bool isVersion, bool isRemoveHeader, bool isToXls,
+        bool isConduceDummy, bool isVersion, bool isRemoveHeader, bool is837ToXls,
         DateTime selectedDate, string totalImagenes, string totalDocumentos, DataTable vdeTable)
     {
         VkFile = vkFile;
@@ -64,7 +64,7 @@ public class ConfigurationService : IUiConfigurationService
         IsConduceDummyChecked = isConduceDummy;
         IsVersionChecked = isVersion;
         IsRemoveHeaderChecked = isRemoveHeader;
-        Is837ToXlsChecked = isToXls;
+        Is837ToXlsChecked = is837ToXls;
         SelectedDate = selectedDate;
         TotalImagenes = totalImagenes;
         TotalDocumentos = totalDocumentos;

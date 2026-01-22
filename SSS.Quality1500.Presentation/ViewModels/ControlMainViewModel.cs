@@ -37,7 +37,7 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _cancellationTokenSource;
 
     // Control para dispose
-    private bool _disposed = false;
+    private bool _disposed;
 
     // Propiedades de configuración
     [ObservableProperty] private string _configurationFiles = "Sin configurar";

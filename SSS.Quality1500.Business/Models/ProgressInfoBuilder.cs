@@ -9,10 +9,10 @@ public class ProgressInfoBuilder
 {
     private double _percentage;
     private string _message = string.Empty;
-    private int _processedRecords = 0;
-    private int _totalRecords = 0;
+    private int _processedRecords;
+    private int _totalRecords;
     private ProcessingPhase _currentPhase = ProcessingPhase.Initializing;
-    private string? _currentBatch = null;
+    private string? _currentBatch;
 
     /// <summary>
     /// Establece el porcentaje de progreso

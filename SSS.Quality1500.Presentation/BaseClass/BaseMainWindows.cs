@@ -17,7 +17,7 @@ public abstract class BaseMainWindows : ObservableObject, IClosingWindows, IMous
     private const string ExitMessage = "!!!Do you really want to exit?";
     private const string ExitTitle = "Exiting...";
     private bool _isClosing;
-    protected readonly ILogger<BaseMainWindows> _logger;
+    private readonly ILogger<BaseMainWindows> _logger;
 
     protected BaseMainWindows(ILogger<BaseMainWindows> logger)
     {

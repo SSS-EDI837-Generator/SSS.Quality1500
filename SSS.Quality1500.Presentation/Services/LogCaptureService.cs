@@ -225,7 +225,7 @@ public class LogCaptureService : ILogCaptureService
     /// Obtener todos los logs (método helper privado)
     /// </summary>
     /// <returns>Lista de todos los logs</returns>
-    private IEnumerable<LogEntry> GetAllLogs()
+    private List<LogEntry> GetAllLogs()
     {
         lock (_lockObject)
         {
@@ -280,7 +280,7 @@ public class LogCaptureService : ILogCaptureService
 
                     var entriesList = entries.ToList();
 
-                    if (entriesList.Any())
+                    if (entriesList.Count > 0)
                     {
                         await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
@@ -451,7 +451,7 @@ public class LogCaptureService : ILogCaptureService
             _filePositions[filePath] = newPosition;
 
             var entriesList = entries.ToList();
-            if (entriesList.Any())
+            if (entriesList.Count > 0)
             {
                 foreach (var entry in entriesList)
                 {

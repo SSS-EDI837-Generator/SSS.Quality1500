@@ -83,47 +83,41 @@ public class EventAggregator : IEventAggregator
     }
 
     /// <summary>
-    /// Suscribe un manejador a un tipo específico de evento
+    /// Suscribe un listener a un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    public void Subscribe<TEvent>(IEventListener<TEvent> handler) where TEvent : IEvent
+    /// <param name="listener">Listener del evento</param>
+    public void Subscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentNullException.ThrowIfNull(listener);
 
         var eventType = typeof(TEvent);
         var handlersForType = _handlers.GetOrAdd(eventType, _ => new ConcurrentBag<object>());
-        handlersForType.Add(handler);
+        handlersForType.Add(listener);
 
-        _logger.LogDebug("Manejador {HandlerType} suscrito para evento {EventType}",
-            handler.GetType().Name, eventType.Name);
+        _logger.LogDebug("Listener {ListenerType} suscrito para evento {EventType}",
+            listener.GetType().Name, eventType.Name);
     }
 
     /// <summary>
-    /// Desuscribe un manejador de un tipo específico de evento
+    /// Desuscribe un listener de un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    public void Unsubscribe<TEvent>(IEventListener<TEvent> handler) where TEvent : IEvent
+    /// <param name="listener">Listener del evento</param>
+    public void Unsubscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentNullException.ThrowIfNull(listener);
 
         var eventType = typeof(TEvent);
 
         if (_handlers.TryGetValue(eventType, out var handlersForType))
         {
-            // Crear nueva colección sin el manejador especificado
-            var remainingHandlers = handlersForType.Where(h => !ReferenceEquals(h, handler));
+            // Crear nueva colección sin el listener especificado
+            var remainingHandlers = handlersForType.Where(h => !ReferenceEquals(h, listener));
             _handlers.TryUpdate(eventType, new ConcurrentBag<object>(remainingHandlers), handlersForType);
 
-            _logger.LogDebug("Manejador {HandlerType} desuscrito del evento {EventType}",
-                handler.GetType().Name, eventType.Name);
+            _logger.LogDebug("Listener {ListenerType} desuscrito del evento {EventType}",
+                listener.GetType().Name, eventType.Name);
         }
     }
 

@@ -119,7 +119,7 @@ public class BatchRecord : BaseEntity
     /// <summary>
     /// Número de intentos de procesamiento
     /// </summary>
-    public int ProcessingAttempts { get; set; } = 0;
+    public int ProcessingAttempts { get; set; }
 
     #endregion
 

@@ -126,6 +126,7 @@ public abstract class Result<TSuccess, TFailure>
     /// </summary>
     /// <param name="value">El valor del resultado.</param>
     /// <returns>Un Result exitoso.</returns>
+#pragma warning disable CA1000 // No declarar miembros estáticos en tipos genéricos - Factory methods son más legibles aquí
     public static Result<TSuccess, TFailure> Ok(TSuccess value)
         => new Success(value);
 
@@ -136,6 +137,7 @@ public abstract class Result<TSuccess, TFailure>
     /// <returns>Un Result fallido.</returns>
     public static Result<TSuccess, TFailure> Fail(TFailure error)
         => new Failure(error);
+#pragma warning restore CA1000
 
     /// <summary>
     /// Ejecuta una de las dos funciones segun el estado del resultado (pattern matching).

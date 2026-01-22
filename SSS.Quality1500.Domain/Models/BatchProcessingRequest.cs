@@ -67,8 +67,7 @@ public class BatchProcessingRequest
     {
         VdeTable = vdeTable ?? throw new ArgumentNullException(nameof(vdeTable));
         BatchList = batchList ?? throw new ArgumentNullException(nameof(batchList));
-
-        if (config == null) throw new ArgumentNullException(nameof(config));
+        ArgumentNullException.ThrowIfNull(config);
 
         PageFieldName = config.PageFieldName;
         VdeFilePath = config.VdeFilePath;
@@ -161,7 +160,7 @@ public class BatchProcessingRequest
     /// <returns>True si es válida, false en caso contrario</returns>
     public bool IsValid()
     {
-        return !GetValidationErrors().Any();
+        return GetValidationErrors().Count == 0;
     }
 }
 

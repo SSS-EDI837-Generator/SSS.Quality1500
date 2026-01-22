@@ -10,7 +10,7 @@ namespace SSS.Quality1500.Presentation.EventHandlers;
 /// Principio SRP: Solo se encarga de registrar y auditar eventos de progreso
 /// Principio OCP: Extensible para nuevos tipos de auditoría sin modificar código existente
 /// </summary>
-public class AuditLoggingEventHandler : IEventHandler<ProgressEvent>
+public class AuditLoggingEventHandler : IEventListener<ProgressEvent>
 {
     private readonly ILogger<AuditLoggingEventHandler> _logger;
     private readonly Dictionary<string, ProcessAuditInfo> _processAudits;

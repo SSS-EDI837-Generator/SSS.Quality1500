@@ -14,7 +14,7 @@ using SSS.Quality1500.Presentation.ViewModels;
 /// Principio DIP: Depende de abstracciones, no de implementaciones concretas
 /// Thread-safe para actualizaciones de UI desde background threads
 /// </summary>
-public class ProgressEventHandler : IEventHandler<ProgressEvent>
+public class ProgressEventHandler : IEventListener<ProgressEvent>
 {
     private readonly ControlMainViewModel _viewModel;
     private readonly ILogger<ProgressEventHandler> _logger;

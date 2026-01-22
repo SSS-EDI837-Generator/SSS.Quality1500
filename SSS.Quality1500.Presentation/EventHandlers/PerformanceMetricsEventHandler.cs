@@ -12,7 +12,7 @@ namespace SSS.Quality1500.Presentation.EventHandlers;
 /// Principio SRP: Solo se encarga de calcular y actualizar métricas de rendimiento
 /// Principio OCP: Extensible para nuevas métricas sin modificar código existente
 /// </summary>
-public class PerformanceMetricsEventHandler : IEventHandler<ProgressEvent>
+public class PerformanceMetricsEventHandler : IEventListener<ProgressEvent>
 {
     private readonly ControlMainViewModel _viewModel;
     private readonly ILogger<PerformanceMetricsEventHandler> _logger;

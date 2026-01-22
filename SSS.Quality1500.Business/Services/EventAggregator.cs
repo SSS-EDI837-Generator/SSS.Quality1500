@@ -49,7 +49,7 @@ public class EventAggregator : IEventAggregator
             return Task.CompletedTask;
         }
 
-        var handlers = handlersForType.OfType<IEventHandler<TEvent>>().ToArray();
+        var handlers = handlersForType.OfType<IEventListener<TEvent>>().ToArray();
 
         if (handlers.Length == 0)
         {
@@ -87,7 +87,7 @@ public class EventAggregator : IEventAggregator
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
     /// <param name="handler">Manejador del evento</param>
-    public void Subscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent
+    public void Subscribe<TEvent>(IEventListener<TEvent> handler) where TEvent : IEvent
     {
         if (handler == null)
         {
@@ -107,7 +107,7 @@ public class EventAggregator : IEventAggregator
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
     /// <param name="handler">Manejador del evento</param>
-    public void Unsubscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent
+    public void Unsubscribe<TEvent>(IEventListener<TEvent> handler) where TEvent : IEvent
     {
         if (handler == null)
         {
@@ -128,11 +128,11 @@ public class EventAggregator : IEventAggregator
     }
 
     /// <summary>
-    /// Obtiene el número de manejadores registrados para un tipo de evento
+    /// Obtiene el número de listeners registrados para un tipo de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <returns>Número de manejadores registrados</returns>
-    public int GetHandlerCount<TEvent>() where TEvent : IEvent
+    /// <returns>Número de listeners registrados</returns>
+    public int GetListenerCount<TEvent>() where TEvent : IEvent
     {
         var eventType = typeof(TEvent);
         return _handlers.TryGetValue(eventType, out var handlersForType)
@@ -149,7 +149,7 @@ public class EventAggregator : IEventAggregator
     /// <param name="cancellationToken">Token de cancelación</param>
     /// <returns>Task que representa la operación asíncrona</returns>
     private async Task HandleEventSafely<TEvent>(
-        IEventHandler<TEvent> handler,
+        IEventListener<TEvent> handler,
         TEvent eventData,
         CancellationToken cancellationToken) where TEvent : IEvent
     {

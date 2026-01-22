@@ -18,7 +18,7 @@ public class ProgressEventHandlerService : IDisposable
     private readonly IEventAggregator _eventAggregator;
     private readonly ILogger<ProgressEventHandlerService> _logger;
     private readonly ILoggerFactory _loggerFactory;
-    private readonly List<IEventHandler<ProgressEvent>> _handlers;
+    private readonly List<IEventListener<ProgressEvent>> _handlers;
     private bool _disposed = false;
 
     /// <summary>
@@ -35,7 +35,7 @@ public class ProgressEventHandlerService : IDisposable
         _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-        _handlers = new List<IEventHandler<ProgressEvent>>();
+        _handlers = new List<IEventListener<ProgressEvent>>();
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Configuration;
+
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

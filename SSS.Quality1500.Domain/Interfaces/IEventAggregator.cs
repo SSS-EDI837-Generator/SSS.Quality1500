@@ -12,11 +12,11 @@ public interface IEvent
 }
 
 /// <summary>
-/// Interfaz para manejadores de eventos
+/// Interfaz para listeners de eventos
 /// Principio ISP: Interfaz específica para cada tipo de evento
 /// </summary>
-/// <typeparam name="TEvent">Tipo del evento a manejar</typeparam>
-public interface IEventHandler<in TEvent> where TEvent : IEvent
+/// <typeparam name="TEvent">Tipo del evento a escuchar</typeparam>
+public interface IEventListener<in TEvent> where TEvent : IEvent
 {
     /// <summary>
     /// Maneja el evento especificado
@@ -36,7 +36,7 @@ public interface IEventHandler<in TEvent> where TEvent : IEvent
 public interface IEventAggregator
 {
     /// <summary>
-    /// Publica un evento a todos los manejadores registrados
+    /// Publica un evento a todos los listeners registrados
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
     /// <param name="eventData">Datos del evento</param>
@@ -45,23 +45,23 @@ public interface IEventAggregator
     Task PublishAsync<TEvent>(TEvent eventData, CancellationToken cancellationToken = default) where TEvent : IEvent;
 
     /// <summary>
-    /// Suscribe un manejador a un tipo específico de evento
+    /// Suscribe un listener a un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    void Subscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent;
+    /// <param name="listener">Listener del evento</param>
+    void Subscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent;
 
     /// <summary>
-    /// Desuscribe un manejador de un tipo específico de evento
+    /// Desuscribe un listener de un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    void Unsubscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent;
+    /// <param name="listener">Listener del evento</param>
+    void Unsubscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent;
 
     /// <summary>
-    /// Obtiene el número de manejadores registrados para un tipo de evento
+    /// Obtiene el número de listeners registrados para un tipo de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <returns>Número de manejadores registrados</returns>
-    int GetHandlerCount<TEvent>() where TEvent : IEvent;
+    /// <returns>Número de listeners registrados</returns>
+    int GetListenerCount<TEvent>() where TEvent : IEvent;
 }

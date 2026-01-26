@@ -61,15 +61,14 @@ Domain/
 │   ├── ErrorSeverity.cs
 │   └── Gender.cs
 └── Interfaces/
-    ├── IDbfReader.cs            ⭐ PRIORIDAD ALTA
-    └── IClaimRepository.cs
+    └── IDbfReader.cs            ⭐ PRIORIDAD ALTA
 ```
 
 **Tareas:**
 - [ ] Implementar ClaimRecord con reglas de validación intrínsecas
 - [ ] Implementar Value Objects (PatientInfo, ServiceInfo, ProviderInfo)
 - [ ] Crear enumeraciones de negocio
-- [ ] Definir contratos de repositorios
+- [ ] Definir contrato IDbfReader con métodos de lectura/escritura
 - [ ] Tests unitarios para entidades (Domain.Tests)
 
 #### Sprint 1.2: Data Layer - DBF Reader
@@ -92,28 +91,25 @@ Data/
 - [ ] Implementar conversión DataTable → List<ClaimRecord>
 - [ ] Tests de integración con archivos .dbf de prueba
 
-#### Sprint 1.3: Data Layer - SQLite Repository
-**Objetivo:** Persistencia local con EF Core
+#### Sprint 1.3: Data Layer - DBF Writer
+**Objetivo:** Escritura y actualización de archivos DBF
 
 ```csharp
 Data/
-├── DbContexts/
-│   └── Quality1500DbContext.cs
-├── Repositories/
-│   └── ClaimRepository.cs       ⭐ PRIORIDAD MEDIA
-└── Migrations/
+└── Services/
+    └── DbfReader.cs             ⭐ PRIORIDAD MEDIA (ampliar)
 ```
 
 **Tareas:**
-- [ ] Configurar EF Core con SQLite
-- [ ] Crear DbContext con entidades
-- [ ] Implementar ClaimRepository (CRUD básico)
-- [ ] Crear migrations iniciales
-- [ ] Tests de integración de repositorio
+- [ ] Implementar UpdateRecordAsync en DbfReader
+- [ ] Implementar escritura de campos modificados
+- [ ] Manejar bloqueo de archivos durante escritura
+- [ ] Backup automático antes de modificar
+- [ ] Tests de integración de escritura DBF
 
 **Entregables:**
 - ✅ Lectura de archivos .dbf funcional
-- ✅ Persistencia en SQLite operativa
+- ✅ Escritura de archivos .dbf operativa
 - ✅ Tests de Data layer pasando
 
 ---
@@ -172,7 +168,7 @@ Business/
 - [ ] Implementar ClaimProcessingService
   - Leer claims desde DBF
   - Ejecutar ValidationEngine
-  - Persistir resultados en SQLite
+  - Guardar correcciones en DBF
 - [ ] Implementar procesamiento por lotes
 - [ ] Agregar progreso y cancelación (IProgress, CancellationToken)
 - [ ] Tests de integración end-to-end
@@ -457,7 +453,7 @@ Business/
 **Objetivo:** Cobertura de tests end-to-end
 
 **Tareas:**
-- [ ] Tests de integración: DBF → Validation → SQLite
+- [ ] Tests de integración: DBF → Validation → DBF
 - [ ] Tests de integración: API NPI con WireMock
 - [ ] Tests de UI con FlaUI o similar
 - [ ] Cobertura de código > 70%
@@ -467,7 +463,7 @@ Business/
 
 **Tareas:**
 - [ ] Profiling con dotTrace o VS Profiler
-- [ ] Optimizar queries EF Core (AsNoTracking, Include)
+- [ ] Optimizar lectura/escritura DBF (buffering, batch updates)
 - [ ] Implementar paginación en UI (VirtualizingStackPanel)
 - [ ] Async/await en todas las operaciones I/O
 - [ ] Memory leak detection
@@ -477,7 +473,7 @@ Business/
 
 **Tareas:**
 - [ ] Audit de logging (sin PHI en logs)
-- [ ] Encriptación de datos sensibles en SQLite
+- [ ] Protección de archivos DBF sensibles
 - [ ] Implementar audit trail de cambios
 - [ ] Session timeout automático
 - [ ] Revisión de código por seguridad

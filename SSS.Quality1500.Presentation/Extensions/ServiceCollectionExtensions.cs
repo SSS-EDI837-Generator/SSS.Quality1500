@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Extensions;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,8 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddLoggingServices(this IServiceCollection services)
     {
-        services.AddLogging(loggingBuilder => {
+        services.AddLogging(loggingBuilder =>
+        {
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog(dispose: true);
         });
@@ -84,7 +86,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IUiConfigurationService>(provider => provider.GetRequiredService<ConfigurationService>());
 
         // Servicio agregado para configuración
-        services.AddTransient<IConfigurationServices>(provider => {
+        services.AddTransient<IConfigurationServices>(provider =>
+        {
             var configServices = new ConfigurationServices(
                 provider.GetRequiredService<IViewService>(),
                 provider.GetRequiredService<IVdeRecordService>(),
@@ -110,7 +113,8 @@ public static class ServiceCollectionExtensions
             new CaptureLoggerProvider(provider.GetRequiredService<ILogCaptureService>(), LogLevel.Debug));
 
         // Agregar el provider al sistema de logging
-        services.AddLogging(loggingBuilder => {
+        services.AddLogging(loggingBuilder =>
+        {
             loggingBuilder.Services.AddSingleton<ILoggerProvider>(provider =>
                 provider.GetRequiredService<CaptureLoggerProvider>());
         });

@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Models;
+
 using Microsoft.Extensions.Logging;
 
 /// <summary>
@@ -13,8 +14,8 @@ public class LogEntryBuilder
     private LogLevel _level = LogLevel.Information;
     private string _category = string.Empty;
     private string _message = string.Empty;
-    private Exception? _exception = null;
-    private string? _scope = null;
+    private Exception? _exception;
+    private string? _scope;
 
     /// <summary>
     /// Establece el timestamp del log

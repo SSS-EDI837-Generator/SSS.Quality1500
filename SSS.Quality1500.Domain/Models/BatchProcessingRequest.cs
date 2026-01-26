@@ -1,4 +1,5 @@
 namespace SSS.Quality1500.Domain.Models;
+
 using System.Data;
 
 
@@ -14,32 +15,32 @@ public class BatchProcessingRequest
     /// Tabla de datos VDE a procesar
     /// </summary>
     public DataTable VdeTable { get; set; }
-    
+
     /// <summary>
     /// Lista donde se almacenarán los batch items
     /// </summary>
     public List<string> BatchList { get; set; }
-    
+
     /// <summary>
     /// Nombre del campo de página (generalmente "V1Page")
     /// </summary>
     public string PageFieldName { get; set; }
-    
+
     /// <summary>
     /// Ruta y nombre del archivo VDE (sin extensión)
     /// </summary>
     public string VdeFilePath { get; set; }
-    
+
     /// <summary>
     /// Fecha juliana para el procesamiento (formato JJJ)
     /// </summary>
     public string JulianDate { get; set; }
-    
+
     /// <summary>
     /// Indica si se debe usar la fecha juliana en el número de batch
     /// </summary>
     public bool UseJulianDateInBatchNumber { get; set; }
-    
+
     /// <summary>
     /// Constructor principal del BatchProcessingRequest
     /// </summary>
@@ -55,7 +56,7 @@ public class BatchProcessingRequest
         JulianDate = string.Empty;
         UseJulianDateInBatchNumber = false;
     }
-    
+
     /// <summary>
     /// Constructor con parámetros adicionales
     /// </summary>
@@ -66,15 +67,14 @@ public class BatchProcessingRequest
     {
         VdeTable = vdeTable ?? throw new ArgumentNullException(nameof(vdeTable));
         BatchList = batchList ?? throw new ArgumentNullException(nameof(batchList));
-        
-        if (config == null) throw new ArgumentNullException(nameof(config));
-        
+        ArgumentNullException.ThrowIfNull(config);
+
         PageFieldName = config.PageFieldName;
         VdeFilePath = config.VdeFilePath;
         JulianDate = config.JulianDate;
         UseJulianDateInBatchNumber = config.UseJulianDateInBatchNumber;
     }
-    
+
     /// <summary>
     /// Método para crear una instancia con configuración fluida
     /// </summary>
@@ -86,7 +86,7 @@ public class BatchProcessingRequest
     {
         return new BatchProcessingRequest(vdeTable, batchList, pageFieldName);
     }
-    
+
     /// <summary>
     /// Método para configurar la ruta del archivo VDE
     /// </summary>
@@ -101,7 +101,7 @@ public class BatchProcessingRequest
             UseJulianDateInBatchNumber = UseJulianDateInBatchNumber
         };
     }
-    
+
     /// <summary>
     /// Método para configurar la fecha juliana
     /// </summary>
@@ -116,7 +116,7 @@ public class BatchProcessingRequest
             UseJulianDateInBatchNumber = UseJulianDateInBatchNumber
         };
     }
-    
+
     /// <summary>
     /// Método para configurar el uso de fecha juliana en batch number
     /// </summary>
@@ -131,7 +131,7 @@ public class BatchProcessingRequest
             UseJulianDateInBatchNumber = useJulianDate
         };
     }
-    
+
     /// <summary>
     /// Valida que la request tenga todos los datos necesarios
     /// </summary>
@@ -139,28 +139,28 @@ public class BatchProcessingRequest
     public List<string> GetValidationErrors()
     {
         var errors = new List<string>();
-        
+
         if (VdeTable == null)
             errors.Add("VdeTable no puede ser null");
         else if (VdeTable.Rows.Count == 0)
             errors.Add("VdeTable no puede estar vacía");
-        
+
         if (BatchList == null)
             errors.Add("BatchList no puede ser null");
-        
+
         if (string.IsNullOrWhiteSpace(PageFieldName))
             errors.Add("PageFieldName no puede estar vacío");
-        
+
         return errors;
     }
-    
+
     /// <summary>
     /// Indica si la request es válida
     /// </summary>
     /// <returns>True si es válida, false en caso contrario</returns>
     public bool IsValid()
     {
-        return !GetValidationErrors().Any();
+        return GetValidationErrors().Count == 0;
     }
 }
 

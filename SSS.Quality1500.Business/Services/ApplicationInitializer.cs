@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Business.Services;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 

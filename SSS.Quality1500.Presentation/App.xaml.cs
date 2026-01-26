@@ -102,7 +102,8 @@ public partial class App : Application
             }
 
             // Luego inicializar servicios de fondo de forma asíncrona
-            _ = Task.Run(async () => {
+            _ = Task.Run(async () =>
+            {
                 try
                 {
                     await Task.Delay(1000); // Esperar un poco antes de inicializar servicios

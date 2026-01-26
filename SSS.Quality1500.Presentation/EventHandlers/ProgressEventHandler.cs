@@ -14,7 +14,7 @@ using SSS.Quality1500.Presentation.ViewModels;
 /// Principio DIP: Depende de abstracciones, no de implementaciones concretas
 /// Thread-safe para actualizaciones de UI desde background threads
 /// </summary>
-public class ProgressEventHandler : IEventHandler<ProgressEvent>
+public class ProgressEventHandler : IEventListener<ProgressEvent>
 {
     private readonly ControlMainViewModel _viewModel;
     private readonly ILogger<ProgressEventHandler> _logger;
@@ -59,28 +59,28 @@ public class ProgressEventHandler : IEventHandler<ProgressEvent>
                 progressEvent.ProcessId, progress.Percentage, progress.Message);
 
             // Actualizar UI en el thread principal de forma thread-safe (no bloqueante)
-           await _dispatcher.BeginInvoke(() =>
-            {
-                try
-                {
-                    // Actualizar progreso principal
-                    _viewModel.Progress = progress.Percentage;
-                    _viewModel.ProgressText = progress.Message;
-                    _viewModel.ProcessedRecords = progress.ProcessedRecords.ToString();
+            await _dispatcher.BeginInvoke(() =>
+             {
+                 try
+                 {
+                     // Actualizar progreso principal
+                     _viewModel.Progress = progress.Percentage;
+                     _viewModel.ProgressText = progress.Message;
+                     _viewModel.ProcessedRecords = progress.ProcessedRecords.ToString();
 
-                    // Actualizar estado basado en la fase actual
-                    UpdateStatusBasedOnPhase(progress);
+                     // Actualizar estado basado en la fase actual
+                     UpdateStatusBasedOnPhase(progress);
 
-                    // Log para diagnóstico
-                    _logger.LogDebug("UI actualizada - Progreso: {Progress}% - Registros: {ProcessedRecords}/{TotalRecords}",
-                        progress.Percentage, progress.ProcessedRecords, progress.TotalRecords);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error actualizando UI para proceso {ProcessId}", progressEvent.ProcessId);
-                }
-            }, DispatcherPriority.Render);
-            
+                     // Log para diagnóstico
+                     _logger.LogDebug("UI actualizada - Progreso: {Progress}% - Registros: {ProcessedRecords}/{TotalRecords}",
+                         progress.Percentage, progress.ProcessedRecords, progress.TotalRecords);
+                 }
+                 catch (Exception ex)
+                 {
+                     _logger.LogError(ex, "Error actualizando UI para proceso {ProcessId}", progressEvent.ProcessId);
+                 }
+             }, DispatcherPriority.Render);
+
             // Completar inmediatamente para evitar bloqueos
             await Task.CompletedTask;
         }
@@ -161,7 +161,7 @@ public class ProgressEventHandler : IEventHandler<ProgressEvent>
         _viewModel.StatusColor = System.Windows.Media.Brushes.Green;
         _viewModel.Progress = 100;
         _viewModel.LastProcessTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        
+
         _logger.LogInformation("Proceso completado exitosamente: {Message}", progress.Message);
     }
 }

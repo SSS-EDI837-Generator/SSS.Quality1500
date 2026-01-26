@@ -17,7 +17,8 @@ using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Presentation.Models;
 using SSS.Quality1500.Domain.Models;
 
-public partial class ControlMainViewModel : ObservableObject, IDisposable {
+public partial class ControlMainViewModel : ObservableObject, IDisposable
+{
     [ObservableProperty] private string _title = "Control de Procesamiento";
     [ObservableProperty] private string _description = "Sistema de procesamiento de claims profesionales";
     [ObservableProperty] private string _status = "Inactivo";
@@ -31,12 +32,12 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     [ObservableProperty] private bool _canStartProcess = true;
 
     [ObservableProperty] private bool _canStopProcess = false;
-    
+
     // Token de cancelación para el proceso
     private CancellationTokenSource? _cancellationTokenSource;
-    
+
     // Control para dispose
-    private bool _disposed = false;
+    private bool _disposed;
 
     // Propiedades de configuración
     [ObservableProperty] private string _configurationFiles = "Sin configurar";
@@ -59,12 +60,13 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     /// <param name="start837ProcessRefactored">Servicio de procesamiento</param>
     /// <param name="progressEventHandlerService">Servicio de manejadores de eventos</param>
     public ControlMainViewModel(
-        ILogger<ControlMainViewModel> logger, 
-        IViewService viewService, 
+        ILogger<ControlMainViewModel> logger,
+        IViewService viewService,
         IUiConfigurationService configurationService,
         LazyService<IStartQualityProcessRefactored> startProcessRefactored,
-        ProgressEventHandlerService progressEventHandlerService) {
-        
+        ProgressEventHandlerService progressEventHandlerService)
+    {
+
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _viewService = viewService ?? throw new ArgumentNullException(nameof(viewService));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
@@ -78,30 +80,35 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
         UpdateConfigurationDisplay();
     }
 
-    private void InitializeStatus() {
+    private void InitializeStatus()
+    {
         Status = "Listo";
         StatusColor = Brushes.Green;
         LastProcessTime = "Nunca";
         ProcessedRecords = "0";
         ExecutionTime = "0 ms";
     }
-    
+
     /// <summary>
     /// Inicializa los manejadores de eventos de progreso
     /// </summary>
-    private void InitializeEventHandlers() {
-        try {
+    private void InitializeEventHandlers()
+    {
+        try
+        {
             // Registrar manejadores de eventos para este ViewModel
             _progressEventHandlerService.RegisterHandlers(this, Application.Current.Dispatcher);
             _logger.LogInformation("Manejadores de eventos de progreso registrados exitosamente");
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             _logger.LogError(ex, "Error inicializando manejadores de eventos de progreso");
         }
     }
 
     [RelayCommand]
-    private async Task StartProcess() {
+    private async Task StartProcess()
+    {
         if (IsProcessing) return;
 
         IsProcessing = true;
@@ -112,33 +119,34 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
         Progress = 0;
         ProcessedRecords = "0";
         ProgressText = "Iniciando proceso...";
-        
+
         // Crear token de cancelación
         _cancellationTokenSource = new CancellationTokenSource();
 
-        try {
+        try
+        {
             DateTime startTime = DateTime.Now;
 
             // Obtener configuración del servicio
             DataTable vdeTable = _configurationService.VdeTable;
-            string? pathDat = _configurationService.PathOut ;
+            string? pathDat = _configurationService.PathOut;
             var fileNameOutput837 = $"TSA837P_{DateTime.Now.ToString("yyyyMMdd", CultureInfo.InvariantCulture)}";
             var yy = _configurationService.SelectedDate.Year.ToString();
             ObservableCollection<string> lista = _configurationService.BatchItems;
-            
+
             // Log información del usuario y sistema
-            _logger.LogInformation("Proceso iniciado por usuario: {Username} en máquina: {MachineName} - Dominio: {UserDomainName}", 
+            _logger.LogInformation("Proceso iniciado por usuario: {Username} en máquina: {MachineName} - Dominio: {UserDomainName}",
                 Environment.UserName, Environment.MachineName, Environment.UserDomainName);
-            
+
             // Log configuración completa seleccionada por el usuario
             _logger.LogInformation("Configuración de archivos - VK: {VkFile} | DAT: {DatFile} | IDX: {IdxFile} | IMG_IN: {ImgFileIn} | IMG_OUT: {ImgFileOut} | PATH_OUT: {PathOut}",
                 _configurationService.VkFile ?? "No configurado",
-                _configurationService.DatFile ?? "No configurado", 
+                _configurationService.DatFile ?? "No configurado",
                 _configurationService.IdxFile ?? "No configurado",
                 _configurationService.ImgFileIn ?? "No configurado",
                 _configurationService.ImgFileOut ?? "No configurado",
                 pathDat ?? "No configurado");
-                
+
             _logger.LogInformation("Configuración de opciones: {Stamping} | IDA: {Ida} | Zipper: {Zipper} | Conduce: {Conduce} | Backup: {Backup} | ConduceDummy: {ConduceDummy} | Version: {Version} | RemoveHeader: {RemoveHeader} | 837ToXls: {ToXls}",
                 _configurationService.Is837StampingChecked,
                 _configurationService.IsIdaChecked,
@@ -149,7 +157,7 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
                 _configurationService.IsVersionChecked,
                 _configurationService.IsRemoveHeaderChecked,
                 _configurationService.Is837ToXlsChecked);
-                
+
             _logger.LogInformation("Configuración de procesamiento - Fecha seleccionada: {SelectedDate} | Total batches: {BatchCount} | Total registros VDE: {VdeRecords} | Archivo salida: {OutputFile}",
                 _configurationService.SelectedDate.ToString("yyyy-MM-dd"),
                 lista.Count,
@@ -162,29 +170,32 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
                 .WithYear(yy)
                 .WithSelectedBatches(lista)
                 .WithCancellationToken(_cancellationTokenSource.Token);
-            
+
             // Proceso real con progreso y cancelación
             // Los eventos de progreso se publican automáticamente y actualizan la UI
             Result<ProcessingResult, string> resultProcess = await _startProcessRefactored.Value.StartProcess(processRequest);
-            
+
             // Manejar resultado - el progreso ya se actualizó via eventos
-            if (resultProcess.IsFailure) {
+            if (resultProcess.IsFailure)
+            {
                 string errorMessage = resultProcess.GetErrorOrDefault() ?? "Error desconocido";
-                
+
                 // Actualizar estado UI para errores
                 Status = "Error";
                 StatusColor = Brushes.Red;
                 ProgressText = "Proceso terminado con errores";
-                
+
                 // Determinar el tipo de error y respuesta apropiada
-                if (errorMessage.Contains("cancelado")) {
+                if (errorMessage.Contains("cancelado"))
+                {
                     // Error de cancelación - solo log, estado ya actualizado por eventos
                     _logger.LogInformation("Proceso cancelado detectado en ViewModel");
-                } 
-                else if (errorMessage.Contains("Error crítico")) {
+                }
+                else if (errorMessage.Contains("Error crítico"))
+                {
                     // Error crítico - siempre mostrar MessageBox detallado y detener proceso
                     _logger.LogError("Error crítico detectado: {ErrorMessage}", errorMessage);
-                    
+
                     MessageBox.Show(
                         $"Se ha producido un error crítico que impide continuar el procesamiento:\n\n{errorMessage}\n\nEl proceso ha sido detenido. Revise los logs para más detalles y corrija el problema antes de intentar nuevamente.",
                         "Error Crítico - Procesamiento Detenido",
@@ -192,13 +203,14 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
                         MessageBoxImage.Error
                     );
 
-                } 
-                else {
+                }
+                else
+                {
                     // Otros errores - mostrar MessageBox estándar
                     MessageBox.Show(
                         $"Error durante el procesamiento:\n\n{errorMessage}\n\nRevise los logs para más información.",
-                        "Error en el procesamiento", 
-                        MessageBoxButton.OK, 
+                        "Error en el procesamiento",
+                        MessageBoxButton.OK,
                         MessageBoxImage.Warning
                     );
                 }
@@ -207,22 +219,26 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
 
             // Logging adicional para proceso completado
             ProcessingResult? result = resultProcess.GetValueOrDefault();
-            if (result != null) {
-                _logger.LogInformation("Proceso completado: {FilesGenerated} archivos generados, {TotalClaims} claims procesados, {TotalServiceLines} líneas de servicio", 
+            if (result != null)
+            {
+                _logger.LogInformation("Proceso completado: {FilesGenerated} archivos generados, {TotalClaims} claims procesados, {TotalServiceLines} líneas de servicio",
                     result.FilesGenerated, result.TotalClaims, result.TotalServiceLines);
             }
         }
-        catch (OperationCanceledException) {
+        catch (OperationCanceledException)
+        {
             // El estado se actualiza via eventos, solo log local
             _logger.LogInformation("Proceso cancelado por el usuario");
             MessageBox.Show("Proceso cancelado por el usuario", "Proceso cancelado por el usuario", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             // Los eventos manejan el estado, solo mostrar error crítico
             _logger.LogError(ex, "Error inesperado durante el procesamiento");
             MessageBox.Show($"Error crítico: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        finally {
+        finally
+        {
             IsProcessing = false;
             CanStartProcess = true;
             CanStopProcess = false;
@@ -230,9 +246,11 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
             _cancellationTokenSource = null;
 
             // Reset después de 3 segundos solo si el proceso no fue cancelado o tuvo error
-            if (Status == "Completado") {
+            if (Status == "Completado")
+            {
                 await Task.Delay(3000);
-                if (!IsProcessing) {
+                if (!IsProcessing)
+                {
                     Progress = 0;
                     ProgressText = "";
                     Status = "Listo";
@@ -243,27 +261,33 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     }
 
     [RelayCommand]
-    private void StopProcess() {
+    private void StopProcess()
+    {
         if (!IsProcessing || _cancellationTokenSource == null) return;
 
-        _logger.LogInformation("Proceso 837P detenido por usuario: {Username} en máquina: {MachineName} - Timestamp: {Timestamp}", 
+        _logger.LogInformation("Proceso 837P detenido por usuario: {Username} en máquina: {MachineName} - Timestamp: {Timestamp}",
             Environment.UserName, Environment.MachineName, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         _cancellationTokenSource.Cancel();
         ProgressText = "Cancelando proceso...";
     }
 
     [RelayCommand]
-    private void ViewLogs() {
-        try {
-            _logger.LogInformation("Visor de logs abierto por usuario: {Username} en máquina: {MachineName} - Timestamp: {Timestamp}", 
+    private void ViewLogs()
+    {
+        try
+        {
+            _logger.LogInformation("Visor de logs abierto por usuario: {Username} en máquina: {MachineName} - Timestamp: {Timestamp}",
                 Environment.UserName, Environment.MachineName, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            
+
             // Usar el servicio de vista para abrir la ventana de logs
             var logViewerWindow = _viewService.GetView("LogViewerWindow") as Window;
-            
-            if (logViewerWindow != null) {
+
+            if (logViewerWindow != null)
+            {
                 logViewerWindow.Show();
-            } else {
+            }
+            else
+            {
                 _logger.LogError("No se pudo obtener la ventana LogViewerWindow del servicio de vista");
                 MessageBox.Show(
                     "Error abriendo el visor de logs. Por favor, contacte al administrador.",
@@ -273,7 +297,8 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
                 );
             }
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             _logger.LogError(ex, "Error abriendo el visor de logs");
             MessageBox.Show(
                 $"Error abriendo el visor de logs: {ex.Message}",
@@ -285,7 +310,8 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     }
 
     [RelayCommand]
-    private void Configure() {
+    private void Configure()
+    {
         // Abrir la ventana de configuración modal usando DI
         _logger.LogInformation("Open ConfigurationWindow");
         // ✅ MEJORADO: Usar servicio inyectado
@@ -295,14 +321,16 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     }
 
     [RelayCommand]
-    private void ClearConfiguration() {
+    private void ClearConfiguration()
+    {
         var result = MessageBox.Show(
             "¿Está seguro de que desea limpiar toda la configuración?",
             "Confirmar Limpieza",
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
-        if (result == System.Windows.MessageBoxResult.Yes) {
+        if (result == System.Windows.MessageBoxResult.Yes)
+        {
             // ✅ MEJORADO: Usar servicio inyectado
             _configurationService.ClearAllConfiguration();
             MessageBox.Show(
@@ -313,7 +341,8 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
         }
     }
 
-    private void UpdateConfigurationDisplay() {
+    private void UpdateConfigurationDisplay()
+    {
         _logger.LogInformation("UpdateConfigurationDisplay llamado");
         IUiConfigurationService config = _configurationService;
 
@@ -346,13 +375,16 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
         SelectedBatches.Clear();
         BatchItems.Clear();
 
-        foreach (string batch in config.BatchItems) {
+        foreach (string batch in config.BatchItems)
+        {
             BatchItems.Add(batch);
             _logger.LogDebug("Agregado batch a BatchItems: {Batch}", batch);
 
             string[] split = batch.Split('|');
-            if (split.Length >= 4) {
-                var record = new VkFileRecord {
+            if (split.Length >= 4)
+            {
+                var record = new VkFileRecord
+                {
                     BatchFrom = split[0],
                     BatchTo = split[1],
                     Date = split[2],
@@ -370,7 +402,8 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     }
 
     // Override para actualizar la disponibilidad del botón cuando cambia IsProcessing
-    partial void OnIsProcessingChanged(bool value) {
+    partial void OnIsProcessingChanged(bool value)
+    {
         // ✅ MEJORADO: Usar servicio inyectado
         CanStartProcess = _configurationService.IsConfigurationComplete() && !value;
     }
@@ -378,35 +411,41 @@ public partial class ControlMainViewModel : ObservableObject, IDisposable {
     /// <summary>
     /// Método público para forzar actualización desde otros ViewModels
     /// </summary>
-    public void ForceUpdateConfiguration() {
+    public void ForceUpdateConfiguration()
+    {
         _logger.LogInformation("ForceUpdateConfiguration llamado manualmente");
         UpdateConfigurationDisplay();
     }
-    
+
     /// <summary>
     /// Libera los recursos utilizados por el ViewModel
     /// </summary>
-    public void Dispose() {
-        if (!_disposed) {
-            try {
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            try
+            {
                 _logger.LogInformation("Liberando recursos del Control837PViewModel");
-                
+
                 // Desregistrar manejadores de eventos
                 _progressEventHandlerService?.Dispose();
-                
+
                 // Desuscribir eventos de configuración
-                if (_configurationService != null) {
+                if (_configurationService != null)
+                {
                     _configurationService.ConfigurationChanged -= UpdateConfigurationDisplay;
                 }
-                
+
                 // Cancelar cualquier proceso en curso
                 _cancellationTokenSource?.Cancel();
                 _cancellationTokenSource?.Dispose();
-                
+
                 _disposed = true;
                 _logger.LogInformation("Control837PViewModel disposed correctamente");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Error durante dispose de Control837PViewModel");
             }
         }

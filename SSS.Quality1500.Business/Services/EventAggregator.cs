@@ -1,4 +1,5 @@
 namespace SSS.Quality1500.Business.Services;
+
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using SSS.Quality1500.Domain.Interfaces;
@@ -41,15 +42,15 @@ public class EventAggregator : IEventAggregator
         }
 
         var eventType = typeof(TEvent);
-        
+
         if (!_handlers.TryGetValue(eventType, out var handlersForType))
         {
             _logger.LogDebug("No hay manejadores registrados para el evento {EventType}", eventType.Name);
             return Task.CompletedTask;
         }
 
-        var handlers = handlersForType.OfType<IEventHandler<TEvent>>().ToArray();
-        
+        var handlers = handlersForType.OfType<IEventListener<TEvent>>().ToArray();
+
         if (handlers.Length == 0)
         {
             _logger.LogDebug("No hay manejadores válidos para el evento {EventType}", eventType.Name);
@@ -62,7 +63,7 @@ public class EventAggregator : IEventAggregator
         _ = Task.Run(async () =>
         {
             var tasks = handlers.Select(handler => HandleEventSafely(handler, eventData, cancellationToken));
-            
+
             try
             {
                 await Task.WhenAll(tasks);
@@ -74,68 +75,62 @@ public class EventAggregator : IEventAggregator
                 // No re-lanzar la excepción para no interrumpir el flujo principal
             }
         }, cancellationToken);
-        
+
         // Retornar inmediatamente sin esperar a que terminen los handlers
         _logger.LogTrace("Evento {EventType} enviado a {HandlerCount} manejadores (procesamiento asíncrono)", eventType.Name, handlers.Length);
-        
+
         return Task.CompletedTask;
     }
 
     /// <summary>
-    /// Suscribe un manejador a un tipo específico de evento
+    /// Suscribe un listener a un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    public void Subscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent
+    /// <param name="listener">Listener del evento</param>
+    public void Subscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentNullException.ThrowIfNull(listener);
 
         var eventType = typeof(TEvent);
         var handlersForType = _handlers.GetOrAdd(eventType, _ => new ConcurrentBag<object>());
-        handlersForType.Add(handler);
+        handlersForType.Add(listener);
 
-        _logger.LogDebug("Manejador {HandlerType} suscrito para evento {EventType}", 
-            handler.GetType().Name, eventType.Name);
+        _logger.LogDebug("Listener {ListenerType} suscrito para evento {EventType}",
+            listener.GetType().Name, eventType.Name);
     }
 
     /// <summary>
-    /// Desuscribe un manejador de un tipo específico de evento
+    /// Desuscribe un listener de un tipo específico de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <param name="handler">Manejador del evento</param>
-    public void Unsubscribe<TEvent>(IEventHandler<TEvent> handler) where TEvent : IEvent
+    /// <param name="listener">Listener del evento</param>
+    public void Unsubscribe<TEvent>(IEventListener<TEvent> listener) where TEvent : IEvent
     {
-        if (handler == null)
-        {
-            throw new ArgumentNullException(nameof(handler));
-        }
+        ArgumentNullException.ThrowIfNull(listener);
 
         var eventType = typeof(TEvent);
-        
+
         if (_handlers.TryGetValue(eventType, out var handlersForType))
         {
-            // Crear nueva colección sin el manejador especificado
-            var remainingHandlers = handlersForType.Where(h => !ReferenceEquals(h, handler));
+            // Crear nueva colección sin el listener especificado
+            var remainingHandlers = handlersForType.Where(h => !ReferenceEquals(h, listener));
             _handlers.TryUpdate(eventType, new ConcurrentBag<object>(remainingHandlers), handlersForType);
-            
-            _logger.LogDebug("Manejador {HandlerType} desuscrito del evento {EventType}", 
-                handler.GetType().Name, eventType.Name);
+
+            _logger.LogDebug("Listener {ListenerType} desuscrito del evento {EventType}",
+                listener.GetType().Name, eventType.Name);
         }
     }
 
     /// <summary>
-    /// Obtiene el número de manejadores registrados para un tipo de evento
+    /// Obtiene el número de listeners registrados para un tipo de evento
     /// </summary>
     /// <typeparam name="TEvent">Tipo del evento</typeparam>
-    /// <returns>Número de manejadores registrados</returns>
-    public int GetHandlerCount<TEvent>() where TEvent : IEvent
+    /// <returns>Número de listeners registrados</returns>
+    public int GetListenerCount<TEvent>() where TEvent : IEvent
     {
         var eventType = typeof(TEvent);
-        return _handlers.TryGetValue(eventType, out var handlersForType) 
-            ? handlersForType.Count 
+        return _handlers.TryGetValue(eventType, out var handlersForType)
+            ? handlersForType.Count
             : 0;
     }
 
@@ -148,8 +143,8 @@ public class EventAggregator : IEventAggregator
     /// <param name="cancellationToken">Token de cancelación</param>
     /// <returns>Task que representa la operación asíncrona</returns>
     private async Task HandleEventSafely<TEvent>(
-        IEventHandler<TEvent> handler, 
-        TEvent eventData, 
+        IEventListener<TEvent> handler,
+        TEvent eventData,
         CancellationToken cancellationToken) where TEvent : IEvent
     {
         try
@@ -158,12 +153,12 @@ public class EventAggregator : IEventAggregator
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("Manejo de evento {EventType} cancelado para {HandlerType}", 
+            _logger.LogDebug("Manejo de evento {EventType} cancelado para {HandlerType}",
                 typeof(TEvent).Name, handler.GetType().Name);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error en manejador {HandlerType} para evento {EventType}", 
+            _logger.LogError(ex, "Error en manejador {HandlerType} para evento {EventType}",
                 handler.GetType().Name, typeof(TEvent).Name);
         }
     }

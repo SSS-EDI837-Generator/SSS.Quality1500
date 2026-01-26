@@ -23,7 +23,7 @@ public class DbfReader : IDbfReader
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
-    private Table DbfConnection(string filename)
+    private static Table DbfConnection(string filename)
     {
         return Table.Open(filename);
     }
@@ -87,7 +87,7 @@ public class DbfReader : IDbfReader
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error al leer el archivo DBF: {ex.Message}", ex);
+            throw new InvalidOperationException($"Error al leer el archivo DBF: {ex.Message}", ex);
         }
 
         return dataTable;

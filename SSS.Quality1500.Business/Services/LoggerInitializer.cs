@@ -1,5 +1,6 @@
 ﻿namespace SSS.Quality1500.Business.Services;
 
+using System.Globalization;
 using Serilog;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
@@ -17,10 +18,11 @@ public class LoggerInitializer : ILoggerInitializer
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.Console()
+                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
                 .WriteTo.File(logPath,
                     rollingInterval: RollingInterval.Day,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    formatProvider: CultureInfo.InvariantCulture)
                 .CreateLogger();
 
             Log.Information("Logger initialized at {LogPath}", logPath);

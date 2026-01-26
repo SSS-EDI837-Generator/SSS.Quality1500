@@ -1,4 +1,5 @@
 ﻿namespace SSS.Quality1500.Presentation.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 using SSS.Quality1500.Presentation.Interfaces;
 using SSS.Quality1500.Presentation.Views;

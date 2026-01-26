@@ -9,11 +9,11 @@ public class ProgressInfoBuilder
 {
     private double _percentage;
     private string _message = string.Empty;
-    private int _processedRecords = 0;
-    private int _totalRecords = 0;
+    private int _processedRecords;
+    private int _totalRecords;
     private ProcessingPhase _currentPhase = ProcessingPhase.Initializing;
-    private string? _currentBatch = null;
-    
+    private string? _currentBatch;
+
     /// <summary>
     /// Establece el porcentaje de progreso
     /// </summary>
@@ -24,7 +24,7 @@ public class ProgressInfoBuilder
         _percentage = percentage;
         return this;
     }
-    
+
     /// <summary>
     /// Establece el mensaje descriptivo del estado actual
     /// </summary>
@@ -35,7 +35,7 @@ public class ProgressInfoBuilder
         _message = message ?? string.Empty;
         return this;
     }
-    
+
     /// <summary>
     /// Establece el número de registros procesados
     /// </summary>
@@ -46,7 +46,7 @@ public class ProgressInfoBuilder
         _processedRecords = processedRecords;
         return this;
     }
-    
+
     /// <summary>
     /// Establece el número total de registros
     /// </summary>
@@ -57,7 +57,7 @@ public class ProgressInfoBuilder
         _totalRecords = totalRecords;
         return this;
     }
-    
+
     /// <summary>
     /// Establece la fase actual del procesamiento
     /// </summary>
@@ -68,7 +68,7 @@ public class ProgressInfoBuilder
         _currentPhase = currentPhase;
         return this;
     }
-    
+
     /// <summary>
     /// Establece el batch actual siendo procesado
     /// </summary>
@@ -79,7 +79,7 @@ public class ProgressInfoBuilder
         _currentBatch = currentBatch;
         return this;
     }
-    
+
     /// <summary>
     /// Establece el progreso basado en los registros procesados
     /// </summary>
@@ -96,7 +96,7 @@ public class ProgressInfoBuilder
         }
         return this;
     }
-    
+
     /// <summary>
     /// Construye la instancia final de ProgressInfo
     /// </summary>
@@ -112,13 +112,13 @@ public class ProgressInfoBuilder
             _currentBatch
         );
     }
-    
+
     /// <summary>
     /// Crea un nuevo builder
     /// </summary>
     /// <returns>Nueva instancia del builder</returns>
     public static ProgressInfoBuilder Create() => new();
-    
+
     /// <summary>
     /// Crea un builder con valores básicos pre-configurados
     /// </summary>
@@ -129,7 +129,7 @@ public class ProgressInfoBuilder
         new ProgressInfoBuilder()
             .WithPercentage(percentage)
             .WithMessage(message);
-    
+
     /// <summary>
     /// Crea un builder para progreso de inicialización
     /// </summary>
@@ -140,7 +140,7 @@ public class ProgressInfoBuilder
             .WithPercentage(0)
             .WithMessage(message)
             .WithCurrentPhase(ProcessingPhase.Initializing);
-            
+
     /// <summary>
     /// Crea un builder para progreso completado
     /// </summary>

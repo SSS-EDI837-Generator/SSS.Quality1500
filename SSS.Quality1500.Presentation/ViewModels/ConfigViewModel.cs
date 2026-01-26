@@ -125,7 +125,7 @@ public partial class ConfigViewModel : ObservableObject
     private static (string Category, string BoxReference) GetCategoryAndBox(string columnName)
     {
         // Document metadata (V0*)
-        if (columnName.StartsWith("V0"))
+        if (columnName.StartsWith("V0", StringComparison.Ordinal))
             return ("Documento", "N/A");
 
         // Page number
@@ -133,125 +133,125 @@ public partial class ConfigViewModel : ObservableObject
             return ("Documento", "N/A");
 
         // Patient info Box 1-4 (V11*, V12*, V13*, V14*)
-        if (columnName.StartsWith("V11") || columnName.StartsWith("V12") ||
-            columnName.StartsWith("V13") || columnName.StartsWith("V14"))
+        if (columnName.StartsWith("V11", StringComparison.Ordinal) || columnName.StartsWith("V12", StringComparison.Ordinal) ||
+            columnName.StartsWith("V13", StringComparison.Ordinal) || columnName.StartsWith("V14", StringComparison.Ordinal))
         {
             string box = columnName switch
             {
-                var n when n.StartsWith("V11A") => "Box 1a",
-                var n when n.StartsWith("V11") => "Box 1",
-                var n when n.StartsWith("V12") => "Box 2",
-                var n when n.StartsWith("V13") => "Box 3",
-                var n when n.StartsWith("V14") => "Box 4",
+                var n when n.StartsWith("V11A", StringComparison.Ordinal) => "Box 1a",
+                var n when n.StartsWith("V11", StringComparison.Ordinal) => "Box 1",
+                var n when n.StartsWith("V12", StringComparison.Ordinal) => "Box 2",
+                var n when n.StartsWith("V13", StringComparison.Ordinal) => "Box 3",
+                var n when n.StartsWith("V14", StringComparison.Ordinal) => "Box 4",
                 _ => "Box 1-4"
             };
             return ("Paciente", box);
         }
 
         // Patient address Box 5 (V15*)
-        if (columnName.StartsWith("V15"))
+        if (columnName.StartsWith("V15", StringComparison.Ordinal))
             return ("Paciente", "Box 5");
 
         // Patient relationship Box 6 (V16*)
-        if (columnName.StartsWith("V16"))
+        if (columnName.StartsWith("V16", StringComparison.Ordinal))
             return ("Paciente", "Box 6");
 
         // Insured address Box 7 (V17*)
-        if (columnName.StartsWith("V17"))
+        if (columnName.StartsWith("V17", StringComparison.Ordinal))
             return ("Asegurado", "Box 7");
 
         // Reserved Box 8 (V28*)
-        if (columnName.StartsWith("V28"))
+        if (columnName.StartsWith("V28", StringComparison.Ordinal))
             return ("Asegurado", "Box 8");
 
         // Other insured Box 9 (V29*)
-        if (columnName.StartsWith("V29"))
+        if (columnName.StartsWith("V29", StringComparison.Ordinal))
             return ("Asegurado", "Box 9");
 
         // Condition related Box 10 (V210*)
-        if (columnName.StartsWith("V210"))
+        if (columnName.StartsWith("V210", StringComparison.Ordinal))
             return ("Condicion", "Box 10");
 
         // Insured policy Box 11 (V211*)
-        if (columnName.StartsWith("V211"))
+        if (columnName.StartsWith("V211", StringComparison.Ordinal))
             return ("Asegurado", "Box 11");
 
         // Signatures Box 12-13 (V212*, V213*)
-        if (columnName.StartsWith("V212") || columnName.StartsWith("V213"))
-            return ("Paciente", columnName.StartsWith("V212") ? "Box 12" : "Box 13");
+        if (columnName.StartsWith("V212", StringComparison.Ordinal) || columnName.StartsWith("V213", StringComparison.Ordinal))
+            return ("Paciente", columnName.StartsWith("V212", StringComparison.Ordinal) ? "Box 12" : "Box 13");
 
         // Dates Box 14-16 (V314*, V315*, V316*)
-        if (columnName.StartsWith("V314") || columnName.StartsWith("V315") || columnName.StartsWith("V316"))
+        if (columnName.StartsWith("V314", StringComparison.Ordinal) || columnName.StartsWith("V315", StringComparison.Ordinal) || columnName.StartsWith("V316", StringComparison.Ordinal))
         {
             string box = columnName switch
             {
-                var n when n.StartsWith("V314") => "Box 14",
-                var n when n.StartsWith("V315") => "Box 15",
-                var n when n.StartsWith("V316") => "Box 16",
+                var n when n.StartsWith("V314", StringComparison.Ordinal) => "Box 14",
+                var n when n.StartsWith("V315", StringComparison.Ordinal) => "Box 15",
+                var n when n.StartsWith("V316", StringComparison.Ordinal) => "Box 16",
                 _ => "Box 14-16"
             };
             return ("Fechas", box);
         }
 
         // Referring provider Box 17 (V317*)
-        if (columnName.StartsWith("V317"))
+        if (columnName.StartsWith("V317", StringComparison.Ordinal))
             return ("Proveedor Referidor", "Box 17");
 
         // Hospitalization Box 18-19 (V318*, V319*)
-        if (columnName.StartsWith("V318") || columnName.StartsWith("V319"))
-            return ("Hospitalizacion", columnName.StartsWith("V318") ? "Box 18" : "Box 19");
+        if (columnName.StartsWith("V318", StringComparison.Ordinal) || columnName.StartsWith("V319", StringComparison.Ordinal))
+            return ("Hospitalizacion", columnName.StartsWith("V318", StringComparison.Ordinal) ? "Box 18" : "Box 19");
 
         // Outside lab Box 20 (V320*)
-        if (columnName.StartsWith("V320"))
+        if (columnName.StartsWith("V320", StringComparison.Ordinal))
             return ("Laboratorio", "Box 20");
 
         // Diagnosis Box 21 (V321*)
-        if (columnName.StartsWith("V321"))
+        if (columnName.StartsWith("V321", StringComparison.Ordinal))
             return ("Diagnosticos", "Box 21");
 
         // Resubmission Box 22 (V322*, V422*)
-        if (columnName.StartsWith("V322") || columnName.StartsWith("V422"))
+        if (columnName.StartsWith("V322", StringComparison.Ordinal) || columnName.StartsWith("V422", StringComparison.Ordinal))
             return ("Resubmision", "Box 22");
 
         // Prior auth Box 23 (V423*)
-        if (columnName.StartsWith("V423"))
+        if (columnName.StartsWith("V423", StringComparison.Ordinal))
             return ("Resubmision", "Box 23");
 
         // Tax Box 25 (V425*)
-        if (columnName.StartsWith("V425"))
+        if (columnName.StartsWith("V425", StringComparison.Ordinal))
             return ("Impuestos", "Box 25");
 
         // Patient account Box 26 (V426*)
-        if (columnName.StartsWith("V426"))
+        if (columnName.StartsWith("V426", StringComparison.Ordinal))
             return ("Paciente", "Box 26");
 
         // Accept assignment Box 27 (V427*)
-        if (columnName.StartsWith("V427"))
+        if (columnName.StartsWith("V427", StringComparison.Ordinal))
             return ("Montos", "Box 27");
 
         // Amounts Box 28-30 (V428*, V429*, V430*)
-        if (columnName.StartsWith("V428") || columnName.StartsWith("V429") || columnName.StartsWith("V430"))
+        if (columnName.StartsWith("V428", StringComparison.Ordinal) || columnName.StartsWith("V429", StringComparison.Ordinal) || columnName.StartsWith("V430", StringComparison.Ordinal))
         {
             string box = columnName switch
             {
-                var n when n.StartsWith("V428") => "Box 28",
-                var n when n.StartsWith("V429") => "Box 29",
-                var n when n.StartsWith("V430") => "Box 30",
+                var n when n.StartsWith("V428", StringComparison.Ordinal) => "Box 28",
+                var n when n.StartsWith("V429", StringComparison.Ordinal) => "Box 29",
+                var n when n.StartsWith("V430", StringComparison.Ordinal) => "Box 30",
                 _ => "Box 28-30"
             };
             return ("Montos", box);
         }
 
         // Signature Box 31 (V431*)
-        if (columnName.StartsWith("V431"))
+        if (columnName.StartsWith("V431", StringComparison.Ordinal))
             return ("Proveedor Facturacion", "Box 31");
 
         // Service facility Box 32 (V432*)
-        if (columnName.StartsWith("V432"))
+        if (columnName.StartsWith("V432", StringComparison.Ordinal))
             return ("Facilidad", "Box 32");
 
         // Billing provider Box 33 (V433*)
-        if (columnName.StartsWith("V433"))
+        if (columnName.StartsWith("V433", StringComparison.Ordinal))
             return ("Proveedor Facturacion", "Box 33");
 
         // Service lines (V5* through VW*)

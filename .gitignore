@@ -32,12 +32,16 @@ BenchmarkDotNet.Artifacts/
 
 ## DBF Database Files (contains sensitive data)
 Base Datos/
+BASE DATOS/
 *.DBF
 *.CDX
 *.FPT
 *.dbf
 *.cdx
 *.fpt
+
+## Client model files (raw schema definitions)
+**/modelo.txt
 
 ## Logs
 logs/

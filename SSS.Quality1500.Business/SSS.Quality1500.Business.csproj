@@ -18,10 +18,8 @@
 	  <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SSS.Quality1500.Domain\SSS.Quality1500.Domain.csproj" />
-    <ProjectReference Include="..\SSS.Quality1500.Common\SSS.Quality1500.Common.csproj" />
-    <ProjectReference Include="..\SSS.Quality1500.Data\SSS.Quality1500.Data.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SSS.Quality1500.Data\SSS.Quality1500.Data.csproj" />
+	</ItemGroup>
 
 </Project>

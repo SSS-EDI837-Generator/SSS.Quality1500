@@ -559,3 +559,250 @@ public class NpiFormatValidatorTests
     }
 }
 ```
+
+---
+
+## 4. Validación de Estructura DBF
+
+### DBF-001: Validación de Columnas Esperadas
+**Severidad:** Critical
+**Archivo:** Archivo DBF completo
+**Regla:** El archivo DBF debe contener las 735 columnas esperadas del esquema VDE
+
+Esta validación se ejecuta **antes** de procesar claims para asegurar que el archivo tiene la estructura correcta.
+
+### Arquitectura
+
+```
+Business/
+├── Services/
+│   ├── Interfaces/
+│   │   └── IDbfValidationService.cs    # Contrato
+│   └── DbfValidationService.cs         # Implementación
+└── Models/
+    ├── DbfValidationResult.cs          # Resultado de validación
+    └── DbfValidationSettings.cs        # Configuración
+```
+
+### Contrato (Business/Services/Interfaces/)
+
+```csharp
+namespace SSS.Quality1500.Business.Services.Interfaces;
+
+public interface IDbfValidationService
+{
+    /// <summary>
+    /// Validates a DBF file by checking if all expected columns are present.
+    /// </summary>
+    Task<Result<DbfValidationResult, string>> ValidateDbfFileAsync(string filePath);
+}
+```
+
+### Resultado (Business/Models/)
+
+```csharp
+namespace SSS.Quality1500.Business.Models;
+
+public class DbfValidationResult
+{
+    /// <summary>
+    /// Whether the DBF file is valid (all expected columns present).
+    /// </summary>
+    public bool IsValid { get; set; }
+
+    /// <summary>
+    /// Total number of records in the DBF file (= total images).
+    /// </summary>
+    public int TotalRecords { get; set; }
+
+    /// <summary>
+    /// Total number of claims (records where V1PAGINA != "99").
+    /// </summary>
+    public int TotalClaims { get; set; }
+
+    /// <summary>
+    /// List of missing columns if validation failed.
+    /// </summary>
+    public List<string> MissingColumns { get; set; } = [];
+
+    /// <summary>
+    /// List of actual columns found in the DBF file.
+    /// </summary>
+    public List<string> ActualColumns { get; set; } = [];
+
+    /// <summary>
+    /// Error message if validation failed.
+    /// </summary>
+    public string? ErrorMessage { get; set; }
+}
+```
+
+### Configuración (Business/Models/)
+
+```csharp
+namespace SSS.Quality1500.Business.Models;
+
+public class DbfValidationSettings
+{
+    public const string SectionName = "DbfValidation";
+
+    /// <summary>
+    /// Column name used to filter claims from total records.
+    /// Default: "V1PAGINA"
+    /// </summary>
+    public string ClaimFilterColumn { get; set; } = "V1PAGINA";
+
+    /// <summary>
+    /// Value to exclude when counting claims.
+    /// Records where ClaimFilterColumn != ClaimFilterExcludeValue are counted as claims.
+    /// Default: "99"
+    /// </summary>
+    public string ClaimFilterExcludeValue { get; set; } = "99";
+}
+```
+
+### Configuración en appsettings.json
+
+```json
+{
+  "DbfValidation": {
+    "ClaimFilterColumn": "V1PAGINA",
+    "ClaimFilterExcludeValue": "99"
+  }
+}
+```
+
+### Implementación (Business/Services/)
+
+```csharp
+namespace SSS.Quality1500.Business.Services;
+
+public class DbfValidationService(
+    IDbfReader dbfReader,
+    IOptions<DbfValidationSettings> settings) : IDbfValidationService
+{
+    public async Task<Result<DbfValidationResult, string>> ValidateDbfFileAsync(string filePath)
+    {
+        // 1. Validar que el archivo existe
+        if (!File.Exists(filePath))
+            return Result<DbfValidationResult, string>.Fail($"El archivo no existe: {filePath}");
+
+        // 2. Leer el archivo DBF
+        Result<DataTable, string> readResult = await _dbfReader.GetAllAsDataTableAsync(filePath);
+        if (!readResult.IsSuccess)
+            return Result<DbfValidationResult, string>.Fail(readResult.GetErrorOrDefault());
+
+        DataTable dataTable = readResult.GetValueOrDefault()!;
+
+        // 3. Obtener columnas actuales del DBF
+        HashSet<string> actualColumns = dataTable.Columns
+            .Cast<DataColumn>()
+            .Select(c => c.ColumnName.ToUpperInvariant())
+            .ToHashSet();
+
+        // 4. Obtener columnas esperadas (735 total)
+        List<string> expectedColumns = VdeConstants.GetAllExpectedColumns();
+
+        // 5. Encontrar columnas faltantes
+        List<string> missingColumns = expectedColumns
+            .Where(expected => !actualColumns.Contains(expected.ToUpperInvariant()))
+            .ToList();
+
+        if (missingColumns.Count > 0)
+        {
+            return Result<DbfValidationResult, string>.Ok(new DbfValidationResult
+            {
+                IsValid = false,
+                MissingColumns = missingColumns,
+                ErrorMessage = $"Faltan {missingColumns.Count} columnas en el archivo DBF."
+            });
+        }
+
+        // 6. Calcular totales
+        int totalRecords = dataTable.Rows.Count;
+        int totalClaims = CalculateTotalClaims(dataTable);
+
+        return Result<DbfValidationResult, string>.Ok(new DbfValidationResult
+        {
+            IsValid = true,
+            TotalRecords = totalRecords,
+            TotalClaims = totalClaims
+        });
+    }
+
+    private int CalculateTotalClaims(DataTable dataTable)
+    {
+        // Filtrar registros donde V1PAGINA != "99"
+        DataRow[] claimRows = dataTable.Select($"{_settings.ClaimFilterColumn} <> '{_settings.ClaimFilterExcludeValue}'");
+        return claimRows.Length;
+    }
+}
+```
+
+### Registro DI
+
+```csharp
+// Business/Extensions/ServiceCollectionExtensions.cs
+services.Configure<DbfValidationSettings>(configuration.GetSection(DbfValidationSettings.SectionName));
+services.AddTransient<IDbfValidationService, DbfValidationService>();
+```
+
+### Uso en ViewModel
+
+```csharp
+// Presentation/ViewModels/ProcessingViewModel.cs
+[RelayCommand]
+private async Task ValidateDbfAsync()
+{
+    Result<DbfValidationResult, string> result = await _dbfValidationService.ValidateDbfFileAsync(FilePath);
+
+    result.Match(
+        success: validation =>
+        {
+            if (validation.IsValid)
+            {
+                TotalRecords = validation.TotalRecords;
+                TotalClaims = validation.TotalClaims;
+                CanProcess = true;
+            }
+            else
+            {
+                ErrorMessage = validation.ErrorMessage;
+                CanProcess = false;
+            }
+        },
+        failure: error => ErrorMessage = error
+    );
+}
+```
+
+### Estructura de Columnas Esperadas
+
+| Categoría | Cantidad | Rango |
+|-----------|----------|-------|
+| Document Metadata (V0*) | 11 | V0DOCUMENT - V0CONFIDNC |
+| Page (V1*) | 1 | V1PAGINA |
+| Patient Info Box 1-4 | 8 | V11* - V13* |
+| Insured Info Box 4 | 3 | V14* |
+| Patient Address Box 5 | 7 | V15* |
+| Patient Relationship Box 6 | 1 | V16* |
+| Insured Address Box 7 | 7 | V17* |
+| Box 8-9 | 8 | V28* - V29* |
+| Box 10 | 5 | V210* |
+| Box 11 | 7 | V211* |
+| Box 12-13 | 3 | V212* - V213* |
+| Box 14-16 | 6 | V314* - V316* |
+| Box 17 | 5 | V317* |
+| Box 18-19 | 3 | V318* - V319* |
+| Box 20 | 2 | V320* |
+| Box 21 (Diagnosis) | 13 | V321* |
+| Box 22-23 | 3 | V322* - V423* |
+| Box 25-26 | 4 | V425* - V426* |
+| Box 27-30 | 4 | V427* - V430* |
+| Box 31 | 1 | V431* |
+| Box 32 | 5 | V432* |
+| Box 33 | 12 | V433* |
+| **Subtotal Non-Service-Line** | **119** | |
+| Service Lines 1-28 (Box 24) | 616 | V5* - VW* (22 columns each) |
+| **TOTAL** | **735** | |
+```

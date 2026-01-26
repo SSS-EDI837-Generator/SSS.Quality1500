@@ -13,9 +13,9 @@
 
 | Carpeta | Contenido | Ejemplo |
 |---------|-----------|--------|
-| `Services/` | Casos de uso / Application Services | `VdeRecordService.cs`, **`LoggerInitializer.cs`** |
-| `Services/Interfaces/` | Contratos de servicios de negocio | `IVdeRecordService.cs` |
-| `Models/` | DTOs de entrada/salida (NO ViewModels) | `VdeRecordDto.cs`, `StartProcessRequest.cs` |
+| `Services/` | Casos de uso / Application Services | `VdeRecordService.cs`, `DbfValidationService.cs`, **`LoggerInitializer.cs`** |
+| `Services/Interfaces/` | Contratos de servicios de negocio | `IVdeRecordService.cs`, `IDbfValidationService.cs` |
+| `Models/` | DTOs de entrada/salida (NO ViewModels) | `VdeRecordDto.cs`, `DbfValidationResult.cs`, `DbfValidationSettings.cs` |
 | `Mappers/` | Transformadores DataTable → DTOs | `VdeRecordMapper.cs` |
 | `Events/` | Eventos de aplicacion | `ProgressEvent.cs` |
 | `Aggregates/` | ⚠️ Servicios agregados (actualmente vacio) | Ver seccion "Aggregate Services" |

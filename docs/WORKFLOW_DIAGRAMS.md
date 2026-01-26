@@ -142,6 +142,102 @@ sequenceDiagram
 
 ---
 
+## Flujo de Validación de Estructura DBF
+
+Este diagrama muestra el flujo de validación de la estructura del archivo DBF antes de procesar los claims.
+La validación verifica que el archivo contenga las 735 columnas esperadas (119 no-service-line + 28 lineas x 22 columnas).
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#4A90D9',
+    'primaryTextColor': '#fff',
+    'primaryBorderColor': '#2E5A8B',
+    'lineColor': '#5A6C7D',
+    'secondaryColor': '#F39C12',
+    'tertiaryColor': '#E8F4FD'
+  }
+}}%%
+
+sequenceDiagram
+    autonumber
+
+    box rgb(156,39,176) PRESENTATION LAYER
+        participant U as Usuario
+        participant V as ProcessingView
+        participant VM as ProcessingViewModel
+    end
+
+    box rgb(33,150,243) BUSINESS LAYER
+        participant DVS as DbfValidationService
+        participant VC as VdeConstants
+    end
+
+    box rgb(76,175,80) DATA LAYER
+        participant DR as DbfReader
+    end
+
+    rect rgb(227,242,253)
+        Note over U,DR: FASE 0 - VALIDACION DE ESTRUCTURA DBF
+        U->>V: Selecciona archivo .dbf
+        V->>VM: ValidateDbfCommand(path)
+        VM->>DVS: ValidateDbfFileAsync(path)
+        DVS->>DR: GetAllAsDataTableAsync(path)
+        DR-->>DVS: Result DataTable
+    end
+
+    rect rgb(255,243,224)
+        Note over DVS,VC: VERIFICACION DE COLUMNAS
+        DVS->>VC: GetAllExpectedColumns()
+        VC-->>DVS: List 735 columnas esperadas
+        DVS->>DVS: CompareActualVsExpected()
+    end
+
+    alt Estructura Valida (735 columnas presentes)
+        rect rgb(200,230,201)
+            DVS->>DVS: CalculateTotalClaims()
+            DVS-->>VM: Result DbfValidationResult(IsValid=true)
+            VM->>VM: TotalRecords = result.TotalRecords
+            VM->>VM: TotalClaims = result.TotalClaims
+            VM->>VM: CanProcess = true
+            VM-->>V: Actualiza UI con totales
+            V-->>U: Muestra totales y habilita Procesar
+        end
+    else Estructura Invalida (faltan columnas)
+        rect rgb(255,205,210)
+            DVS-->>VM: Result DbfValidationResult(IsValid=false)
+            VM->>VM: CanProcess = false
+            VM-->>V: Muestra error con columnas faltantes
+            V-->>U: Deshabilita boton Procesar
+        end
+    end
+```
+
+### Componentes del Flujo
+
+| Componente | Capa | Responsabilidad |
+|------------|------|-----------------|
+| `ProcessingViewModel` | Presentation | Coordina UI y comandos |
+| `DbfValidationService` | Business | Valida estructura del DBF |
+| `VdeConstants` | Domain | Define las 735 columnas esperadas |
+| `DbfReader` | Data | Lee el archivo DBF |
+
+### Resultado de Validación
+
+```csharp
+public class DbfValidationResult
+{
+    public bool IsValid { get; set; }           // True si todas las columnas existen
+    public int TotalRecords { get; set; }       // Total de registros (imagenes)
+    public int TotalClaims { get; set; }        // Claims (V1PAGINA != "99")
+    public List<string> MissingColumns { get; set; }  // Columnas faltantes
+    public string? ErrorMessage { get; set; }   // Mensaje de error
+}
+```
+
+---
+
 ## Diagrama de Capas (Clean Architecture)
 
 Este diagrama muestra como fluyen las dependencias entre las capas de la arquitectura:

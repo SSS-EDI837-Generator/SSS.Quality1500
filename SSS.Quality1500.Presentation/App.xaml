@@ -1,12 +1,24 @@
-﻿<Application x:Class="SSS.Quality1500.Presentation.App"
+<Application x:Class="SSS.Quality1500.Presentation.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SSS.Quality1500.Presentation"
              xmlns:views="clr-namespace:SSS.Quality1500.Presentation.Views"
              xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
-             >
+             xmlns:converters="clr-namespace:SSS.Quality1500.Presentation.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <Application.Resources>
-        
-        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Material Design -->
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Blue" SecondaryColor="Teal" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:IsNotZeroToVisibilityConverter x:Key="IsNotZeroToVisibilityConverter" />
+            <converters:InverseIsEmptyToVisibilityConverter x:Key="InverseIsEmptyToVisibilityConverter" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

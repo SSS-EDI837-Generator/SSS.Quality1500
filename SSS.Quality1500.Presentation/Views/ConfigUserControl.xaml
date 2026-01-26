@@ -1,14 +1,236 @@
-﻿<UserControl x:Class="SSS.Quality1500.Presentation.Views.ConfigUserControl"
+<UserControl x:Class="SSS.Quality1500.Presentation.Views.ConfigUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:SSS.Quality1500.Presentation.Views"
-                xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
-             mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel , IsDesignTimeCreatable=True}"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Label Content="{Binding LabelName,Mode=OneWay,NotifyOnTargetUpdated=True,UpdateSourceTrigger=PropertyChanged}" />
+             xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{DynamicResource MaterialDesign.Brush.Background}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="{Binding PageTitle}"
+                       Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                       Foreground="{DynamicResource MaterialDesign.Brush.Primary}"/>
+            <TextBlock Text="Seleccione las columnas del archivo DBF que desea verificar durante el procesamiento."
+                       Style="{StaticResource MaterialDesignBody1TextBlock}"
+                       Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light}"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Filter Section -->
+        <materialDesign:Card Grid.Row="1" Margin="0,0,0,16" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Search Box -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Buscar columna..."
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Margin="0,0,16,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Escape" Command="ApplicationCommands.NotACommand"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <TextBlock Grid.Column="1"
+                           Text="Categoria:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"/>
+
+                <!-- Category Filter -->
+                <ComboBox Grid.Column="2"
+                          ItemsSource="{Binding Categories}"
+                          SelectedItem="{Binding SelectedCategory}"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Stats Bar -->
+        <materialDesign:Card Grid.Row="2" Margin="0,0,0,16" Padding="12,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="CheckboxMarkedCircle"
+                                             VerticalAlignment="Center"
+                                             Foreground="{DynamicResource MaterialDesign.Brush.Primary}"
+                                             Margin="0,0,8,0"/>
+                    <TextBlock VerticalAlignment="Center">
+                        <Run Text="Seleccionadas: "/>
+                        <Run Text="{Binding SelectedCount, Mode=OneWay}" FontWeight="Bold"/>
+                        <Run Text=" de "/>
+                        <Run Text="{Binding TotalCount, Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                        Content="Seleccionar Todas"
+                        Command="{Binding SelectAllCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Margin="0,0,8,0"/>
+
+                <Button Grid.Column="3"
+                        Content="Deseleccionar Todas"
+                        Command="{Binding DeselectAllCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Columns DataGrid -->
+        <materialDesign:Card Grid.Row="3" Padding="0">
+            <DataGrid ItemsSource="{Binding FilteredColumns}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserReorderColumns="True"
+                      CanUserSortColumns="True"
+                      SelectionMode="Single"
+                      IsReadOnly="False"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      materialDesign:DataGridAssist.CellPadding="8 6"
+                      materialDesign:DataGridAssist.ColumnHeaderPadding="8 6">
+                <DataGrid.Columns>
+                    <!-- Selection Checkbox -->
+                    <DataGridTemplateColumn Header="" Width="50" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center"
+                                          Style="{StaticResource MaterialDesignCheckBox}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Column Name -->
+                    <DataGridTextColumn Header="Columna DBF"
+                                        Binding="{Binding ColumnName}"
+                                        Width="120"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Consolas"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Display Name -->
+                    <DataGridTextColumn Header="Nombre"
+                                        Binding="{Binding DisplayName}"
+                                        Width="180"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Box Reference -->
+                    <DataGridTextColumn Header="CMS-1500"
+                                        Binding="{Binding BoxReference}"
+                                        Width="90"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Category -->
+                    <DataGridTextColumn Header="Categoria"
+                                        Binding="{Binding Category}"
+                                        Width="140"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Description -->
+                    <DataGridTextColumn Header="Descripcion"
+                                        Binding="{Binding Description}"
+                                        Width="*"
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="NoWrap"/>
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                <Setter Property="ToolTip" Value="{Binding Description}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Foreground.Light}"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </materialDesign:Card>
+
+        <!-- Footer Actions -->
+        <Grid Grid.Row="4" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Foreground="{DynamicResource MaterialDesign.Brush.Foreground.Light}">
+                <Run Text="Las columnas seleccionadas seran verificadas durante el procesamiento de archivos DBF."/>
+            </TextBlock>
+
+            <Button Grid.Column="1"
+                    Content="Guardar Configuracion"
+                    Command="{Binding SaveConfigurationCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    materialDesign:ButtonAssist.CornerRadius="4">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave"
+                                                     VerticalAlignment="Center"
+                                                     Margin="0,0,8,0"/>
+                            <TextBlock Text="Guardar Configuracion" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

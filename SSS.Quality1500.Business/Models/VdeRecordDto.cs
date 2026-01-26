@@ -1,114 +1,207 @@
 namespace SSS.Quality1500.Business.Models;
-// Esto es un ejemplo de DTO para los registros VDE
+
+/// <summary>
+/// DTO for VDE (Virtual Data Entry) records from DBF files.
+/// Organized by CMS-1500 form sections for clarity.
+/// </summary>
 public class VdeRecordDto
 {
-    // Main identifiers
-    public string? V0Batchnum { get; set; }
-    public string? V1Page { get; set; }
-    public string? V0IfName01 { get; set; }
-    public string? V0Sequence { get; set; }
+    #region Document Identifiers
+
     public string? V0Document { get; set; }
+    public string? V0Batchnum { get; set; }
+    public string? V0Sequence { get; set; }
+    public string? V0IfName01 { get; set; }
+    public string? V1Page { get; set; }
 
-    // Patient information
-    public string? V1Insured { get; set; }
-    public string? V1Birthday { get; set; }
-    public string? V1ClaimCod { get; set; }
-    public string? V1OtherId { get; set; }
-    public string? V1Ispat { get; set; }
-    public string? V1IsThere { get; set; }
-    public string? V1Zua { get; set; }
-    public string? V1Sex { get; set; }
-    public string? V1Oth { get; set; }
-    public string? V1Patient { get; set; }
-    public string? V1Originan { get; set; }
+    #endregion
 
-    // Diagnosis information
-    public string? V4Diag { get; set; }
-    public string? V414Qual { get; set; }
-    public string? V415Date { get; set; }
-    public string? V415Qual { get; set; }
-    public string? V432Plufou { get; set; }
-    public string? V432Zcode { get; set; }
-    public string? V414Date { get; set; }
+    #region Patient Information - Box 1-4
 
-    // Dates
-    public string? V6DateFrom { get; set; }
-    public string? V311Insdat { get; set; }
-    public string? V316Patdat { get; set; }
-    public string? V316Datewo { get; set; }
-    public string? V318Hospda { get; set; }
-    public string? V318Reldat { get; set; }
+    /// <summary>Box 1: Insurance type</summary>
+    public string? V11TypeId { get; set; }
 
-    // Provider information
-    public string? V133Anpi { get; set; }
-    public string? V417Bnpi { get; set; }
-    public string? V417Aprove { get; set; }
-    public string? V133Bprovi { get; set; }
-    public string? V133Bqual { get; set; }
-    public string? V132Anpi { get; set; }
-    public string? V132Bprovi { get; set; }
+    /// <summary>Box 1a: Insured's ID number</summary>
+    public string? V11AInsure { get; set; }
 
-    // Address information
-    public string? V533Add1 { get; set; }
-    public string? V533Add2 { get; set; }
-    public string? V533City { get; set; }
-    public string? V533State { get; set; }
-    public string? V533Name { get; set; }
-    public string? V533Lastn1 { get; set; }
-    // public string? V533Lastn2 { get; set; }
-    public string? V533Zipcoc { get; set; }
-    public string? V533Plus4 { get; set; }
+    /// <summary>Box 2: Patient's first name</summary>
+    public string? V12Name { get; set; }
 
-    // Financial information
-    public string? V419Reserv { get; set; }
-    public string? V426Patien { get; set; }
-    public string? V423Priot { get; set; }
-    public string? V425Federa { get; set; }
-    public string? V4Ssn { get; set; }
-    public string? V4Ein { get; set; }
-    public string? V428Total { get; set; }
-    public string? V429Amout { get; set; }
-    public string? V330Balanc { get; set; }
+    /// <summary>Box 2: Patient's last name</summary>
+    public string? V12LastName { get; set; }
 
-    // Other patient information
-    public string? V39Otherna { get; set; }
-    public string? V39Ini { get; set; }
-    public string? V39Otherla { get; set; }
-    // public string? V39Bsex { get; set; }
-    public string? V39Botherd { get; set; }
-    public string? V39Otherin { get; set; }
-    public string? V39Dinspla { get; set; }
+    /// <summary>Box 2: Patient's middle initial</summary>
+    public string? V12Initial { get; set; }
 
-    // Insurance information
+    /// <summary>Box 3: Patient's birth date</summary>
+    public string? V13Birth { get; set; }
+
+    /// <summary>Box 3: Patient's sex</summary>
+    public string? V13Sexo { get; set; }
+
+    #endregion
+
+    #region Patient Address - Box 5
+
+    public string? V15Address1 { get; set; }
+    public string? V15Address2 { get; set; }
+    public string? V15City { get; set; }
+    public string? V15State { get; set; }
+    public string? V15ZipCode { get; set; }
+    public string? V15Plus4 { get; set; }
+    public string? V15Telefon { get; set; }
+
+    #endregion
+
+    #region Insured Information - Box 9, 11
+
+    public string? V29Name { get; set; }
+    public string? V29LastName { get; set; }
+    public string? V29APolicy { get; set; }
+    public string? V29DInsPla { get; set; }
+    public string? V210AEmplo { get; set; }
+    public string? V210BAuto { get; set; }
+    public string? V210COther { get; set; }
+    public string? V211ABirth { get; set; }
+    public string? V211ASexo { get; set; }
     public string? V211Insure { get; set; }
-    public string? V332Facili { get; set; }
 
-    public string? V2Patstatu { get; set; }
-    // public string? V38Empl { get; set; }
+    #endregion
 
-    // Charges and payments
-    public string? V320Outsid { get; set; }
-    public string? V320Charge { get; set; }
-    public string? V327Accept { get; set; }
+    #region Referring Provider - Box 17
 
-    // Record D properties
-    public string? Datefrom { get; set; }
-    public string? Dateto { get; set; }
-    public string? Diagpoin { get; set; }
-    public string? Ndc { get; set; }
-    public string? Unitqual { get; set; }
-    public string? Unit { get; set; }
-    public string? Place { get; set; }
-    public string? Mod1 { get; set; }
-    public string? Mod2 { get; set; }
-    public string? Mod3 { get; set; }
-    public string? Mod4 { get; set; }
-    public string? Npi { get; set; }
-    public string? Cpt { get; set; }
-    public string? Rendprov { get; set; }
-    public string? Iqual24 { get; set; }
-    public string? Daysunit { get; set; }
-    public string? Emg { get; set; }
-    public string? Charges { get; set; }
-    public string? Abbimabi { get; set; }
+    public string? V317Name { get; set; }
+    public string? V317AQual { get; set; }
+    public string? V317AReffE { get; set; }
+
+    /// <summary>Box 17b: Referring provider NPI</summary>
+    public string? V317BNpi { get; set; }
+
+    #endregion
+
+    #region Dates - Box 14-18
+
+    public string? V314Qual { get; set; }
+    public string? V314Date { get; set; }
+    public string? V315Qual { get; set; }
+    public string? V315Date { get; set; }
+    public string? V316DateFr { get; set; }
+    public string? V316DateTo { get; set; }
+    public string? V318DateFr { get; set; }
+    public string? V318DateTo { get; set; }
+
+    #endregion
+
+    #region Diagnosis - Box 21
+
+    /// <summary>Box 21: ICD indicator (9=ICD-9, 0=ICD-10)</summary>
+    public string? V321IcdInd { get; set; }
+
+    /// <summary>Box 21: Diagnosis codes A-L</summary>
+    public string? V321Diag { get; set; }
+
+    #endregion
+
+    #region Prior Authorization - Box 23
+
+    public string? V423Prior { get; set; }
+
+    #endregion
+
+    #region Tax and Patient Account - Box 25-26
+
+    public string? V425FedTax { get; set; }
+    public string? V425Ssn { get; set; }
+    public string? V425Ein { get; set; }
+    public string? V426Patien { get; set; }
+
+    #endregion
+
+    #region Amounts - Box 27-30
+
+    public string? V427Accept { get; set; }
+
+    /// <summary>Box 28: Total charge</summary>
+    public string? V428Total { get; set; }
+
+    /// <summary>Box 29: Amount paid</summary>
+    public string? V429Amount { get; set; }
+
+    public string? V430Nucc { get; set; }
+
+    #endregion
+
+    #region Signature - Box 31
+
+    public string? V431Date { get; set; }
+
+    #endregion
+
+    #region Service Facility - Box 32
+
+    public string? V432Name { get; set; }
+    public string? V432Addre1 { get; set; }
+    public string? V432City { get; set; }
+    public string? V432State { get; set; }
+    public string? V432ZipCod { get; set; }
+    public string? V432Plus4 { get; set; }
+
+    /// <summary>Box 32a: Service facility NPI</summary>
+    public string? V432ANpi { get; set; }
+
+    public string? V432BOther { get; set; }
+
+    #endregion
+
+    #region Billing Provider - Box 33
+
+    public string? V433Name { get; set; }
+    public string? V433LastNa { get; set; }
+    public string? V433Addre1 { get; set; }
+    public string? V433City { get; set; }
+    public string? V433State { get; set; }
+    public string? V433ZipCod { get; set; }
+    public string? V433Plus4 { get; set; }
+
+    /// <summary>Box 33a: Billing provider NPI</summary>
+    public string? V433ANpi { get; set; }
+
+    /// <summary>Box 33b: Taxonomy code</summary>
+    public string? V433BTaxon { get; set; }
+
+    #endregion
+
+    #region Service Line 1 - Box 24
+
+    /// <summary>Box 24A: Date from (line 1)</summary>
+    public string? V524DateFrom { get; set; }
+
+    /// <summary>Box 24A: Date to (line 1)</summary>
+    public string? V524DateTo { get; set; }
+
+    /// <summary>Box 24B: Place of service (line 1)</summary>
+    public string? V524PlaceOfService { get; set; }
+
+    /// <summary>Box 24D: CPT/HCPCS code (line 1)</summary>
+    public string? V524Cpt { get; set; }
+
+    /// <summary>Box 24D: Modifier 1 (line 1)</summary>
+    public string? V524Mod1 { get; set; }
+
+    /// <summary>Box 24D: Modifier 2 (line 1)</summary>
+    public string? V524Mod2 { get; set; }
+
+    /// <summary>Box 24E: Diagnosis pointer (line 1)</summary>
+    public string? V524DiagPointer { get; set; }
+
+    /// <summary>Box 24F: Charges (line 1)</summary>
+    public string? V524Charges { get; set; }
+
+    /// <summary>Box 24G: Days/units (line 1)</summary>
+    public string? V524DaysUnits { get; set; }
+
+    /// <summary>Box 24J: Rendering provider NPI (line 1)</summary>
+    public string? V524RenderingNpi { get; set; }
+
+    #endregion
 }

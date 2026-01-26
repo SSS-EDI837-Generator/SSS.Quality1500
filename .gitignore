@@ -30,6 +30,15 @@ BenchmarkDotNet.Artifacts/
 *.db-shm
 *.db-wal
 
+## DBF Database Files (contains sensitive data)
+Base Datos/
+*.DBF
+*.CDX
+*.FPT
+*.dbf
+*.cdx
+*.fpt
+
 ## Logs
 logs/
 *.log

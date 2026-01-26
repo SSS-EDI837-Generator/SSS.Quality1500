@@ -1,131 +1,388 @@
 namespace SSS.Quality1500.Domain.Constants;
 
-// Establish constants for VDE (Virtual Data Entry) record fields this is a Example
+/// <summary>
+/// Constants for VDE (Virtual Data Entry) record fields.
+/// Organized by CMS-1500 form sections and DBF column prefixes.
+/// For service line constants (Box 24), see VdeServiceLineConstants.
+/// </summary>
 public static class VdeConstants
 {
-    public const string V0Batchnum = "V0Batchnum";
-    public const string V0IfName01 = "V0Ifname01";
-    public const string V0Sequence = "V0Sequence";
-    public const string V0Document = "V0Document";
-    public const string V533Zipcoc = "V433ZIPCOD";
+    #region Document Metadata (V0*)
+
+    /// <summary>Unique document identifier</summary>
+    public const string V0Document = "V0DOCUMENT";
+
+    /// <summary>Batch number for processing</summary>
+    public const string V0Batchnum = "V0BATCHNUM";
+
+    /// <summary>Sequence number within batch</summary>
+    public const string V0Sequence = "V0SEQUENCE";
+
+    /// <summary>Image file path</summary>
+    public const string V0IfName01 = "V0IFNAME01";
+
+    /// <summary>Page number</summary>
+    public const string V1Page = "V1PAGINA";
+
+    #endregion
+
+    #region Patient Information - Box 1-4 (V1*)
+
+    /// <summary>Box 1: Insurance type (Medicare/Medicaid/etc)</summary>
+    public const string V11TypeId = "V11TYPEID";
+
+    /// <summary>Box 1a: Insured's ID number</summary>
+    public const string V11AInsure = "V11AINSURE";
+
+    /// <summary>Box 1a: ZUA number</summary>
+    public const string V11AZua = "V11AZUA";
+
+    /// <summary>Box 2: Patient's first name</summary>
+    public const string V12Name = "V12NAME";
+
+    /// <summary>Box 2: Patient's last name</summary>
+    public const string V12LastName = "V12LASTNAM";
+
+    /// <summary>Box 2: Patient's middle initial</summary>
+    public const string V12Initial = "V12INITIAL";
+
+    /// <summary>Box 3: Patient's birth date</summary>
+    public const string V13Birth = "V13BIRTH";
+
+    /// <summary>Box 3: Patient's sex (M/F)</summary>
+    public const string V13Sexo = "V13SEXO";
+
+    #endregion
+
+    #region Patient Address - Box 5 (V1*)
+
+    /// <summary>Box 5: Address line 1</summary>
+    public const string V15Address1 = "V15ADDRES1";
+
+    /// <summary>Box 5: Address line 2</summary>
+    public const string V15Address2 = "V15ADDRES2";
+
+    /// <summary>Box 5: City</summary>
+    public const string V15City = "V15CITY";
+
+    /// <summary>Box 5: State</summary>
+    public const string V15State = "V15STATE";
+
+    /// <summary>Box 5: ZIP code</summary>
+    public const string V15ZipCode = "V15ZIPCODE";
+
+    /// <summary>Box 5: ZIP+4 extension</summary>
+    public const string V15Plus4 = "V15PLUS4";
+
+    /// <summary>Box 5: Telephone number</summary>
+    public const string V15Telefon = "V15TELEFON";
+
+    #endregion
+
+    #region Patient Relationship - Box 6 (V1*)
+
+    /// <summary>Box 6: Patient relationship to insured</summary>
+    public const string V16PatRela = "V16PATRELA";
+
+    #endregion
+
+    #region Insured Information - Box 7, 9, 11 (V1*, V2*)
+
+    /// <summary>Box 7: Insured's telephone</summary>
+    public const string V17Telefon = "V17TELEFON";
+
+    /// <summary>Box 8: Reserved for NUCC use</summary>
+    public const string V28Reserve = "V28RESERVE";
+
+    /// <summary>Box 9: Other insured's name</summary>
+    public const string V29Name = "V29NAME";
+
+    /// <summary>Box 9: Other insured's initial</summary>
+    public const string V29Initial = "V29INITIAL";
+
+    /// <summary>Box 9: Other insured's last name</summary>
+    public const string V29LastName = "V29LASTNAM";
+
+    /// <summary>Box 9a: Other insured's policy/group number</summary>
+    public const string V29APolicy = "V29APOLICY";
+
+    /// <summary>Box 9b: Reserved for NUCC use</summary>
+    public const string V29BReserv = "V29BRESERV";
+
+    /// <summary>Box 9d: Insurance plan name</summary>
+    public const string V29DInsPla = "V29DINSPLA";
+
+    #endregion
+
+    #region Condition Related To - Box 10 (V2*)
+
+    /// <summary>Box 10a: Is condition related to employment</summary>
+    public const string V210AEmplo = "V210AEMPLO";
+
+    /// <summary>Box 10b: Auto accident</summary>
+    public const string V210BAuto = "V210BAUTO";
+
+    /// <summary>Box 10b: State</summary>
+    public const string V210State = "V210STATE";
+
+    /// <summary>Box 10c: Other accident</summary>
+    public const string V210COther = "V210COTHER";
+
+    /// <summary>Box 10d: Claim codes (designated by NUCC)</summary>
+    public const string V210DClaim = "V210DCLAIM";
+
+    #endregion
+
+    #region Insured Policy - Box 11 (V2*)
+
+    /// <summary>Box 11a: Insured's birth date</summary>
+    public const string V211ABirth = "V211ABIRTH";
+
+    /// <summary>Box 11a: Insured's sex</summary>
+    public const string V211ASexo = "V211ASEXO";
+
+    /// <summary>Box 11b: Other claim ID (designated by NUCC)</summary>
+    public const string V211BOther = "V211BOTHER";
+
+    /// <summary>Box 11b: Qualifier</summary>
+    public const string V211BQual = "V211BQUAL";
+
+    /// <summary>Box 11c: Insurance plan name or program name</summary>
+    public const string V211Insure = "V211INSURE";
+
+    /// <summary>Box 11c: Insured insurance</summary>
+    public const string V211CInsur = "V211CINSUR";
+
+    /// <summary>Box 11d: Is there another health benefit plan</summary>
+    public const string V211DIsThere = "V211DISTHE";
+
+    #endregion
+
+    #region Signatures - Box 12-13 (V2*)
+
+    /// <summary>Box 12: Patient or authorized person's signature</summary>
+    public const string V212Signed = "V212SIGNED";
+
+    /// <summary>Box 13: Insured's or authorized person's signature</summary>
+    public const string V213Firma = "V213FIRMA";
+
+    #endregion
+
+    #region Dates and Referring Provider - Box 14-19 (V3*)
+
+    /// <summary>Box 14: Date of current illness/injury/pregnancy (qualifier)</summary>
+    public const string V314Qual = "V314QUAL";
+
+    /// <summary>Box 14: Date of current illness/injury/pregnancy</summary>
+    public const string V314Date = "V314DATE";
+
+    /// <summary>Box 15: Other date (qualifier)</summary>
+    public const string V315Qual = "V315QUAL";
+
+    /// <summary>Box 15: Other date</summary>
+    public const string V315Date = "V315DATE";
+
+    /// <summary>Box 16: Dates patient unable to work - from</summary>
+    public const string V316DateFr = "V316DATEFR";
+
+    /// <summary>Box 16: Dates patient unable to work - to</summary>
+    public const string V316DateTo = "V316DATETO";
+
+    /// <summary>Box 17: Referring provider name</summary>
+    public const string V317Name = "V317NAME";
+
+    /// <summary>Box 17a: Qualifier</summary>
+    public const string V317AQual = "V317AQUAL";
+
+    /// <summary>Box 17a: Other ID number</summary>
+    public const string V317AReffE = "V317AREFFE";
+
+    /// <summary>Box 17b: Referring provider NPI</summary>
+    public const string V317BNpi = "V317BNPI";
+
+    /// <summary>Box 18: Hospitalization dates - from</summary>
+    public const string V318DateFr = "V318DATEFR";
+
+    /// <summary>Box 18: Hospitalization dates - to</summary>
+    public const string V318DateTo = "V318DATETO";
+
+    /// <summary>Box 19: Additional claim information</summary>
+    public const string V319Add = "V319ADD";
+
+    #endregion
+
+    #region Outside Lab and Diagnosis - Box 20-21 (V3*)
+
+    /// <summary>Box 20: Outside lab</summary>
+    public const string V320OutSid = "V320OUTSID";
+
+    /// <summary>Box 20: Charges</summary>
+    public const string V320Charge = "V320CHARGE";
+
+    /// <summary>Box 21: ICD indicator (9 = ICD-9, 0 = ICD-10)</summary>
+    public const string V321IcdInd = "V321ICDIND";
+
+    /// <summary>Box 21: Diagnosis or nature of illness codes (A-L)</summary>
+    public const string V321Diag = "V321DIAG";
+
+    #endregion
+
+    #region Resubmission and Prior Authorization - Box 22-23 (V3*, V4*)
+
+    /// <summary>Box 22: Resubmission code</summary>
+    public const string V322Resub = "V322RESUB";
+
+    /// <summary>Box 23: Prior authorization number</summary>
+    public const string V423Prior = "V423PRIOR";
+
+    #endregion
+
+    #region Tax and Patient Account - Box 25-26 (V4*)
+
+    /// <summary>Box 25: Federal tax ID number</summary>
+    public const string V425FedTax = "V425FEDTAX";
+
+    /// <summary>Box 25: SSN indicator</summary>
+    public const string V425Ssn = "V425SSN";
+
+    /// <summary>Box 25: EIN indicator</summary>
+    public const string V425Ein = "V425EIN";
+
+    /// <summary>Box 26: Patient's account number</summary>
     public const string V426Patien = "V426PATIEN";
 
-    public const string V1Page = "V1PAGINA";
-    public const string V1Insured = "V11AINSURE";
-    public const string V1Birthday = "V13BIRTH";
-    public const string V1ClaimCod = "V210DCLAIM";
-    public const string V1OtherId = "V211BOTHER";
-    public const string V414Qual = "V314QUAL";
-    public const string V415Date = "V315DATE";
-    public const string V415Qual = "V315QUAL";
-    public const string V432Plufou = "V432PLUS4";
-    public const string V432Zcode = "V432ZIPCOD";
-    public const string V6DateFrom = "V524ADATEF";
-    public const string V133Anpi = "V433ANPI";
-    public const string V417Bnpi = "V317BNPI";
-    public const string V417Aprove = "V317AREFFE";
-    public const string V133Bprovi = "V433BTAXON";
-    public const string V133Bqual = "V433BQUAL";
-    public const string V533Add1 = "V433ADDRE1";
-    public const string V533Add2 = "V433ADDRE2";
-    public const string V533City = "V433CITY";
-    public const string V533State = "V433STATE";
-    public const string V533Name = "V433NAME";
-    public const string V533Initia = "V433Initia";
-    public const string V533Lastn1 = "V433LASTNA";
-    public const string V533Plus4 = "V433PLUS4";
-    public const string V132Anpi = "V432ANPI";
-    public const string V1Ispat = "V210AEMPLO";
-    public const string V414Date = "V314DATE";
-    public const string V1IsThere = "V211Disthe";
-    public const string V419Reserv = "V319ADD";
-    public const string V1Zua = "V11AZUA";
-    public const string V1Sex = "V13SEXO";
-    public const string V423Priot = "V423PRIOR";
-    public const string V1Oth = "V11TYPEID";
-    public const string V1Patient = "V212SIGNED";
-    public const string V425Federa = "V425FEDTAX";
-    public const string V4Ssn = "V425SSN";
-    public const string V4Ein = "V425EIN";
+    #endregion
+
+    #region Accept Assignment and Amounts - Box 27-30 (V4*)
+
+    /// <summary>Box 27: Accept assignment</summary>
+    public const string V427Accept = "V427ACCEPT";
+
+    /// <summary>Box 28: Total charge</summary>
     public const string V428Total = "V428TOTAL";
-    public const string V1Originan = "V422ORIGIN";
-    public const string V311Insdat = "V211ABIRTH";
-    public const string V39Otherna = "V29NAME";
-    public const string V39Ini = "V29INITIAL";
-    public const string V39Otherla = "V29LASTNAM";
-    public const string V39Botherd = "V29BRESERV";
-    public const string V39Otherin = "V29APOLICY";
-    public const string V211Insure = "V211INSURE";
-    public const string V39Dinspla = "V29DINSPLA";
-    public const string V132Bprovi = "V432BOTHER";
-    public const string V432Bqual = "V432BQUAL";
-    public const string V2Patstatu = "V28RESERVE";
-    public const string V316Patdat = "V316DATEFR";
-    public const string V316Datewo = "V316DATETO";
-    public const string V318Hospda = "V318DATEFR";
-    public const string V318Reldat = "V318DATETO";
-    public const string V320Outsid = "V320OUTSID";
-    public const string V320Charge = "V320CHARGE";
-    public const string V327Accept = "V427ACCEPT";
-    public const string V429Amout = "V429AMOUNT";
-    public const string V330Balanc = "V430NUCC";
-    public const string V332Facili = "V432Facili";
-    public const string V4Diag = "V321DIAG";
-    public const string V2Patname = "V12Name";
-    public const string V2Lastname = "V12Lastnam";
-    public const string V2Initial = "V12Initial";
-    public const string V25Address = "V15ADDRES1";
-    public const string V25Addres2 = "V15ADDRES2";
-    public const string V25City = "V15CITY";
-    public const string V25State = "V15STATE";
-    public const string V35Zcode = "V15ZIPCODE";
-    public const string V35Plufour = "V15PLUS4";
-    public const string V417Aqual = "V317Qual";
 
-    // Record D
-    public const string Datefrom = "24ADATEF";
-    public const string Dateto = "24ADATET";
-    public const string Diagpoin = "24EDIAGN";
-    public const string Ndc = "24NDC";
-    public const string Unitqual = "24UNITQU";
-    public const string Unit = "24UNIT";
-    public const string Place = "24BPLACE";
-    public const string Mod1 = "24DMOD1";
-    public const string Mod2 = "24DMOD2";
-    public const string Mod3 = "24DMOD3";
-    public const string Mod4 = "24DMOD4";
-    public const string Npi = "24JNPI";
-    public const string Cpt = "24DCPT";
-    public const string Hepsot = "24HEPSOT";
-    public const string Rendprov = "24JTAXON";
-    public const string Iqual24 = "24IQUAL";
-    public const string Daysunit = "24GDAYS";
-    public const string Emg = "24CEMG";
-    public const string Charges = "24FCHARG";
-    public const string Abbimabi = "24ABBMBB";
-    public const string Ndcqua = "24NDCQUA";
-    public const string V15Telefon = "V15TELEFON";
-    public const string V17Telefon = "V17TELEFON";
-    public const string V210State = "V210STATE";
-    public const string V210Bauto = "V210BAUTO";
-    public const string V210Cother = "V210COTHER";
-    public const string V211Asexo = "V211ASEXO";
-    public const string V211Bqual = "V211BQUAL";
-    public const string V211Cinsur = "V211CINSUR";
-    public const string V213Firma = "V213FIRMA";
-    public const string V317Name = "V317NAME";
-    public const string V317Aqual = "V317AQUAL";
-    public const string V321Icdind = "V321ICDIND";
-    public const string V322Resub = "V322RESUB";
+    /// <summary>Box 29: Amount paid</summary>
+    public const string V429Amount = "V429AMOUNT";
+
+    /// <summary>Box 30: NUCC reserved</summary>
+    public const string V430Nucc = "V430NUCC";
+
+    #endregion
+
+    #region Signature of Physician - Box 31 (V4*)
+
+    /// <summary>Box 31: Signature of physician date</summary>
     public const string V431Date = "V431DATE";
-    public const string V28Reserve = "V28Reserve";
-    public const string V16Patrela = "V16Patrela";
-    public const string V11Typeid = "V11Typeid";
 
+    #endregion
+
+    #region Service Facility - Box 32 (V4*)
+
+    /// <summary>Box 32: Service facility location - name</summary>
+    public const string V432Name = "V432NAME";
+
+    /// <summary>Box 32: Service facility location - address 1</summary>
+    public const string V432Addre1 = "V432ADDRE1";
+
+    /// <summary>Box 32: Service facility location - address 2</summary>
+    public const string V432Addre2 = "V432ADDRE2";
+
+    /// <summary>Box 32: Service facility location - city</summary>
+    public const string V432City = "V432CITY";
+
+    /// <summary>Box 32: Service facility location - state</summary>
+    public const string V432State = "V432STATE";
+
+    /// <summary>Box 32: Service facility location - ZIP code</summary>
+    public const string V432ZipCod = "V432ZIPCOD";
+
+    /// <summary>Box 32: Service facility location - ZIP+4</summary>
+    public const string V432Plus4 = "V432PLUS4";
+
+    /// <summary>Box 32a: Service facility NPI</summary>
+    public const string V432ANpi = "V432ANPI";
+
+    /// <summary>Box 32b: Service facility other ID</summary>
+    public const string V432BOther = "V432BOTHER";
+
+    /// <summary>Box 32b: Service facility other ID qualifier</summary>
+    public const string V432BQual = "V432BQUAL";
+
+    #endregion
+
+    #region Billing Provider - Box 33 (V4*)
+
+    /// <summary>Box 33: Billing provider name</summary>
+    public const string V433Name = "V433NAME";
+
+    /// <summary>Box 33: Billing provider last name</summary>
+    public const string V433LastNa = "V433LASTNA";
+
+    /// <summary>Box 33: Billing provider initial</summary>
+    public const string V433Initia = "V433INITIA";
+
+    /// <summary>Box 33: Billing provider address 1</summary>
+    public const string V433Addre1 = "V433ADDRE1";
+
+    /// <summary>Box 33: Billing provider address 2</summary>
+    public const string V433Addre2 = "V433ADDRE2";
+
+    /// <summary>Box 33: Billing provider city</summary>
+    public const string V433City = "V433CITY";
+
+    /// <summary>Box 33: Billing provider state</summary>
+    public const string V433State = "V433STATE";
+
+    /// <summary>Box 33: Billing provider ZIP code</summary>
+    public const string V433ZipCod = "V433ZIPCOD";
+
+    /// <summary>Box 33: Billing provider ZIP+4</summary>
+    public const string V433Plus4 = "V433PLUS4";
+
+    /// <summary>Box 33a: Billing provider NPI</summary>
+    public const string V433ANpi = "V433ANPI";
+
+    /// <summary>Box 33b: Billing provider taxonomy code</summary>
+    public const string V433BTaxon = "V433BTAXON";
+
+    /// <summary>Box 33b: Billing provider other ID qualifier</summary>
+    public const string V433BQual = "V433BQUAL";
+
+    #endregion
+
+    #region Service Line Helper
+
+    /// <summary>
+    /// Gets the column name for a service line field.
+    /// Delegates to VdeServiceLineConstants.GetColumnName.
+    /// </summary>
+    /// <param name="lineNumber">Line number (1-25)</param>
+    /// <param name="suffix">Field suffix from VdeServiceLineConstants.Suffix</param>
+    /// <returns>Full column name (e.g., "V524ADATEF" for line 1 date from)</returns>
+    public static string GetServiceLineColumn(int lineNumber, string suffix)
+        => VdeServiceLineConstants.GetColumnName(lineNumber, suffix);
+
+    #endregion
+
+    #region Processing Constants
+
+    /// <summary>Job type identifier for 837P transactions</summary>
     public const string Job = "TSA837P";
+
+    /// <summary>Header identifier</summary>
     public const string Hd = "NS";
+
+    /// <summary>Cutoff date for ICD-10 vs ICD-9 (MMDDYY format)</summary>
     public const string LimiteDateIcd10Icd9 = "093015";
-    public const int ViewStart = 5; // V5
-    public const int ViewEnd = 32; // VW
+
+    /// <summary>Starting service line view index (5 = V5)</summary>
+    public const int ViewStart = 5;
+
+    /// <summary>Ending service line view index (32 = VW, but mapped to hex)</summary>
+    public const int ViewEnd = 32;
+
+    /// <summary>Flag for ICD-10 vs ICD-9 processing</summary>
     public const bool Icd10OrIcd9 = true;
+
+    #endregion
 }

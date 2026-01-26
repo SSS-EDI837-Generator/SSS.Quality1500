@@ -7,11 +7,13 @@
              xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="700" d:DesignWidth="900"
              Background="{DynamicResource MaterialDesign.Brush.Background}">
 
-    <Grid Margin="16">
+    <Grid>
+        <!-- Main Content -->
+        <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -232,5 +234,12 @@
                 </Button.ContentTemplate>
             </Button>
         </Grid>
+        </Grid>
+
+        <!-- Snackbar para notificaciones -->
+        <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Bottom"
+                                 Margin="0,0,0,16"/>
     </Grid>
 </UserControl>

@@ -2,7 +2,10 @@ namespace SSS.Quality1500.Presentation.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
 using SSS.Quality1500.Domain.Constants;
+using SSS.Quality1500.Domain.Interfaces;
+using SSS.Quality1500.Domain.Models;
 using SSS.Quality1500.Presentation.Models;
 using System.Collections.ObjectModel;
 
@@ -13,6 +16,8 @@ using System.Collections.ObjectModel;
 /// </summary>
 public partial class ConfigViewModel : ObservableObject
 {
+    private readonly IColumnConfigurationRepository _configRepository;
+
     [ObservableProperty]
     private string _pageTitle = "Configuracion de Columnas";
 
@@ -37,9 +42,19 @@ public partial class ConfigViewModel : ObservableObject
     [ObservableProperty]
     private int _totalCount;
 
-    public ConfigViewModel()
+    [ObservableProperty]
+    private string _statusMessage = string.Empty;
+
+    /// <summary>
+    /// Cola de mensajes para el Snackbar de MaterialDesign.
+    /// </summary>
+    public SnackbarMessageQueue MessageQueue { get; } = new(TimeSpan.FromSeconds(3));
+
+    public ConfigViewModel(IColumnConfigurationRepository configRepository)
     {
+        _configRepository = configRepository;
         LoadColumns();
+        LoadSavedConfiguration();
         UpdateFilteredColumns();
     }
 
@@ -649,7 +664,32 @@ public partial class ConfigViewModel : ObservableObject
             .Select(c => c.ColumnName)
             .ToList();
 
-        // TODO: Save to configuration file or database
-        System.Diagnostics.Debug.WriteLine($"Saved {selectedColumns.Count} columns for validation");
+        ColumnConfiguration config = ColumnConfiguration.WithColumns(selectedColumns);
+        Result<bool, string> result = _configRepository.Save(config);
+
+        result
+            .OnSuccess(_ => MessageQueue.Enqueue($"Configuracion guardada: {selectedColumns.Count} columnas seleccionadas"))
+            .OnFailure(error => MessageQueue.Enqueue($"Error al guardar: {error}"));
+    }
+
+    private void LoadSavedConfiguration()
+    {
+        Result<ColumnConfiguration, string> result = _configRepository.Load();
+
+        result.OnSuccess(config =>
+        {
+            if (!config.HasSelectedColumns)
+                return;
+
+            HashSet<string> savedColumns = new(config.SelectedColumns, StringComparer.Ordinal);
+
+            foreach (ColumnConfigItem column in AllColumns)
+            {
+                column.IsSelected = savedColumns.Contains(column.ColumnName);
+            }
+
+            UpdateSelectedCount();
+            StatusMessage = $"Configuracion cargada: {config.SelectedColumns.Count} columnas";
+        });
     }
 }

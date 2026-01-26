@@ -33,7 +33,7 @@
     
     <ProjectReference Include="..\SSS.Quality1500.Business\SSS.Quality1500.Business.csproj" />
     
-    <ProjectReference Include="..\SSS.Quality1500.Domain\SSS.Quality1500.Domain.csproj" />
+  
     
   </ItemGroup>
 

@@ -2,12 +2,14 @@ namespace SSS.Quality1500.Presentation.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SSS.Quality1500.Domain.Constants;
 using SSS.Quality1500.Presentation.Models;
 using System.Collections.ObjectModel;
 
 /// <summary>
 /// ViewModel for the column configuration view.
 /// Allows users to select which DBF columns to verify during processing.
+/// Dynamically loads all 735 columns from VdeConstants.
 /// </summary>
 public partial class ConfigViewModel : ObservableObject
 {
@@ -59,117 +61,33 @@ public partial class ConfigViewModel : ObservableObject
             "Documento",
             "Paciente",
             "Asegurado",
+            "Condicion",
             "Proveedor Referidor",
-            "Diagnosticos",
             "Fechas",
+            "Hospitalizacion",
+            "Laboratorio",
+            "Diagnosticos",
+            "Resubmision",
+            "Impuestos",
             "Montos",
             "Facilidad",
             "Proveedor Facturacion",
-            "Lineas de Servicio"
+            "Linea 1-7",
+            "Linea 8-14",
+            "Linea 15-21",
+            "Linea 22-28"
         ];
 
-        AllColumns =
-        [
-            // Document Section (V0*)
-            new ColumnConfigItem { ColumnName = "V0DOCUMENT", DisplayName = "Numero Documento", BoxReference = "N/A", Category = "Documento", Description = "Identificador unico del documento" },
-            new ColumnConfigItem { ColumnName = "V0BATCHNUM", DisplayName = "Numero de Batch", BoxReference = "N/A", Category = "Documento", Description = "Numero del lote de procesamiento" },
-            new ColumnConfigItem { ColumnName = "V0SEQUENCE", DisplayName = "Secuencia", BoxReference = "N/A", Category = "Documento", Description = "Numero de secuencia en el batch" },
-            new ColumnConfigItem { ColumnName = "V0IFNAME01", DisplayName = "Nombre Archivo Imagen", BoxReference = "N/A", Category = "Documento", Description = "Ruta del archivo de imagen asociado" },
+        List<string> allColumnNames = VdeConstants.GetAllExpectedColumns();
+        ObservableCollection<ColumnConfigItem> columns = [];
 
-            // Patient Section (V1* - Box 1-4)
-            new ColumnConfigItem { ColumnName = "V11AINSURE", DisplayName = "ID Asegurado", BoxReference = "Box 1a", Category = "Paciente", Description = "Numero de identificacion del asegurado", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V11TYPEID", DisplayName = "Tipo de Cobertura", BoxReference = "Box 1", Category = "Paciente", Description = "Medicare/Medicaid/Group/etc" },
-            new ColumnConfigItem { ColumnName = "V12NAME", DisplayName = "Nombre Paciente", BoxReference = "Box 2", Category = "Paciente", Description = "Nombre del paciente" },
-            new ColumnConfigItem { ColumnName = "V12LASTNAM", DisplayName = "Apellido Paciente", BoxReference = "Box 2", Category = "Paciente", Description = "Apellido del paciente" },
-            new ColumnConfigItem { ColumnName = "V12INITIAL", DisplayName = "Inicial Paciente", BoxReference = "Box 2", Category = "Paciente", Description = "Inicial del segundo nombre" },
-            new ColumnConfigItem { ColumnName = "V13BIRTH", DisplayName = "Fecha Nacimiento", BoxReference = "Box 3", Category = "Paciente", Description = "Fecha de nacimiento del paciente", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V13SEXO", DisplayName = "Sexo Paciente", BoxReference = "Box 3", Category = "Paciente", Description = "M/F" },
+        foreach (string columnName in allColumnNames)
+        {
+            ColumnConfigItem item = CreateColumnConfigItem(columnName);
+            columns.Add(item);
+        }
 
-            // Patient Address (V1* - Box 5)
-            new ColumnConfigItem { ColumnName = "V15ADDRES1", DisplayName = "Direccion 1", BoxReference = "Box 5", Category = "Paciente", Description = "Direccion linea 1" },
-            new ColumnConfigItem { ColumnName = "V15ADDRES2", DisplayName = "Direccion 2", BoxReference = "Box 5", Category = "Paciente", Description = "Direccion linea 2" },
-            new ColumnConfigItem { ColumnName = "V15CITY", DisplayName = "Ciudad", BoxReference = "Box 5", Category = "Paciente", Description = "Ciudad del paciente" },
-            new ColumnConfigItem { ColumnName = "V15STATE", DisplayName = "Estado", BoxReference = "Box 5", Category = "Paciente", Description = "Estado del paciente" },
-            new ColumnConfigItem { ColumnName = "V15ZIPCODE", DisplayName = "Codigo Postal", BoxReference = "Box 5", Category = "Paciente", Description = "ZIP Code" },
-            new ColumnConfigItem { ColumnName = "V15PLUS4", DisplayName = "ZIP+4", BoxReference = "Box 5", Category = "Paciente", Description = "Extension ZIP+4" },
-            new ColumnConfigItem { ColumnName = "V15TELEFON", DisplayName = "Telefono Paciente", BoxReference = "Box 5", Category = "Paciente", Description = "Numero de telefono" },
-
-            // Insured Information (V2* - Box 9, 11)
-            new ColumnConfigItem { ColumnName = "V29NAME", DisplayName = "Nombre Otro Asegurado", BoxReference = "Box 9", Category = "Asegurado", Description = "Nombre si hay otro seguro" },
-            new ColumnConfigItem { ColumnName = "V29LASTNAM", DisplayName = "Apellido Otro Asegurado", BoxReference = "Box 9", Category = "Asegurado", Description = "Apellido si hay otro seguro" },
-            new ColumnConfigItem { ColumnName = "V29APOLICY", DisplayName = "Poliza Otro Asegurado", BoxReference = "Box 9a", Category = "Asegurado", Description = "Numero de poliza" },
-            new ColumnConfigItem { ColumnName = "V29DINSPLA", DisplayName = "Plan de Seguro", BoxReference = "Box 9d", Category = "Asegurado", Description = "Nombre del plan de seguro" },
-            new ColumnConfigItem { ColumnName = "V210AEMPLO", DisplayName = "Es por Empleo", BoxReference = "Box 10a", Category = "Asegurado", Description = "Condicion relacionada a empleo" },
-            new ColumnConfigItem { ColumnName = "V210BAUTO", DisplayName = "Accidente Auto", BoxReference = "Box 10b", Category = "Asegurado", Description = "Condicion por accidente auto" },
-            new ColumnConfigItem { ColumnName = "V210COTHER", DisplayName = "Otro Accidente", BoxReference = "Box 10c", Category = "Asegurado", Description = "Otra condicion de accidente" },
-            new ColumnConfigItem { ColumnName = "V211ABIRTH", DisplayName = "Fecha Nac. Asegurado", BoxReference = "Box 11a", Category = "Asegurado", Description = "Fecha nacimiento del asegurado" },
-            new ColumnConfigItem { ColumnName = "V211ASEXO", DisplayName = "Sexo Asegurado", BoxReference = "Box 11a", Category = "Asegurado", Description = "Sexo del asegurado" },
-            new ColumnConfigItem { ColumnName = "V211INSURE", DisplayName = "Nombre Plan Asegurado", BoxReference = "Box 11c", Category = "Asegurado", Description = "Nombre del plan de seguro" },
-
-            // Referring Provider (V3* - Box 17)
-            new ColumnConfigItem { ColumnName = "V317NAME", DisplayName = "Nombre Proveedor Ref.", BoxReference = "Box 17", Category = "Proveedor Referidor", Description = "Nombre del proveedor que refiere" },
-            new ColumnConfigItem { ColumnName = "V317AQUAL", DisplayName = "Qualifier 17a", BoxReference = "Box 17a", Category = "Proveedor Referidor", Description = "Calificador de ID" },
-            new ColumnConfigItem { ColumnName = "V317AREFFE", DisplayName = "ID Referidor", BoxReference = "Box 17a", Category = "Proveedor Referidor", Description = "Numero ID del referidor" },
-            new ColumnConfigItem { ColumnName = "V317BNPI", DisplayName = "NPI Referidor", BoxReference = "Box 17b", Category = "Proveedor Referidor", Description = "NPI del proveedor que refiere", IsSelected = true },
-
-            // Dates (V3* - Box 14-18)
-            new ColumnConfigItem { ColumnName = "V314DATE", DisplayName = "Fecha Condicion Actual", BoxReference = "Box 14", Category = "Fechas", Description = "Fecha inicio condicion actual", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V314QUAL", DisplayName = "Qualifier Fecha 14", BoxReference = "Box 14", Category = "Fechas", Description = "431=Onset, 484=Initial Treatment" },
-            new ColumnConfigItem { ColumnName = "V315DATE", DisplayName = "Fecha Similar", BoxReference = "Box 15", Category = "Fechas", Description = "Fecha condicion similar" },
-            new ColumnConfigItem { ColumnName = "V315QUAL", DisplayName = "Qualifier Fecha 15", BoxReference = "Box 15", Category = "Fechas", Description = "Calificador fecha Box 15" },
-            new ColumnConfigItem { ColumnName = "V316DATEFR", DisplayName = "Fecha Desde Incapacidad", BoxReference = "Box 16", Category = "Fechas", Description = "Fecha desde no puede trabajar", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V316DATETO", DisplayName = "Fecha Hasta Incapacidad", BoxReference = "Box 16", Category = "Fechas", Description = "Fecha hasta no puede trabajar", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V318DATEFR", DisplayName = "Fecha Admision Hospital", BoxReference = "Box 18", Category = "Fechas", Description = "Fecha de admision" },
-            new ColumnConfigItem { ColumnName = "V318DATETO", DisplayName = "Fecha Alta Hospital", BoxReference = "Box 18", Category = "Fechas", Description = "Fecha de alta" },
-
-            // Diagnosis (V3/V4* - Box 21)
-            new ColumnConfigItem { ColumnName = "V321ICDIND", DisplayName = "Indicador ICD", BoxReference = "Box 21", Category = "Diagnosticos", Description = "9=ICD-9, 0=ICD-10", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V321DIAG", DisplayName = "Codigos Diagnostico", BoxReference = "Box 21", Category = "Diagnosticos", Description = "Codigos de diagnostico A-L", IsSelected = true },
-
-            // Amounts (V4* - Box 28-30)
-            new ColumnConfigItem { ColumnName = "V428TOTAL", DisplayName = "Total Cargos", BoxReference = "Box 28", Category = "Montos", Description = "Total de cargos", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V429AMOUNT", DisplayName = "Monto Pagado", BoxReference = "Box 29", Category = "Montos", Description = "Monto ya pagado" },
-            new ColumnConfigItem { ColumnName = "V430NUCC", DisplayName = "Balance Due NUCC", BoxReference = "Box 30", Category = "Montos", Description = "Balance pendiente" },
-
-            // Facility (V4* - Box 32)
-            new ColumnConfigItem { ColumnName = "V432ANPI", DisplayName = "NPI Facilidad", BoxReference = "Box 32a", Category = "Facilidad", Description = "NPI de la facilidad", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V432BOTHER", DisplayName = "Otro ID Facilidad", BoxReference = "Box 32b", Category = "Facilidad", Description = "Otro identificador" },
-            new ColumnConfigItem { ColumnName = "V432BQUAL", DisplayName = "Qualifier Facilidad", BoxReference = "Box 32b", Category = "Facilidad", Description = "Calificador otro ID" },
-            new ColumnConfigItem { ColumnName = "V432NAME", DisplayName = "Nombre Facilidad", BoxReference = "Box 32", Category = "Facilidad", Description = "Nombre de la facilidad" },
-            new ColumnConfigItem { ColumnName = "V432ADDRE1", DisplayName = "Direccion Facilidad", BoxReference = "Box 32", Category = "Facilidad", Description = "Direccion linea 1" },
-            new ColumnConfigItem { ColumnName = "V432CITY", DisplayName = "Ciudad Facilidad", BoxReference = "Box 32", Category = "Facilidad", Description = "Ciudad de la facilidad" },
-            new ColumnConfigItem { ColumnName = "V432STATE", DisplayName = "Estado Facilidad", BoxReference = "Box 32", Category = "Facilidad", Description = "Estado de la facilidad" },
-            new ColumnConfigItem { ColumnName = "V432ZIPCOD", DisplayName = "ZIP Facilidad", BoxReference = "Box 32", Category = "Facilidad", Description = "Codigo postal facilidad" },
-
-            // Billing Provider (V4* - Box 33)
-            new ColumnConfigItem { ColumnName = "V433ANPI", DisplayName = "NPI Facturacion", BoxReference = "Box 33a", Category = "Proveedor Facturacion", Description = "NPI del proveedor de facturacion", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V433BTAXON", DisplayName = "Taxonomy Facturacion", BoxReference = "Box 33b", Category = "Proveedor Facturacion", Description = "Codigo taxonomy" },
-            new ColumnConfigItem { ColumnName = "V433BQUAL", DisplayName = "Qualifier Facturacion", BoxReference = "Box 33b", Category = "Proveedor Facturacion", Description = "Calificador ID" },
-            new ColumnConfigItem { ColumnName = "V433NAME", DisplayName = "Nombre Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Nombre del proveedor" },
-            new ColumnConfigItem { ColumnName = "V433LASTNA", DisplayName = "Apellido Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Apellido del proveedor" },
-            new ColumnConfigItem { ColumnName = "V433ADDRE1", DisplayName = "Direccion Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Direccion linea 1" },
-            new ColumnConfigItem { ColumnName = "V433CITY", DisplayName = "Ciudad Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Ciudad del proveedor" },
-            new ColumnConfigItem { ColumnName = "V433STATE", DisplayName = "Estado Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Estado del proveedor" },
-            new ColumnConfigItem { ColumnName = "V433ZIPCOD", DisplayName = "ZIP Facturacion", BoxReference = "Box 33", Category = "Proveedor Facturacion", Description = "Codigo postal" },
-
-            // Service Lines (Box 24 - Line 1 example, V5*)
-            new ColumnConfigItem { ColumnName = "V524ADATEF", DisplayName = "L1: Fecha Desde", BoxReference = "Box 24A", Category = "Lineas de Servicio", Description = "Fecha desde linea 1", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524ADATET", DisplayName = "L1: Fecha Hasta", BoxReference = "Box 24A", Category = "Lineas de Servicio", Description = "Fecha hasta linea 1", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524BPLACE", DisplayName = "L1: Place of Service", BoxReference = "Box 24B", Category = "Lineas de Servicio", Description = "Codigo lugar de servicio", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524CEMG", DisplayName = "L1: Emergencia", BoxReference = "Box 24C", Category = "Lineas de Servicio", Description = "Indicador emergencia" },
-            new ColumnConfigItem { ColumnName = "V524DCPT", DisplayName = "L1: CPT/HCPCS", BoxReference = "Box 24D", Category = "Lineas de Servicio", Description = "Codigo de procedimiento", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524DMOD1", DisplayName = "L1: Modificador 1", BoxReference = "Box 24D", Category = "Lineas de Servicio", Description = "Primer modificador" },
-            new ColumnConfigItem { ColumnName = "V524DMOD2", DisplayName = "L1: Modificador 2", BoxReference = "Box 24D", Category = "Lineas de Servicio", Description = "Segundo modificador" },
-            new ColumnConfigItem { ColumnName = "V524DMOD3", DisplayName = "L1: Modificador 3", BoxReference = "Box 24D", Category = "Lineas de Servicio", Description = "Tercer modificador" },
-            new ColumnConfigItem { ColumnName = "V524DMOD4", DisplayName = "L1: Modificador 4", BoxReference = "Box 24D", Category = "Lineas de Servicio", Description = "Cuarto modificador" },
-            new ColumnConfigItem { ColumnName = "V524EDIAGN", DisplayName = "L1: Pointer Diagnostico", BoxReference = "Box 24E", Category = "Lineas de Servicio", Description = "Apuntador a diagnosticos", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524FCHARG", DisplayName = "L1: Cargos", BoxReference = "Box 24F", Category = "Lineas de Servicio", Description = "Monto del cargo", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524GDAYS", DisplayName = "L1: Dias/Unidades", BoxReference = "Box 24G", Category = "Lineas de Servicio", Description = "Cantidad de unidades", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524JNPI", DisplayName = "L1: Rendering NPI", BoxReference = "Box 24J", Category = "Lineas de Servicio", Description = "NPI del proveedor que rindio servicio", IsSelected = true },
-            new ColumnConfigItem { ColumnName = "V524JTAXON", DisplayName = "L1: Rendering Taxonomy", BoxReference = "Box 24J", Category = "Lineas de Servicio", Description = "Taxonomy del rendering" },
-            new ColumnConfigItem { ColumnName = "V524NDC", DisplayName = "L1: NDC Code", BoxReference = "Box 24", Category = "Lineas de Servicio", Description = "National Drug Code" },
-        ];
-
+        AllColumns = columns;
         TotalCount = AllColumns.Count;
         UpdateSelectedCount();
 
@@ -184,6 +102,498 @@ public partial class ConfigViewModel : ObservableObject
                 }
             };
         }
+    }
+
+    private static ColumnConfigItem CreateColumnConfigItem(string columnName)
+    {
+        (string category, string boxReference) = GetCategoryAndBox(columnName);
+        string displayName = GetDisplayName(columnName);
+        string description = GetDescription(columnName);
+        bool isSelected = IsDefaultSelected(columnName);
+
+        return new ColumnConfigItem
+        {
+            ColumnName = columnName,
+            DisplayName = displayName,
+            BoxReference = boxReference,
+            Category = category,
+            Description = description,
+            IsSelected = isSelected
+        };
+    }
+
+    private static (string Category, string BoxReference) GetCategoryAndBox(string columnName)
+    {
+        // Document metadata (V0*)
+        if (columnName.StartsWith("V0"))
+            return ("Documento", "N/A");
+
+        // Page number
+        if (columnName == "V1PAGINA")
+            return ("Documento", "N/A");
+
+        // Patient info Box 1-4 (V11*, V12*, V13*, V14*)
+        if (columnName.StartsWith("V11") || columnName.StartsWith("V12") ||
+            columnName.StartsWith("V13") || columnName.StartsWith("V14"))
+        {
+            string box = columnName switch
+            {
+                var n when n.StartsWith("V11A") => "Box 1a",
+                var n when n.StartsWith("V11") => "Box 1",
+                var n when n.StartsWith("V12") => "Box 2",
+                var n when n.StartsWith("V13") => "Box 3",
+                var n when n.StartsWith("V14") => "Box 4",
+                _ => "Box 1-4"
+            };
+            return ("Paciente", box);
+        }
+
+        // Patient address Box 5 (V15*)
+        if (columnName.StartsWith("V15"))
+            return ("Paciente", "Box 5");
+
+        // Patient relationship Box 6 (V16*)
+        if (columnName.StartsWith("V16"))
+            return ("Paciente", "Box 6");
+
+        // Insured address Box 7 (V17*)
+        if (columnName.StartsWith("V17"))
+            return ("Asegurado", "Box 7");
+
+        // Reserved Box 8 (V28*)
+        if (columnName.StartsWith("V28"))
+            return ("Asegurado", "Box 8");
+
+        // Other insured Box 9 (V29*)
+        if (columnName.StartsWith("V29"))
+            return ("Asegurado", "Box 9");
+
+        // Condition related Box 10 (V210*)
+        if (columnName.StartsWith("V210"))
+            return ("Condicion", "Box 10");
+
+        // Insured policy Box 11 (V211*)
+        if (columnName.StartsWith("V211"))
+            return ("Asegurado", "Box 11");
+
+        // Signatures Box 12-13 (V212*, V213*)
+        if (columnName.StartsWith("V212") || columnName.StartsWith("V213"))
+            return ("Paciente", columnName.StartsWith("V212") ? "Box 12" : "Box 13");
+
+        // Dates Box 14-16 (V314*, V315*, V316*)
+        if (columnName.StartsWith("V314") || columnName.StartsWith("V315") || columnName.StartsWith("V316"))
+        {
+            string box = columnName switch
+            {
+                var n when n.StartsWith("V314") => "Box 14",
+                var n when n.StartsWith("V315") => "Box 15",
+                var n when n.StartsWith("V316") => "Box 16",
+                _ => "Box 14-16"
+            };
+            return ("Fechas", box);
+        }
+
+        // Referring provider Box 17 (V317*)
+        if (columnName.StartsWith("V317"))
+            return ("Proveedor Referidor", "Box 17");
+
+        // Hospitalization Box 18-19 (V318*, V319*)
+        if (columnName.StartsWith("V318") || columnName.StartsWith("V319"))
+            return ("Hospitalizacion", columnName.StartsWith("V318") ? "Box 18" : "Box 19");
+
+        // Outside lab Box 20 (V320*)
+        if (columnName.StartsWith("V320"))
+            return ("Laboratorio", "Box 20");
+
+        // Diagnosis Box 21 (V321*)
+        if (columnName.StartsWith("V321"))
+            return ("Diagnosticos", "Box 21");
+
+        // Resubmission Box 22 (V322*, V422*)
+        if (columnName.StartsWith("V322") || columnName.StartsWith("V422"))
+            return ("Resubmision", "Box 22");
+
+        // Prior auth Box 23 (V423*)
+        if (columnName.StartsWith("V423"))
+            return ("Resubmision", "Box 23");
+
+        // Tax Box 25 (V425*)
+        if (columnName.StartsWith("V425"))
+            return ("Impuestos", "Box 25");
+
+        // Patient account Box 26 (V426*)
+        if (columnName.StartsWith("V426"))
+            return ("Paciente", "Box 26");
+
+        // Accept assignment Box 27 (V427*)
+        if (columnName.StartsWith("V427"))
+            return ("Montos", "Box 27");
+
+        // Amounts Box 28-30 (V428*, V429*, V430*)
+        if (columnName.StartsWith("V428") || columnName.StartsWith("V429") || columnName.StartsWith("V430"))
+        {
+            string box = columnName switch
+            {
+                var n when n.StartsWith("V428") => "Box 28",
+                var n when n.StartsWith("V429") => "Box 29",
+                var n when n.StartsWith("V430") => "Box 30",
+                _ => "Box 28-30"
+            };
+            return ("Montos", box);
+        }
+
+        // Signature Box 31 (V431*)
+        if (columnName.StartsWith("V431"))
+            return ("Proveedor Facturacion", "Box 31");
+
+        // Service facility Box 32 (V432*)
+        if (columnName.StartsWith("V432"))
+            return ("Facilidad", "Box 32");
+
+        // Billing provider Box 33 (V433*)
+        if (columnName.StartsWith("V433"))
+            return ("Proveedor Facturacion", "Box 33");
+
+        // Service lines (V5* through VW*)
+        int? lineNumber = GetServiceLineNumber(columnName);
+        if (lineNumber.HasValue)
+        {
+            string category = lineNumber.Value switch
+            {
+                >= 1 and <= 7 => "Linea 1-7",
+                >= 8 and <= 14 => "Linea 8-14",
+                >= 15 and <= 21 => "Linea 15-21",
+                >= 22 and <= 28 => "Linea 22-28",
+                _ => "Lineas de Servicio"
+            };
+            return (category, $"Box 24 L{lineNumber}");
+        }
+
+        return ("Documento", "N/A");
+    }
+
+    private static int? GetServiceLineNumber(string columnName)
+    {
+        if (string.IsNullOrEmpty(columnName) || columnName.Length < 2)
+            return null;
+
+        string prefix = columnName[..2];
+
+        return prefix switch
+        {
+            "V5" => 1,
+            "V6" => 2,
+            "V7" => 3,
+            "V8" => 4,
+            "V9" => 5,
+            "VA" => 6,
+            "VB" => 7,
+            "VC" => 8,
+            "VD" => 9,
+            "VE" => 10,
+            "VF" => 11,
+            "VG" => 12,
+            "VH" => 13,
+            "VI" => 14,
+            "VJ" => 15,
+            "VK" => 16,
+            "VL" => 17,
+            "VM" => 18,
+            "VN" => 19,
+            "VO" => 20,
+            "VP" => 21,
+            "VQ" => 22,
+            "VR" => 23,
+            "VS" => 24,
+            "VT" => 25,
+            "VU" => 26,
+            "VV" => 27,
+            "VW" => 28,
+            _ => null
+        };
+    }
+
+    private static string GetDisplayName(string columnName)
+    {
+        // Service line fields
+        int? lineNumber = GetServiceLineNumber(columnName);
+        if (lineNumber.HasValue)
+        {
+            string suffix = columnName.Length > 2 ? columnName[2..] : "";
+            string fieldName = suffix switch
+            {
+                "24ADATEF" => "Fecha Desde",
+                "24ADATET" => "Fecha Hasta",
+                "24BPLACE" => "Place of Service",
+                "24CEMG" => "Emergencia",
+                "24ABBMBB" => "ABB/MBB",
+                "24DCPT" => "CPT/HCPCS",
+                "24DMOD1" => "Modificador 1",
+                "24DMOD2" => "Modificador 2",
+                "24DMOD3" => "Modificador 3",
+                "24DMOD4" => "Modificador 4",
+                "24EDIAGN" => "Pointer Dx",
+                "24FCHARG" => "Cargos",
+                "24GDAYS" => "Dias/Unidades",
+                "24HEPSOT" => "EPSDT",
+                "24IQUAL" => "ID Qualifier",
+                "24JTAXON" => "Taxonomy",
+                "24JNPI" => "Rendering NPI",
+                "24NDCQUA" => "NDC Qualifier",
+                "24NDC" => "NDC Code",
+                "24UNITQU" => "Unit Qualifier",
+                "24UNIT" => "Unit",
+                "CHANGE" => "Change Flag",
+                _ => suffix
+            };
+            return $"L{lineNumber}: {fieldName}";
+        }
+
+        // Non-service-line fields
+        return columnName switch
+        {
+            // Document metadata
+            "V0DOCUMENT" => "Numero Documento",
+            "V0BATCHNUM" => "Numero de Batch",
+            "V0SEQUENCE" => "Secuencia",
+            "V0CURSTAGE" => "Etapa Actual",
+            "V0EXPRUNID" => "Export Run ID",
+            "V0KEYOPER" => "Operador Key",
+            "V0VFYOPER" => "Operador Verify",
+            "V0VIEWNAME" => "Nombre Vista",
+            "V0FILEPATH" => "Ruta Archivo",
+            "V0IFNAME01" => "Nombre Imagen",
+            "V0CONFIDNC" => "Confianza",
+            "V1PAGINA" => "Pagina",
+
+            // Patient info
+            "V11TYPEID" => "Tipo Cobertura",
+            "V11AZUA" => "Numero ZUA",
+            "V11AINSURE" => "ID Asegurado",
+            "V12LASTNAM" => "Apellido Paciente",
+            "V12NAME" => "Nombre Paciente",
+            "V12INITIAL" => "Inicial Paciente",
+            "V13BIRTH" => "Fecha Nacimiento",
+            "V13SEXO" => "Sexo Paciente",
+
+            // Insured Box 4
+            "V14LASTNAM" => "Apellido Asegurado",
+            "V14NAME" => "Nombre Asegurado",
+            "V14INITIAL" => "Inicial Asegurado",
+
+            // Patient address Box 5
+            "V15ADDRES1" => "Direccion 1",
+            "V15ADDRES2" => "Direccion 2",
+            "V15CITY" => "Ciudad",
+            "V15STATE" => "Estado",
+            "V15ZIPCODE" => "Codigo Postal",
+            "V15PLUS4" => "ZIP+4",
+            "V15TELEFON" => "Telefono",
+
+            // Patient relationship Box 6
+            "V16PATRELA" => "Relacion Paciente",
+
+            // Insured address Box 7
+            "V17ADDRES1" => "Dir. Asegurado 1",
+            "V17ADDRES2" => "Dir. Asegurado 2",
+            "V17CITY" => "Ciudad Asegurado",
+            "V17STATE" => "Estado Asegurado",
+            "V17ZIPCODE" => "ZIP Asegurado",
+            "V17PLUS4" => "ZIP+4 Asegurado",
+            "V17TELEFON" => "Tel. Asegurado",
+
+            // Box 8-9
+            "V28RESERVE" => "Reservado",
+            "V29LASTNAM" => "Apellido Otro Aseg.",
+            "V29NAME" => "Nombre Otro Aseg.",
+            "V29INITIAL" => "Inicial Otro Aseg.",
+            "V29APOLICY" => "Poliza Otro Aseg.",
+            "V29BRESERV" => "Reservado 9b",
+            "V29CRESERV" => "Reservado 9c",
+            "V29DINSPLA" => "Plan de Seguro",
+
+            // Box 10
+            "V210AEMPLO" => "Rel. Empleo",
+            "V210BAUTO" => "Accidente Auto",
+            "V210COTHER" => "Otro Accidente",
+            "V210STATE" => "Estado Accidente",
+            "V210DCLAIM" => "Claim Codes",
+
+            // Box 11
+            "V211INSURE" => "Poliza Asegurado",
+            "V211ABIRTH" => "Fecha Nac. Aseg.",
+            "V211ASEXO" => "Sexo Asegurado",
+            "V211BQUAL" => "Qualifier 11b",
+            "V211BOTHER" => "Otro ID 11b",
+            "V211CINSUR" => "Plan Seguro",
+            "V211DISTHE" => "Otro Seguro?",
+
+            // Box 12-13
+            "V212SIGNED" => "Firma Paciente",
+            "V212DATE" => "Fecha Firma Pac.",
+            "V213FIRMA" => "Autoriza Pago",
+
+            // Box 14-16
+            "V314DATE" => "Fecha Condicion",
+            "V314QUAL" => "Qualifier 14",
+            "V315QUAL" => "Qualifier 15",
+            "V315DATE" => "Fecha Similar",
+            "V316DATEFR" => "Incapacidad Desde",
+            "V316DATETO" => "Incapacidad Hasta",
+
+            // Box 17
+            "V317QUAL" => "Qualifier 17",
+            "V317NAME" => "Nombre Referidor",
+            "V317AQUAL" => "Qualifier 17a",
+            "V317AREFFE" => "ID Referidor",
+            "V317BNPI" => "NPI Referidor",
+
+            // Box 18-19
+            "V318DATEFR" => "Admision Desde",
+            "V318DATETO" => "Admision Hasta",
+            "V319ADD" => "Info Adicional",
+
+            // Box 20
+            "V320OUTSID" => "Lab Externo?",
+            "V320CHARGE" => "Cargo Lab",
+
+            // Box 21 - Diagnosis
+            "V321ICDIND" => "Indicador ICD",
+            "V321DIAG1" => "Diagnostico A",
+            "V321DIAG2" => "Diagnostico B",
+            "V321DIAG3" => "Diagnostico C",
+            "V321DIAG4" => "Diagnostico D",
+            "V321DIAG5" => "Diagnostico E",
+            "V321DIAG6" => "Diagnostico F",
+            "V321DIAG7" => "Diagnostico G",
+            "V321DIAG8" => "Diagnostico H",
+            "V321DIAG9" => "Diagnostico I",
+            "V321DIAG10" => "Diagnostico J",
+            "V321DIAG11" => "Diagnostico K",
+            "V321DIAG12" => "Diagnostico L",
+
+            // Box 22-23
+            "V322RESUB" => "Cod. Resubmision",
+            "V422ORIGIN" => "Claim Original",
+            "V423PRIOR" => "Auth. Previa",
+
+            // Box 25-26
+            "V425FEDTAX" => "Fed Tax ID",
+            "V425SSN" => "SSN",
+            "V425EIN" => "EIN",
+            "V426PATIEN" => "Cuenta Paciente",
+
+            // Box 27-30
+            "V427ACCEPT" => "Acepta Asignacion",
+            "V428TOTAL" => "Total Cargos",
+            "V429AMOUNT" => "Monto Pagado",
+            "V430NUCC" => "Balance NUCC",
+
+            // Box 31
+            "V431DATE" => "Fecha Firma Prov.",
+
+            // Box 32
+            "V432FACILI" => "Facilidad",
+            "V432ZIPCOD" => "ZIP Facilidad",
+            "V432PLUS4" => "ZIP+4 Facilidad",
+            "V432ANPI" => "NPI Facilidad",
+            "V432BOTHER" => "Otro ID Facilidad",
+
+            // Box 33
+            "V433ANPI" => "NPI Facturacion",
+            "V433BQUAL" => "Qualifier 33b",
+            "V433BTAXON" => "Taxonomy",
+            "V433NAME" => "Nombre Prov.",
+            "V433INITIA" => "Inicial Prov.",
+            "V433LASTNA" => "Apellido Prov.",
+            "V433ADDRE1" => "Direccion Prov.",
+            "V433ADDRE2" => "Direccion 2 Prov.",
+            "V433CITY" => "Ciudad Prov.",
+            "V433STATE" => "Estado Prov.",
+            "V433ZIPCOD" => "ZIP Prov.",
+            "V433PLUS4" => "ZIP+4 Prov.",
+
+            _ => columnName
+        };
+    }
+
+    private static string GetDescription(string columnName)
+    {
+        // Service line fields
+        int? lineNumber = GetServiceLineNumber(columnName);
+        if (lineNumber.HasValue)
+        {
+            string suffix = columnName.Length > 2 ? columnName[2..] : "";
+            string desc = suffix switch
+            {
+                "24ADATEF" => "Fecha de servicio desde",
+                "24ADATET" => "Fecha de servicio hasta",
+                "24BPLACE" => "Codigo lugar de servicio",
+                "24CEMG" => "Indicador de emergencia",
+                "24ABBMBB" => "Indicador ABB/MBB",
+                "24DCPT" => "Codigo de procedimiento",
+                "24DMOD1" => "Primer modificador",
+                "24DMOD2" => "Segundo modificador",
+                "24DMOD3" => "Tercer modificador",
+                "24DMOD4" => "Cuarto modificador",
+                "24EDIAGN" => "Apuntador a diagnosticos",
+                "24FCHARG" => "Monto del cargo",
+                "24GDAYS" => "Dias o unidades de servicio",
+                "24HEPSOT" => "EPSDT/Family Plan",
+                "24IQUAL" => "Calificador de ID",
+                "24JTAXON" => "Codigo taxonomy del rendering",
+                "24JNPI" => "NPI del rendering provider",
+                "24NDCQUA" => "Calificador NDC",
+                "24NDC" => "National Drug Code",
+                "24UNITQU" => "Calificador de unidad",
+                "24UNIT" => "Cantidad de unidad",
+                "CHANGE" => "Flag de cambio en linea",
+                _ => $"Campo de linea de servicio {lineNumber}"
+            };
+            return $"{desc} (Linea {lineNumber})";
+        }
+
+        // Default description based on column name
+        return columnName switch
+        {
+            "V0DOCUMENT" => "Identificador unico del documento",
+            "V0BATCHNUM" => "Numero del lote de procesamiento",
+            "V0SEQUENCE" => "Numero de secuencia en el batch",
+            "V0IFNAME01" => "Ruta del archivo de imagen",
+            "V11AINSURE" => "Numero de identificacion del asegurado",
+            "V13BIRTH" => "Fecha de nacimiento del paciente",
+            "V317BNPI" => "NPI del proveedor que refiere",
+            "V321ICDIND" => "9=ICD-9, 0=ICD-10",
+            "V428TOTAL" => "Total de cargos de la reclamacion",
+            "V432ANPI" => "NPI de la facilidad de servicio",
+            "V433ANPI" => "NPI del proveedor de facturacion",
+            _ => $"Campo {columnName} del formulario CMS-1500"
+        };
+    }
+
+    private static bool IsDefaultSelected(string columnName)
+    {
+        // Select important fields by default
+        HashSet<string> defaultSelected =
+        [
+            "V11AINSURE", "V13BIRTH", "V317BNPI", "V321ICDIND",
+            "V321DIAG1", "V321DIAG2", "V321DIAG3", "V321DIAG4",
+            "V428TOTAL", "V432ANPI", "V433ANPI"
+        ];
+
+        if (defaultSelected.Contains(columnName))
+            return true;
+
+        // Select key service line fields for line 1
+        int? lineNumber = GetServiceLineNumber(columnName);
+        if (lineNumber == 1)
+        {
+            string suffix = columnName.Length > 2 ? columnName[2..] : "";
+            return suffix is "24ADATEF" or "24ADATET" or "24BPLACE" or
+                   "24DCPT" or "24EDIAGN" or "24FCHARG" or "24GDAYS" or "24JNPI";
+        }
+
+        return false;
     }
 
     private void UpdateFilteredColumns()

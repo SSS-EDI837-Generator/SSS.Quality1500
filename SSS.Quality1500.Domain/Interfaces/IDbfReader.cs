@@ -15,4 +15,9 @@ public interface IDbfReader
 
     Task<Result<DataTable, string>> GetAllAsDataTableAsync(string filePath);
     DataTable ReadDbfFile(string filePath);
+
+    /// <summary>
+    /// Gets the column names from a DBF file without loading all data.
+    /// </summary>
+    List<string> GetColumnNames(string filePath);
 }

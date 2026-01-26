@@ -1,14 +1,15 @@
 namespace SSS.Quality1500.Domain.Constants;
 
 /// <summary>
-/// Constants for CMS-1500 Box 24 service lines (lines 1-25).
-/// Service lines use prefixes V5-VT for lines 1-25.
+/// Constants for CMS-1500 Box 24 service lines (lines 1-28).
+/// Service lines use prefixes V5-VW for lines 1-28.
+/// Based on actual DBF structure from SSS1503.DBF.
 /// </summary>
 public static class VdeServiceLineConstants
 {
     /// <summary>
-    /// Service line prefixes for lines 1-25.
-    /// Line 1 = V5, Line 2 = V6, ... Line 20 = VO, Line 21 = VP, ... Line 25 = VT
+    /// Service line prefixes for lines 1-28.
+    /// Line 1 = V5, Line 2 = V6, ... Line 28 = VW
     /// </summary>
     public static class Prefix
     {
@@ -37,9 +38,12 @@ public static class VdeServiceLineConstants
         public const string Line23 = "VR";
         public const string Line24 = "VS";
         public const string Line25 = "VT";
+        public const string Line26 = "VU";
+        public const string Line27 = "VV";
+        public const string Line28 = "VW";
 
         /// <summary>
-        /// Gets the prefix for a specific line number.
+        /// Gets the prefix for a specific line number (1-28).
         /// </summary>
         public static string GetPrefix(int lineNumber)
         {
@@ -70,7 +74,10 @@ public static class VdeServiceLineConstants
                 23 => Line23,
                 24 => Line24,
                 25 => Line25,
-                _ => throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be 1-25")
+                26 => Line26,
+                27 => Line27,
+                28 => Line28,
+                _ => throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be 1-28")
             };
         }
     }
@@ -92,6 +99,9 @@ public static class VdeServiceLineConstants
 
         /// <summary>Box 24C: EMG (emergency indicator)</summary>
         public const string Emergency = "24CEMG";
+
+        /// <summary>ABB/MBB indicator</summary>
+        public const string AbbMbb = "24ABBMBB";
 
         /// <summary>Box 24D: CPT/HCPCS procedure code</summary>
         public const string Cpt = "24DCPT";
@@ -123,17 +133,17 @@ public static class VdeServiceLineConstants
         /// <summary>Box 24I: ID qualifier</summary>
         public const string IdQualifier = "24IQUAL";
 
-        /// <summary>Box 24J: Rendering provider NPI</summary>
-        public const string RenderingNpi = "24JNPI";
-
         /// <summary>Box 24J: Rendering provider taxonomy</summary>
         public const string RenderingTaxonomy = "24JTAXON";
 
-        /// <summary>NDC code</summary>
-        public const string Ndc = "24NDC";
+        /// <summary>Box 24J: Rendering provider NPI</summary>
+        public const string RenderingNpi = "24JNPI";
 
         /// <summary>NDC qualifier</summary>
         public const string NdcQualifier = "24NDCQUA";
+
+        /// <summary>NDC code</summary>
+        public const string Ndc = "24NDC";
 
         /// <summary>Unit qualifier</summary>
         public const string UnitQualifier = "24UNITQU";
@@ -141,20 +151,45 @@ public static class VdeServiceLineConstants
         /// <summary>Unit</summary>
         public const string Unit = "24UNIT";
 
-        /// <summary>ABB/MBB indicator</summary>
-        public const string AbbMbb = "24ABBMBB";
+        /// <summary>Change flag for the service line</summary>
+        public const string Change = "CHANGE";
+
+        /// <summary>
+        /// Gets all service line suffixes as an array (22 suffixes per line).
+        /// </summary>
+        public static string[] GetAllSuffixes() =>
+        [
+            DateFrom, DateTo, PlaceOfService, Emergency, AbbMbb,
+            Cpt, Mod1, Mod2, Mod3, Mod4, DiagPointer, Charges, DaysUnits,
+            Epsdt, IdQualifier, RenderingTaxonomy, RenderingNpi,
+            NdcQualifier, Ndc, UnitQualifier, Unit, Change
+        ];
     }
+
+    /// <summary>
+    /// Total number of service lines in the DBF.
+    /// </summary>
+    public const int TotalServiceLines = 28;
+
+    /// <summary>
+    /// Number of columns per service line.
+    /// </summary>
+    public const int ColumnsPerLine = 22;
 
     /// <summary>
     /// Gets the full column name for a service line field.
     /// </summary>
-    /// <param name="lineNumber">Line number (1-25)</param>
+    /// <param name="lineNumber">Line number (1-28)</param>
     /// <param name="suffix">Field suffix from Suffix class</param>
     /// <returns>Full column name (e.g., "V524ADATEF" for line 1 date from)</returns>
     public static string GetColumnName(int lineNumber, string suffix)
     {
-        if (lineNumber < 1 || lineNumber > 25)
-            throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be 1-25");
+        if (lineNumber < 1 || lineNumber > 28)
+            throw new ArgumentOutOfRangeException(nameof(lineNumber), "Line number must be 1-28");
+
+        // Special case: CHANGE suffix doesn't have "24" prefix
+        if (suffix == Suffix.Change)
+            return Prefix.GetPrefix(lineNumber) + suffix;
 
         return Prefix.GetPrefix(lineNumber) + suffix;
     }

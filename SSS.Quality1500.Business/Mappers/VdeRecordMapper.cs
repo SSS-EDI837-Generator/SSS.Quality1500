@@ -76,7 +76,18 @@ public static class VdeRecordMapper
 
                 // Diagnosis - Box 21
                 V321IcdInd = GetStringValue(row, VdeConstants.V321IcdInd),
-                V321Diag = GetStringValue(row, VdeConstants.V321Diag),
+                V321Diag1 = GetStringValue(row, VdeConstants.V321Diag1),
+                V321Diag2 = GetStringValue(row, VdeConstants.V321Diag2),
+                V321Diag3 = GetStringValue(row, VdeConstants.V321Diag3),
+                V321Diag4 = GetStringValue(row, VdeConstants.V321Diag4),
+                V321Diag5 = GetStringValue(row, VdeConstants.V321Diag5),
+                V321Diag6 = GetStringValue(row, VdeConstants.V321Diag6),
+                V321Diag7 = GetStringValue(row, VdeConstants.V321Diag7),
+                V321Diag8 = GetStringValue(row, VdeConstants.V321Diag8),
+                V321Diag9 = GetStringValue(row, VdeConstants.V321Diag9),
+                V321Diag10 = GetStringValue(row, VdeConstants.V321Diag10),
+                V321Diag11 = GetStringValue(row, VdeConstants.V321Diag11),
+                V321Diag12 = GetStringValue(row, VdeConstants.V321Diag12),
 
                 // Prior authorization - Box 23
                 V423Prior = GetStringValue(row, VdeConstants.V423Prior),
@@ -97,10 +108,7 @@ public static class VdeRecordMapper
                 V431Date = GetStringValue(row, VdeConstants.V431Date),
 
                 // Service facility - Box 32
-                V432Name = GetStringValue(row, VdeConstants.V432Name),
-                V432Addre1 = GetStringValue(row, VdeConstants.V432Addre1),
-                V432City = GetStringValue(row, VdeConstants.V432City),
-                V432State = GetStringValue(row, VdeConstants.V432State),
+                V432Facili = GetStringValue(row, VdeConstants.V432Facili),
                 V432ZipCod = GetStringValue(row, VdeConstants.V432ZipCod),
                 V432Plus4 = GetStringValue(row, VdeConstants.V432Plus4),
                 V432ANpi = GetStringValue(row, VdeConstants.V432ANpi),

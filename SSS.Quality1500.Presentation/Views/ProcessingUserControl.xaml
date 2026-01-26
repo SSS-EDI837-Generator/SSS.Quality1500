@@ -8,7 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:ProcessingViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="700" d:DesignWidth="900"
+             d:DesignHeight="800" d:DesignWidth="900"
              Background="{DynamicResource MaterialDesign.Brush.Background}">
 
     <Grid Margin="16">
@@ -18,6 +18,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -25,7 +26,7 @@
             <TextBlock Text="{Binding PageTitle}"
                        Style="{StaticResource MaterialDesignHeadline4TextBlock}"
                        Foreground="{DynamicResource MaterialDesign.Brush.Primary}"/>
-            <TextBlock Text="Seleccione la carpeta y el archivo DBF para iniciar el procesamiento de claims."
+            <TextBlock Text="Seleccione la carpeta y el archivo DBF, valide la estructura y procese los claims."
                        Style="{StaticResource MaterialDesignBody1TextBlock}"
                        Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light}"
                        Margin="0,4,0,0"/>
@@ -185,8 +186,121 @@
             </Grid>
         </materialDesign:Card>
 
+        <!-- Validation Results Panel -->
+        <materialDesign:Card Grid.Row="3" Margin="0,16,0,0" Padding="16"
+                             Visibility="{Binding ShowValidationResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid>
+                <!-- Success State -->
+                <Border Padding="12"
+                        CornerRadius="4"
+                        Background="#E8F5E9"
+                        Visibility="{Binding ValidationPassed, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <materialDesign:PackIcon Kind="CheckCircle"
+                                                 Width="32" Height="32"
+                                                 Foreground="#4CAF50"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,16,0"/>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="Total Registros (Imagenes)"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                       Foreground="#666666"/>
+                            <TextBlock Text="{Binding TotalRecords}"
+                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Foreground="#2E7D32"/>
+                        </StackPanel>
+
+                        <Border Grid.Column="2"
+                                Width="1"
+                                Background="#C8E6C9"
+                                Margin="16,4"/>
+
+                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                            <TextBlock Text="Total Reclamaciones"
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                       Foreground="#666666"/>
+                            <TextBlock Text="{Binding TotalClaims}"
+                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Foreground="#1565C0"/>
+                        </StackPanel>
+
+                        <materialDesign:PackIcon Grid.Column="4"
+                                                 Kind="FileDocumentCheck"
+                                                 Width="24" Height="24"
+                                                 Foreground="#4CAF50"
+                                                 VerticalAlignment="Center"
+                                                 Margin="16,0,0,0"
+                                                 ToolTip="Base de datos validada correctamente"/>
+                    </Grid>
+                </Border>
+
+                <!-- Error State -->
+                <Border Padding="12"
+                        CornerRadius="4"
+                        Background="#FFEBEE"
+                        Visibility="{Binding ValidationPassed, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <materialDesign:PackIcon Kind="AlertCircle"
+                                                 Width="32" Height="32"
+                                                 Foreground="#D32F2F"
+                                                 VerticalAlignment="Top"
+                                                 Margin="0,0,16,0"/>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Validacion Fallida"
+                                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                       Foreground="#D32F2F"/>
+                            <TextBlock Text="{Binding ValidationErrorMessage}"
+                                       Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                       Foreground="#666666"
+                                       TextWrapping="Wrap"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- Missing Columns List -->
+                        <ItemsControl Grid.Row="1" Grid.Column="1"
+                                      ItemsSource="{Binding MissingColumns}"
+                                      Margin="0,8,0,0"
+                                      Visibility="{Binding MissingColumns.Count, Converter={StaticResource IsNotZeroToVisibilityConverter}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"
+                                               Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                               Foreground="#B71C1C"
+                                               Margin="0,2"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+
         <!-- Processing Status -->
-        <materialDesign:Card Grid.Row="3" Margin="0,16,0,0" Padding="16">
+        <materialDesign:Card Grid.Row="4" Margin="0,16,0,0" Padding="16">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -205,21 +319,35 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Progress Bar (visible during processing) -->
+                <!-- Progress Bar (visible during processing or validation) -->
                 <ProgressBar Grid.Row="1"
+                             IsIndeterminate="{Binding IsValidating}"
                              Value="{Binding ProgressValue}"
                              Minimum="0" Maximum="100"
                              Height="8"
-                             Margin="0,12,0,0"
-                             Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                             Margin="0,12,0,0">
+                    <ProgressBar.Style>
+                        <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsProcessing}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsValidating}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ProgressBar.Style>
+                </ProgressBar>
 
-                <!-- Results Panel (visible after processing) -->
+                <!-- Processing Results Panel (visible after processing) -->
                 <Border Grid.Row="2"
                         Margin="0,12,0,0"
                         Padding="12"
                         CornerRadius="4"
                         Background="{DynamicResource MaterialDesign.Brush.Primary.Light}"
-                        Visibility="{Binding ShowResults, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        Visibility="{Binding ShowProcessingResults, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -229,7 +357,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                            <TextBlock Text="Total Registros"
+                            <TextBlock Text="Total Procesados"
                                        Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                        Foreground="White"
                                        Opacity="0.8"
@@ -271,9 +399,10 @@
         </materialDesign:Card>
 
         <!-- Action Buttons -->
-        <Grid Grid.Row="4" Margin="0,16,0,0">
+        <Grid Grid.Row="5" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
@@ -286,9 +415,31 @@
                      FontWeight="Medium"/>
             </TextBlock>
 
+            <!-- Validate Button -->
             <Button Grid.Column="1"
-                    Command="{Binding ProcessFileCommand}"
+                    Command="{Binding ValidateFileCommand}"
                     IsEnabled="{Binding HasValidSelection}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,8,0"
+                    materialDesign:ButtonAssist.CornerRadius="4">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="DatabaseCheck"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,8,0"
+                                                 Visibility="{Binding IsValidating, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                        <materialDesign:PackIcon Kind="Loading"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,8,0"
+                                                 Visibility="{Binding IsValidating, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="Validar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+
+            <!-- Process Button -->
+            <Button Grid.Column="2"
+                    Command="{Binding ProcessFileCommand}"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     materialDesign:ButtonAssist.CornerRadius="4">
                 <Button.Content>
@@ -300,11 +451,7 @@
                         <materialDesign:PackIcon Kind="Loading"
                                                  VerticalAlignment="Center"
                                                  Margin="0,0,8,0"
-                                                 Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <materialDesign:PackIcon.RenderTransform>
-                                <RotateTransform x:Name="SpinnerRotate" CenterX="12" CenterY="12"/>
-                            </materialDesign:PackIcon.RenderTransform>
-                        </materialDesign:PackIcon>
+                                                 Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <TextBlock Text="Procesar Archivo" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>

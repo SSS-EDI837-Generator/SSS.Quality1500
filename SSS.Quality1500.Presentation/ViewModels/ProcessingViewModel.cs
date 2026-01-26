@@ -2,15 +2,20 @@ namespace SSS.Quality1500.Presentation.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Domain.Models;
 using System.Collections.ObjectModel;
 using System.IO;
 
 /// <summary>
 /// ViewModel for the processing view.
-/// Allows users to select a DBF file path and initiate processing.
+/// Allows users to select a DBF file, validate it, and initiate processing.
 /// </summary>
 public partial class ProcessingViewModel : ObservableObject
 {
+    private readonly IDbfValidationService? _validationService;
+
     [ObservableProperty]
     private string _pageTitle = "Procesamiento de Archivos";
 
@@ -30,6 +35,9 @@ public partial class ProcessingViewModel : ObservableObject
     private bool _isProcessing;
 
     [ObservableProperty]
+    private bool _isValidating;
+
+    [ObservableProperty]
     private int _progressValue;
 
     [ObservableProperty]
@@ -39,17 +47,51 @@ public partial class ProcessingViewModel : ObservableObject
     private bool _hasValidSelection;
 
     [ObservableProperty]
+    private bool _isValidated;
+
+    [ObservableProperty]
+    private bool _validationPassed;
+
+    [ObservableProperty]
     private int _totalRecords;
+
+    [ObservableProperty]
+    private int _totalClaims;
 
     [ObservableProperty]
     private int _recordsWithErrors;
 
     [ObservableProperty]
-    private bool _showResults;
+    private bool _showValidationResults;
 
+    [ObservableProperty]
+    private bool _showProcessingResults;
+
+    [ObservableProperty]
+    private string _validationErrorMessage = string.Empty;
+
+    [ObservableProperty]
+    private ObservableCollection<string> _missingColumns = [];
+
+    /// <summary>
+    /// Design-time constructor.
+    /// </summary>
     public ProcessingViewModel()
     {
-        // Set default path if exists
+        InitializeDefaultPath();
+    }
+
+    /// <summary>
+    /// Runtime constructor with DI.
+    /// </summary>
+    public ProcessingViewModel(IDbfValidationService validationService)
+    {
+        _validationService = validationService;
+        InitializeDefaultPath();
+    }
+
+    private void InitializeDefaultPath()
+    {
         string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Base Datos");
         if (Directory.Exists(defaultPath))
         {
@@ -61,12 +103,26 @@ public partial class ProcessingViewModel : ObservableObject
     partial void OnSelectedPathChanged(string value)
     {
         LoadAvailableFiles();
+        ResetValidation();
         ValidateSelection();
     }
 
     partial void OnSelectedFileChanged(DbfFileInfo? value)
     {
+        ResetValidation();
         ValidateSelection();
+    }
+
+    private void ResetValidation()
+    {
+        IsValidated = false;
+        ValidationPassed = false;
+        ShowValidationResults = false;
+        ShowProcessingResults = false;
+        TotalRecords = 0;
+        TotalClaims = 0;
+        ValidationErrorMessage = string.Empty;
+        MissingColumns.Clear();
     }
 
     private void LoadAvailableFiles()
@@ -127,7 +183,6 @@ public partial class ProcessingViewModel : ObservableObject
     [RelayCommand]
     private void BrowseFolder()
     {
-        // Using Microsoft.Win32.OpenFolderDialog (available in .NET 8+)
         Microsoft.Win32.OpenFolderDialog dialog = new()
         {
             Title = "Seleccionar carpeta con archivos DBF",
@@ -143,6 +198,72 @@ public partial class ProcessingViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ValidateFileAsync()
+    {
+        if (SelectedFile == null || _validationService == null)
+            return;
+
+        IsValidating = true;
+        ResetValidation();
+        StatusMessage = $"Validando {SelectedFile.FileName}...";
+
+        try
+        {
+            Result<DbfValidationResult, string> result = await _validationService.ValidateDbfFileAsync(SelectedFile.FullPath);
+
+            if (!result.IsSuccess)
+            {
+                ValidationPassed = false;
+                ValidationErrorMessage = result.GetErrorOrDefault() ?? "Error desconocido durante la validación.";
+                StatusMessage = $"Error: {ValidationErrorMessage}";
+                IsValidated = true;
+                ShowValidationResults = true;
+                return;
+            }
+
+            DbfValidationResult validationResult = result.GetValueOrDefault()!;
+
+            if (!validationResult.IsValid)
+            {
+                ValidationPassed = false;
+                ValidationErrorMessage = validationResult.ErrorMessage ?? "El archivo DBF no es válido.";
+                MissingColumns = new ObservableCollection<string>(validationResult.MissingColumns.Take(20));
+                StatusMessage = $"Validación fallida: {validationResult.MissingColumns.Count} columnas faltantes.";
+
+                // Write actual columns to file for debugging
+                if (validationResult.ActualColumns.Count > 0)
+                {
+                    string debugPath = Path.Combine(SelectedPath, "dbf_columns_debug.txt");
+                    File.WriteAllLines(debugPath, validationResult.ActualColumns);
+                    System.Diagnostics.Debug.WriteLine($"Columnas del DBF escritas en: {debugPath}");
+                }
+            }
+            else
+            {
+                ValidationPassed = true;
+                TotalRecords = validationResult.TotalRecords;
+                TotalClaims = validationResult.TotalClaims;
+                StatusMessage = $"Validación exitosa. {TotalRecords} registros, {TotalClaims} reclamaciones.";
+            }
+
+            IsValidated = true;
+            ShowValidationResults = true;
+        }
+        catch (Exception ex)
+        {
+            ValidationPassed = false;
+            ValidationErrorMessage = $"Error durante la validación: {ex.Message}";
+            StatusMessage = ValidationErrorMessage;
+            IsValidated = true;
+            ShowValidationResults = true;
+        }
+        finally
+        {
+            IsValidating = false;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanProcessFile))]
     private async Task ProcessFileAsync()
     {
         if (SelectedFile == null)
@@ -150,7 +271,7 @@ public partial class ProcessingViewModel : ObservableObject
 
         IsProcessing = true;
         ProgressValue = 0;
-        ShowResults = false;
+        ShowProcessingResults = false;
         StatusMessage = $"Procesando {SelectedFile.FileName}...";
 
         try
@@ -163,9 +284,8 @@ public partial class ProcessingViewModel : ObservableObject
             }
 
             // Simulated results - replace with actual validation results
-            TotalRecords = 14;
             RecordsWithErrors = 3;
-            ShowResults = true;
+            ShowProcessingResults = true;
             StatusMessage = $"Procesamiento completado. {RecordsWithErrors} registros con errores de {TotalRecords} totales.";
         }
         catch (Exception ex)
@@ -178,6 +298,12 @@ public partial class ProcessingViewModel : ObservableObject
         }
     }
 
+    private bool CanProcessFile() => HasValidSelection && ValidationPassed && !IsProcessing;
+
+    partial void OnHasValidSelectionChanged(bool value) => ProcessFileCommand.NotifyCanExecuteChanged();
+    partial void OnValidationPassedChanged(bool value) => ProcessFileCommand.NotifyCanExecuteChanged();
+    partial void OnIsProcessingChanged(bool value) => ProcessFileCommand.NotifyCanExecuteChanged();
+
     [RelayCommand]
     private void ViewErrors()
     {
@@ -189,6 +315,7 @@ public partial class ProcessingViewModel : ObservableObject
     private void RefreshFiles()
     {
         LoadAvailableFiles();
+        ResetValidation();
     }
 }
 

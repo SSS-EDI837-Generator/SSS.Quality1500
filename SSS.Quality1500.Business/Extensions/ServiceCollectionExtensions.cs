@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SSS.Quality1500.Data.Extensions;
+using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Services;
 using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Domain.Interfaces;
@@ -17,8 +18,13 @@ public static class ServiceCollectionExtensions
         // Primero registrar los servicios de la capa Data
         services.AddDataServices(configuration);
 
+        // Registrar configuración de validación DBF
+        services.Configure<DbfValidationSettings>(
+            configuration.GetSection(DbfValidationSettings.SectionName));
+
         // Registrar servicios de Business
         services.AddTransient<IVdeRecordService, VdeRecordService>();
+        services.AddTransient<IDbfValidationService, DbfValidationService>();
 
         // Registrar LoggerInitializer como Singleton
         // Nota: Si ya existe una instancia en App.xaml.cs, se puede reutilizar

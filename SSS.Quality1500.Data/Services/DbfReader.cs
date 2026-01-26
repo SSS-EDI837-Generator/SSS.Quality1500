@@ -92,4 +92,20 @@ public class DbfReader : IDbfReader
 
         return dataTable;
     }
+
+    public List<string> GetColumnNames(string filePath)
+    {
+        if (!File.Exists(filePath))
+            return [];
+
+        try
+        {
+            using Table table = DbfConnection(filePath);
+            return table.Columns.Select(c => c.Name).ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
 }

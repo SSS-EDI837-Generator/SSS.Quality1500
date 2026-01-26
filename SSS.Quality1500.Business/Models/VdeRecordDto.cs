@@ -97,8 +97,41 @@ public class VdeRecordDto
     /// <summary>Box 21: ICD indicator (9=ICD-9, 0=ICD-10)</summary>
     public string? V321IcdInd { get; set; }
 
-    /// <summary>Box 21: Diagnosis codes A-L</summary>
-    public string? V321Diag { get; set; }
+    /// <summary>Box 21A: Diagnosis code A</summary>
+    public string? V321Diag1 { get; set; }
+
+    /// <summary>Box 21B: Diagnosis code B</summary>
+    public string? V321Diag2 { get; set; }
+
+    /// <summary>Box 21C: Diagnosis code C</summary>
+    public string? V321Diag3 { get; set; }
+
+    /// <summary>Box 21D: Diagnosis code D</summary>
+    public string? V321Diag4 { get; set; }
+
+    /// <summary>Box 21E: Diagnosis code E</summary>
+    public string? V321Diag5 { get; set; }
+
+    /// <summary>Box 21F: Diagnosis code F</summary>
+    public string? V321Diag6 { get; set; }
+
+    /// <summary>Box 21G: Diagnosis code G</summary>
+    public string? V321Diag7 { get; set; }
+
+    /// <summary>Box 21H: Diagnosis code H</summary>
+    public string? V321Diag8 { get; set; }
+
+    /// <summary>Box 21I: Diagnosis code I</summary>
+    public string? V321Diag9 { get; set; }
+
+    /// <summary>Box 21J: Diagnosis code J</summary>
+    public string? V321Diag10 { get; set; }
+
+    /// <summary>Box 21K: Diagnosis code K</summary>
+    public string? V321Diag11 { get; set; }
+
+    /// <summary>Box 21L: Diagnosis code L</summary>
+    public string? V321Diag12 { get; set; }
 
     #endregion
 
@@ -139,10 +172,9 @@ public class VdeRecordDto
 
     #region Service Facility - Box 32
 
-    public string? V432Name { get; set; }
-    public string? V432Addre1 { get; set; }
-    public string? V432City { get; set; }
-    public string? V432State { get; set; }
+    /// <summary>Box 32: Service facility name/address</summary>
+    public string? V432Facili { get; set; }
+
     public string? V432ZipCod { get; set; }
     public string? V432Plus4 { get; set; }
 

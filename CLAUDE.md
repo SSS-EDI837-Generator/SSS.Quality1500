@@ -63,6 +63,11 @@ Common ← Domain ← Data ← Business ← Presentation
    - Each layer has `Extensions/ServiceCollectionExtensions.cs`
    - Chain: `AddCommonServices()` → `AddDataServices(config)` → `AddBusinessServices(config)` → `AddPresentationServices(config)`
 
+5. **No Redundant Transitive References**
+   - Each project should only reference its **immediate dependency**, not transitive ones
+   - .NET propagates dependencies automatically through the chain
+   - This keeps `.csproj` files clean and the dependency graph explicit
+
 ## MVVM Implementation
 
 ### Required Patterns
@@ -217,15 +222,79 @@ using SSS.Quality1500.Data.Services;
 namespace SSS.Quality1500.Domain.Constants; // ✅ CORRECT
 ```
 
+### No Redundant Transitive References (ProjectReference)
+
+Each `.csproj` must only reference its **immediate dependency**. Types from deeper layers are available transitively.
+
+**Dependency Chain:**
+```
+Presentation → Business → Data → Domain
+                                    ↑
+                    available transitively to all
+```
+
+**❌ WRONG - Redundant references in .csproj:**
+```xml
+<!-- Presentation.csproj - WRONG -->
+<ItemGroup>
+  <ProjectReference Include="..\Business\Business.csproj" />
+  <ProjectReference Include="..\Domain\Domain.csproj" />  <!-- ❌ REDUNDANT -->
+</ItemGroup>
+
+<!-- Business.csproj - WRONG -->
+<ItemGroup>
+  <ProjectReference Include="..\Data\Data.csproj" />
+  <ProjectReference Include="..\Domain\Domain.csproj" />  <!-- ❌ REDUNDANT -->
+</ItemGroup>
+```
+
+**✅ CORRECT - Only immediate dependencies:**
+```xml
+<!-- Presentation.csproj - CORRECT -->
+<ItemGroup>
+  <ProjectReference Include="..\Business\Business.csproj" />
+  <!-- Domain types available via Business → Data → Domain -->
+</ItemGroup>
+
+<!-- Business.csproj - CORRECT -->
+<ItemGroup>
+  <ProjectReference Include="..\Data\Data.csproj" />
+  <!-- Domain types available via Data → Domain -->
+</ItemGroup>
+
+<!-- Data.csproj - CORRECT (references Domain directly as immediate dependency) -->
+<ItemGroup>
+  <ProjectReference Include="..\Domain\Domain.csproj" />
+  <ProjectReference Include="..\Common\Common.csproj" />
+</ItemGroup>
+```
+
+**Current valid ProjectReferences:**
+
+| Project | Direct References | Gets Transitively |
+|---------|-------------------|-------------------|
+| Domain | (none) | - |
+| Common | (none) | - |
+| Data | Domain, Common | - |
+| Business | Data | Domain, Common |
+| Presentation | Business | Data, Domain, Common |
+
 ### Verification Checklist
 
 Before committing code, verify:
-- [ ] `.csproj` files only reference allowed layers
+- [ ] `.csproj` files only reference **immediate** dependencies (no transitive redundancy)
 - [ ] `using` statements follow dependency rules
 - [ ] Namespaces match physical folder structure
 - [ ] Domain has NO dependencies on other project layers
 - [ ] Common has NO dependencies on other project layers
 - [ ] `dotnet build` succeeds with 0 warnings
+
+**Quick .csproj reference check:**
+- `Presentation.csproj` → only `Business`
+- `Business.csproj` → only `Data`
+- `Data.csproj` → `Domain` + `Common`
+- `Domain.csproj` → (none)
+- `Common.csproj` → (none)
 
 ### Template Design Note
 

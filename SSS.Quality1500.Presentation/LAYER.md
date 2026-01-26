@@ -3,11 +3,19 @@
 ## Proposito
 **Interfaz de usuario** implementada con WPF siguiendo el patron MVVM estricto (sin code-behind).
 
-## Dependencias
-- Depende de **Business** (casos de uso)
-- Depende de **Domain** (entidades para binding)
-- Depende de **Common** (utilidades)
-- Usa CommunityToolkit.Mvvm, MaterialDesignThemes, Behaviors
+## Dependencias (Onion Architecture)
+
+**Referencia directa en .csproj:**
+- **Business** (unica referencia directa)
+
+**Disponibles transitivamente via Business → Data → Domain:**
+- **Domain** (entidades, Result<T,E>, constantes)
+- **Common** (utilidades)
+
+**Paquetes NuGet:**
+- CommunityToolkit.Mvvm, MaterialDesignThemes, Behaviors
+
+> **Regla:** No agregar ProjectReference a Domain ni Common. Los tipos llegan transitivamente.
 
 ## Estructura de Carpetas
 

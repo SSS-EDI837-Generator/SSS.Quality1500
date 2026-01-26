@@ -3,11 +3,20 @@
 ## Proposito
 **Implementacion de acceso a datos**. Contiene las implementaciones concretas de los contratos definidos en Domain (repositorios, lectores de archivos, etc.).
 
-## Dependencias
-- Depende de **Domain** (implementa sus contratos/interfaces)
-- Depende de **Common** (utilidades transversales)
-- **NO** depende de Business ni Presentation
-- **SI** puede usar frameworks externos (EF Core, NDbfReader, etc.)
+## Dependencias (Onion Architecture)
+
+**Referencias directas en .csproj:**
+- **Domain** (implementa sus contratos/interfaces)
+- **Common** (utilidades transversales)
+
+**NO depende de:**
+- Business
+- Presentation
+
+**Paquetes NuGet:**
+- NDbfReader, EF Core (frameworks de infraestructura)
+
+> **Nota:** Data es la capa que conecta con el nucleo (Domain). Las capas externas (Business, Presentation) obtienen Domain transitivamente a traves de Data.
 
 ## Estructura de Carpetas
 

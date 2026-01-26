@@ -3,11 +3,19 @@
 ## Proposito
 **Orquestacion y casos de uso**. Coordina las entidades del Domain con las implementaciones de Data para ejecutar flujos de negocio completos.
 
-## Dependencias
-- Depende de **Domain** (entidades, contratos)
-- Depende de **Data** (implementaciones de repositorios)
-- Depende de **Common** (utilidades transversales)
-- **NO** depende de Presentation
+## Dependencias (Onion Architecture)
+
+**Referencia directa en .csproj:**
+- **Data** (unica referencia directa)
+
+**Disponibles transitivamente via Data → Domain/Common:**
+- **Domain** (entidades, contratos, Result<T,E>)
+- **Common** (utilidades transversales)
+
+**NO depende de:**
+- Presentation
+
+> **Regla:** No agregar ProjectReference a Domain ni Common. Los tipos llegan transitivamente via Data.
 
 ## Estructura de Carpetas
 

@@ -2,12 +2,12 @@
 
 ## 📋 Descripción
 
-Esta carpeta contiene documentación **complementaria** para el proyecto SSS.Quality1500, diseñada para integrarse con la arquitectura Clean Architecture existente documentada en `CLAUDE.md`.
+Esta carpeta contiene documentación **complementaria** para el proyecto SSS.Quality1500, diseñada para integrarse con la Onion Architecture existente documentada en `CLAUDE.md`.
 
 ## 🎯 Diferencia con la Documentación Existente
 
 ### Ya existe en tu repo:
-- ✅ `CLAUDE.md` - Guía completa de arquitectura Clean Architecture
+- ✅ `CLAUDE.md` - Guía completa de Onion Architecture
 - ✅ `LAYER.md` en cada capa - Documentación específica por capa
 - ✅ `README.md` - Overview del proyecto
 
@@ -35,7 +35,7 @@ Esta carpeta contiene documentación **complementaria** para el proyecto SSS.Qua
 - Al mapear datos de .dbf a modelos
 
 ### 2. VALIDATION_RULES.md
-**Propósito:** Especificación de reglas de validación adaptadas a Clean Architecture
+**Propósito:** Especificación de reglas de validación adaptadas a Onion Architecture
 
 **Contenido:**
 - Contratos de Domain (`IValidationRule`, `IValidator`)
@@ -123,8 +123,8 @@ Para contexto específico de healthcare y validaciones, consulta los documentos 
 
 4. Custom Instructions:
 ```
-Soy el desarrollador principal de SSS.Quality1500, una aplicación WPF 
-con Clean Architecture para verificación de calidad de CMS-1500 forms.
+Soy el desarrollador principal de SSS.Quality1500, una aplicación WPF
+con Onion Architecture para verificación de calidad de CMS-1500 forms.
 
 Arquitectura:
 - 5 capas: Common ← Domain ← Data ← Business ← Presentation

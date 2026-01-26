@@ -1,19 +1,35 @@
 ﻿# SSS.Quality1500
 
 ## Arquitectura
-Este proyecto sigue **Clean Architecture** con 5 capas:
+Este proyecto sigue **Onion Architecture** (Clean Architecture) con 5 capas:
 
 ```
-Common <- Domain <- Data <- Business <- Presentation
+        ┌─────────────────────────────────────┐
+        │          PRESENTATION               │
+        │  ┌───────────────────────────────┐  │
+        │  │          BUSINESS             │  │
+        │  │  ┌─────────────────────────┐  │  │
+        │  │  │          DATA           │  │  │
+        │  │  │  ┌───────────────────┐  │  │  │
+        │  │  │  │      DOMAIN       │  │  │  │  ← Nucleo (sin deps)
+        │  │  │  └───────────────────┘  │  │  │
+        │  │  └─────────────────────────┘  │  │
+        │  └───────────────────────────────┘  │
+        └─────────────────────────────────────┘
 ```
 
-| Capa | Proposito |
-|------|----------|
-| **Domain** | Entidades, reglas de negocio, contratos (interfaces), `Result<T,E>` |
-| **Business** | Casos de uso, orquestacion, LoggerInitializer |
-| **Data** | Implementacion de acceso a datos (DBF, SQL, etc.) |
-| **Common** | Utilidades transversales (EnvironmentProvider, Version, LazyService) |
-| **Presentation** | UI con WPF + MVVM estricto |
+**Cadena de dependencias (solo inmediatas):**
+```
+Presentation → Business → Data → Domain ← Common
+```
+
+| Capa | Proposito | Referencia Directa |
+|------|----------|-------------------|
+| **Domain** | Entidades, contratos, `Result<T,E>` | (ninguna) |
+| **Common** | Utilidades transversales | (ninguna) |
+| **Data** | Implementacion de acceso a datos | Domain, Common |
+| **Business** | Casos de uso, orquestacion | Data |
+| **Presentation** | UI con WPF + MVVM | Business |
 
 Cada capa tiene un archivo `LAYER.md` con documentacion detallada.
 

@@ -2,6 +2,7 @@ namespace SSS.Quality1500.Presentation.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Domain.Models;
@@ -23,7 +24,13 @@ public partial class ProcessingViewModel : ObservableObject
     private string _selectedPath = string.Empty;
 
     [ObservableProperty]
+    private string _selectedImagesPath = string.Empty;
+
+    [ObservableProperty]
     private string _selectedFileName = string.Empty;
+
+    [ObservableProperty]
+    private int _totalImages;
 
     [ObservableProperty]
     private ObservableCollection<DbfFileInfo> _availableFiles = [];
@@ -72,6 +79,11 @@ public partial class ProcessingViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<string> _missingColumns = [];
+
+    /// <summary>
+    /// Cola de mensajes para el Snackbar de MaterialDesign.
+    /// </summary>
+    public SnackbarMessageQueue MessageQueue { get; } = new(TimeSpan.FromSeconds(4));
 
     /// <summary>
     /// Design-time constructor.
@@ -162,6 +174,8 @@ public partial class ProcessingViewModel : ObservableObject
     {
         HasValidSelection = !string.IsNullOrEmpty(SelectedPath) &&
                            Directory.Exists(SelectedPath) &&
+                           !string.IsNullOrEmpty(SelectedImagesPath) &&
+                           Directory.Exists(SelectedImagesPath) &&
                            SelectedFile != null;
     }
 
@@ -195,6 +209,47 @@ public partial class ProcessingViewModel : ObservableObject
         {
             SelectedPath = dialog.FolderName;
         }
+    }
+
+    [RelayCommand]
+    private void BrowseImagesFolder()
+    {
+        Microsoft.Win32.OpenFolderDialog dialog = new()
+        {
+            Title = "Seleccionar carpeta con imagenes TIF",
+            InitialDirectory = string.IsNullOrEmpty(SelectedImagesPath)
+                ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                : SelectedImagesPath
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            SelectedImagesPath = dialog.FolderName;
+            CountTifImages();
+        }
+    }
+
+    private void CountTifImages()
+    {
+        TotalImages = 0;
+
+        if (string.IsNullOrEmpty(SelectedImagesPath) || !Directory.Exists(SelectedImagesPath))
+            return;
+
+        try
+        {
+            TotalImages = Directory.GetFiles(SelectedImagesPath, "*.tif", SearchOption.TopDirectoryOnly).Length;
+        }
+        catch (Exception ex)
+        {
+            MessageQueue.Enqueue($"Error al contar imagenes: {ex.Message}");
+        }
+    }
+
+    partial void OnSelectedImagesPathChanged(string value)
+    {
+        CountTifImages();
+        ValidateSelection();
     }
 
     [RelayCommand]
@@ -240,10 +295,22 @@ public partial class ProcessingViewModel : ObservableObject
             }
             else
             {
-                ValidationPassed = true;
                 TotalRecords = validationResult.TotalRecords;
                 TotalClaims = validationResult.TotalClaims;
-                StatusMessage = $"Validación exitosa. {TotalRecords} registros, {TotalClaims} reclamaciones.";
+
+                // Validar que total de registros coincida con total de imagenes
+                if (TotalRecords != TotalImages)
+                {
+                    ValidationPassed = false;
+                    ValidationErrorMessage = $"El total de registros ({TotalRecords}) no coincide con el total de imagenes TIF ({TotalImages}).";
+                    MessageQueue.Enqueue(ValidationErrorMessage);
+                    StatusMessage = "Validacion fallida: discrepancia entre registros e imagenes.";
+                }
+                else
+                {
+                    ValidationPassed = true;
+                    StatusMessage = $"Validacion exitosa. {TotalRecords} registros, {TotalClaims} reclamaciones, {TotalImages} imagenes.";
+                }
             }
 
             IsValidated = true;

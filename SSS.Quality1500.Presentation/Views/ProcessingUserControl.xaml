@@ -11,7 +11,9 @@
              d:DesignHeight="800" d:DesignWidth="900"
              Background="{DynamicResource MaterialDesign.Brush.Background}">
 
-    <Grid Margin="16">
+    <Grid>
+        <!-- Main Content -->
+        <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -38,6 +40,9 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -45,6 +50,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <!-- Carpeta Base de Datos -->
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
                            Text="Carpeta de Base de Datos:"
                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
@@ -73,6 +79,39 @@
                         Style="{StaticResource MaterialDesignOutlinedButton}"
                         ToolTip="Actualizar lista de archivos">
                     <materialDesign:PackIcon Kind="Refresh"/>
+                </Button>
+
+                <!-- Carpeta Imagenes -->
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="2"
+                           Text="Carpeta de Imagenes:"
+                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                           Margin="0,0,0,8"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="2"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Foreground="{DynamicResource MaterialDesign.Brush.Primary}">
+                    <Run Text="{Binding TotalImages, Mode=OneWay}"/>
+                    <Run Text=" archivos TIF"/>
+                </TextBlock>
+
+                <TextBox Grid.Row="4" Grid.Column="0"
+                         Text="{Binding SelectedImagesPath, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Ruta de las imagenes..."
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         IsReadOnly="True"
+                         Margin="0,0,8,0"/>
+
+                <Button Grid.Row="4" Grid.Column="1"
+                        Command="{Binding BrowseImagesFolderCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        ToolTip="Seleccionar carpeta de imagenes"
+                        Margin="0,0,8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FolderImage" VerticalAlignment="Center"/>
+                        <TextBlock Text="Examinar" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
             </Grid>
         </materialDesign:Card>
@@ -457,5 +496,12 @@
                 </Button.Content>
             </Button>
         </Grid>
+        </Grid>
+
+        <!-- Snackbar para notificaciones -->
+        <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Bottom"
+                                 Margin="0,0,0,16"/>
     </Grid>
 </UserControl>

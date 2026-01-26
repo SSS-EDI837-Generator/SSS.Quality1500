@@ -24,12 +24,30 @@ dotnet run --project SSS.Quality1500.Presentation
 dotnet clean
 ```
 
-## Architecture: Clean Architecture with 5 Layers
+## Architecture: Onion Architecture with 5 Layers
 
-The codebase follows a strict dependency flow from inner to outer layers:
+The codebase follows **Onion Architecture** (also known as Clean Architecture / Hexagonal Architecture). Dependencies always point **inward** toward the core (Domain).
 
 ```
-Common ← Domain ← Data ← Business ← Presentation
+        ┌─────────────────────────────────────┐
+        │          PRESENTATION               │  ← Outer layer (UI)
+        │  ┌───────────────────────────────┐  │
+        │  │          BUSINESS             │  │  ← Application/Use Cases
+        │  │  ┌─────────────────────────┐  │  │
+        │  │  │          DATA           │  │  │  ← Infrastructure
+        │  │  │  ┌───────────────────┐  │  │  │
+        │  │  │  │      DOMAIN       │  │  │  │  ← Core (no dependencies)
+        │  │  │  └───────────────────┘  │  │  │
+        │  │  └─────────────────────────┘  │  │
+        │  └───────────────────────────────┘  │
+        └─────────────────────────────────────┘
+
+        Dependencies → always point inward
+```
+
+**Dependency Chain:**
+```
+Presentation → Business → Data → Domain ← Common
 ```
 
 ### Layer Responsibilities
@@ -141,7 +159,7 @@ public partial class ExampleViewModel : ObservableObject
 | **Business** | Domain, Data, Common | Presentation | `SSS.Quality1500.Business.*` |
 | **Presentation** | Domain, Business, Common | Data (use Business instead) | `SSS.Quality1500.Presentation.*` |
 
-### Dependency Flow Diagram
+### Dependency Flow Diagram (Onion Architecture)
 
 ```
 ┌─────────────┐         ┌─────────────┐
@@ -150,6 +168,7 @@ public partial class ExampleViewModel : ObservableObject
 │ - Version   │         │ - Result<T> │
 │ - EnvProvider│        │ - Entities  │
 │ - LazyService│        │ - Contracts │
+│ (no deps)   │         │ (no deps)   │
 └─────────────┘         └─────────────┘
        ↑                       ↑
        │                       │
@@ -178,7 +197,18 @@ public partial class ExampleViewModel : ObservableObject
           │ - ViewModels  │
           │ - Views       │
           └───────────────┘
+
+    ↑ = dependency direction (always toward center)
 ```
+
+### Onion Architecture Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Domain at center** | Domain has 0 ProjectReferences |
+| **Dependencies inward** | Outer layers depend on inner layers only |
+| **Dependency inversion** | Domain defines interfaces, Data implements |
+| **Transitive flow** | Each layer only references its immediate inner layer |
 
 ### Critical Violations to Avoid
 

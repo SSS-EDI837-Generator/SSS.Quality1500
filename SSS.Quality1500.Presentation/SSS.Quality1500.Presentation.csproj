@@ -30,11 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    
     <ProjectReference Include="..\SSS.Quality1500.Business\SSS.Quality1500.Business.csproj" />
-    
-  
-    
+    <ProjectReference Include="..\SSS.Quality1500.Data\SSS.Quality1500.Data.csproj" />
   </ItemGroup>
 
 </Project>

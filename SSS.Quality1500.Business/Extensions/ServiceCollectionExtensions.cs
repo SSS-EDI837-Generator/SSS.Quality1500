@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using SSS.Quality1500.Data.Extensions;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Commands.ProcessClaims;
 using SSS.Quality1500.Business.Queries.GetVdeRecords;
@@ -16,15 +15,14 @@ using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 
 /// <summary>
-/// Extensiones para configurar los servicios de la capa Business
+/// Extensiones para configurar los servicios de la capa Business.
+/// NOTA: Esta capa solo depende de Domain. No registra servicios de Data.
+/// Los servicios de Data se registran en Presentation (Composition Root).
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBusinessServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Primero registrar los servicios de la capa Data
-        services.AddDataServices(configuration);
-
         // Registrar configuración de validación DBF
         services.Configure<DbfValidationSettings>(
             configuration.GetSection(DbfValidationSettings.SectionName));

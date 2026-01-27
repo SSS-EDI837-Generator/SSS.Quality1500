@@ -7,6 +7,7 @@ using Serilog;
 using SSS.Quality1500.Business.Extensions;
 using SSS.Quality1500.Business.Services;
 using SSS.Quality1500.Common.Services;
+using SSS.Quality1500.Data.Extensions;
 using SSS.Quality1500.Common.Extensions;
 using SSS.Quality1500.Presentation.Interfaces;
 using SSS.Quality1500.Presentation.Services;
@@ -188,16 +189,21 @@ public static class ServiceCollectionExtensions
     #region Complete Configuration Extensions
 
     /// <summary>
-    /// Configura todos los servicios de la capa Presentation
-    /// Principio Facade: Proporciona interfaz simplificada para configuración completa
+    /// Configura todos los servicios de la capa Presentation.
+    /// Como Composition Root, registra servicios de todas las capas.
+    /// Orden de registro: Data → Business → Common → Presentation
     /// </summary>
     public static IServiceCollection AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddLoggingServices();
         services.AddLogCaptureServices(); // Agregar después del logging básico
         services.AddCoreServices(configuration);
-        services.AddBusinessServices(configuration);
+
+        // Composition Root: registrar capas en orden de dependencia
+        services.AddDataServices(configuration);    // Data implementa interfaces de Domain
+        services.AddBusinessServices(configuration); // Business usa interfaces de Domain
         services.AddCommonServices();
+
         services.AddInfrastructureServices();
         services.AddUIServices();
 

@@ -4,7 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using SSS.Quality1500.Business.Models;
-using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Business.Queries.ValidateDbf;
+using SSS.Quality1500.Domain.CQRS;
 using SSS.Quality1500.Domain.Models;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,7 +16,7 @@ using System.IO;
 /// </summary>
 public partial class ProcessingViewModel : ObservableObject
 {
-    private readonly IDbfValidationService? _validationService;
+    private readonly IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>? _validateDbfHandler;
 
     [ObservableProperty]
     private string _pageTitle = "Procesamiento de Archivos";
@@ -96,9 +97,9 @@ public partial class ProcessingViewModel : ObservableObject
     /// <summary>
     /// Runtime constructor with DI.
     /// </summary>
-    public ProcessingViewModel(IDbfValidationService validationService)
+    public ProcessingViewModel(IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>> validateDbfHandler)
     {
-        _validationService = validationService;
+        _validateDbfHandler = validateDbfHandler;
         InitializeDefaultPath();
     }
 
@@ -255,7 +256,7 @@ public partial class ProcessingViewModel : ObservableObject
     [RelayCommand]
     private async Task ValidateFileAsync()
     {
-        if (SelectedFile == null || _validationService == null)
+        if (SelectedFile == null || _validateDbfHandler == null)
             return;
 
         IsValidating = true;
@@ -264,7 +265,8 @@ public partial class ProcessingViewModel : ObservableObject
 
         try
         {
-            Result<DbfValidationResult, string> result = await _validationService.ValidateDbfFileAsync(SelectedFile.FullPath);
+            ValidateDbfQuery query = new(SelectedFile.FullPath);
+            Result<DbfValidationResult, string> result = await _validateDbfHandler.HandleAsync(query);
 
             if (!result.IsSuccess)
             {

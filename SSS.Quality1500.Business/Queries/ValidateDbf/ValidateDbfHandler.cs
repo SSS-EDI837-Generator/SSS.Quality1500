@@ -1,34 +1,35 @@
-namespace SSS.Quality1500.Business.Services;
+namespace SSS.Quality1500.Business.Queries.ValidateDbf;
 
 using Microsoft.Extensions.Options;
 using SSS.Quality1500.Business.Models;
-using SSS.Quality1500.Business.Services.Interfaces;
 using SSS.Quality1500.Domain.Constants;
+using SSS.Quality1500.Domain.CQRS;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 using System.Data;
 
 /// <summary>
-/// Service for validating DBF files against the expected VDE schema.
+/// Handler for validating DBF files against the expected VDE schema.
 /// </summary>
-public class DbfValidationService(
+public class ValidateDbfHandler(
     IDbfReader dbfReader,
-    IOptions<DbfValidationSettings> settings) : IDbfValidationService
+    IOptions<DbfValidationSettings> settings) : IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>
 {
     private readonly IDbfReader _dbfReader = dbfReader;
     private readonly DbfValidationSettings _settings = settings.Value;
 
-    public async Task<Result<DbfValidationResult, string>> ValidateDbfFileAsync(string filePath)
+    public async Task<Result<DbfValidationResult, string>> HandleAsync(
+        ValidateDbfQuery query, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
+        if (string.IsNullOrWhiteSpace(query.FilePath))
             return Result<DbfValidationResult, string>.Fail("La ruta del archivo no puede estar vacía.");
 
-        if (!File.Exists(filePath))
-            return Result<DbfValidationResult, string>.Fail($"El archivo no existe: {filePath}");
+        if (!File.Exists(query.FilePath))
+            return Result<DbfValidationResult, string>.Fail($"El archivo no existe: {query.FilePath}");
 
         try
         {
-            Result<DataTable, string> readResult = await _dbfReader.GetAllAsDataTableAsync(filePath);
+            Result<DataTable, string> readResult = await _dbfReader.GetAllAsDataTableAsync(query.FilePath);
 
             if (!readResult.IsSuccess)
                 return Result<DbfValidationResult, string>.Fail(readResult.GetErrorOrDefault() ?? "Error al leer el archivo DBF.");

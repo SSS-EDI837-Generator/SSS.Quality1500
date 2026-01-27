@@ -4,9 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SSS.Quality1500.Data.Extensions;
 using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Business.Queries.GetVdeRecords;
+using SSS.Quality1500.Business.Queries.ValidateDbf;
 using SSS.Quality1500.Business.Services;
 using SSS.Quality1500.Business.Services.Interfaces;
+using SSS.Quality1500.Domain.CQRS;
 using SSS.Quality1500.Domain.Interfaces;
+using SSS.Quality1500.Domain.Models;
 
 /// <summary>
 /// Extensiones para configurar los servicios de la capa Business
@@ -22,9 +26,12 @@ public static class ServiceCollectionExtensions
         services.Configure<DbfValidationSettings>(
             configuration.GetSection(DbfValidationSettings.SectionName));
 
-        // Registrar servicios de Business
+        // Registrar servicios de Business (legacy - pendiente migración a CQRS)
         services.AddTransient<IVdeRecordService, VdeRecordService>();
-        services.AddTransient<IDbfValidationService, DbfValidationService>();
+
+        // Registrar Query Handlers (CQRS)
+        services.AddTransient<IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>, ValidateDbfHandler>();
+        services.AddTransient<IQueryHandler<GetVdeRecordsQuery, Result<List<VdeRecordDto>, string>>, GetVdeRecordsHandler>();
 
         // Registrar LoggerInitializer como Singleton
         // Nota: Si ya existe una instancia en App.xaml.cs, se puede reutilizar

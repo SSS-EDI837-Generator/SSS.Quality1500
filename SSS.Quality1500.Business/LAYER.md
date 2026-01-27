@@ -6,16 +6,14 @@
 ## Dependencias (Onion Architecture)
 
 **Referencia directa en .csproj:**
-- **Data** (unica referencia directa)
-
-**Disponibles transitivamente via Data → Domain/Common:**
-- **Domain** (entidades, contratos, Result<T,E>)
-- **Common** (utilidades transversales)
+- **Domain** (única referencia directa)
 
 **NO depende de:**
+- Data
+- Common
 - Presentation
 
-> **Regla:** No agregar ProjectReference a Domain ni Common. Los tipos llegan transitivamente via Data.
+> **Regla Onion:** Business y Data son capas hermanas que ambas dependen de Domain. Business NO conoce Data. Las implementaciones de Data se inyectan via DI en Presentation (Composition Root).
 
 ## Estructura de Carpetas
 
@@ -166,19 +164,23 @@ public class ClaimViewModel(IClaimProcessingAggregate aggregate)
 
 ## Registro DI
 ```csharp
+// Business/Extensions/ServiceCollectionExtensions.cs
 public static IServiceCollection AddBusinessServices(this IServiceCollection services, IConfiguration config)
 {
-    services.AddDataServices(config); // Primero Data
+    // NOTA: NO llamar AddDataServices aquí - viola Onion Architecture
+    // Data se registra en Presentation (Composition Root)
 
-    // Servicios de Business
+    // Query/Command Handlers (CQRS)
+    services.AddTransient<IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>,
+        ValidateDbfHandler>();
+    services.AddTransient<ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>,
+        ProcessClaimsHandler>();
+
+    // Servicios de Business (legacy)
     services.AddTransient<IVdeRecordService, VdeRecordService>();
-    services.AddSingleton<IEventAggregator, EventAggregator>();
 
     // Servicios de infraestructura de aplicación
     services.AddSingleton<ILoggerInitializer, LoggerInitializer>();
-
-    // Aggregate Services (si los usas)
-    services.AddTransient<IClaimProcessingAggregate, ClaimProcessingAggregate>();
 
     return services;
 }

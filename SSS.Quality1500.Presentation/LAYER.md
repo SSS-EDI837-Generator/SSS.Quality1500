@@ -5,17 +5,18 @@
 
 ## Dependencias (Onion Architecture)
 
-**Referencia directa en .csproj:**
-- **Business** (unica referencia directa)
+**Referencias directas en .csproj:**
+- **Business** (casos de uso, handlers CQRS)
+- **Data** (implementaciones de interfaces de Domain)
 
-**Disponibles transitivamente via Business → Data → Domain:**
-- **Domain** (entidades, Result<T,E>, constantes)
-- **Common** (utilidades)
+**Disponibles transitivamente:**
+- **Domain** (via Business y Data)
+- **Common** (via Data)
 
 **Paquetes NuGet:**
 - CommunityToolkit.Mvvm, MaterialDesignThemes, Behaviors
 
-> **Regla:** No agregar ProjectReference a Domain ni Common. Los tipos llegan transitivamente.
+> **Regla Onion:** Presentation es el **Composition Root**. Es la única capa que conoce tanto Business como Data para conectar las implementaciones de Data con las interfaces de Domain que usa Business.
 
 ## Estructura de Carpetas
 

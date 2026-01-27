@@ -4,23 +4,21 @@
 Este proyecto sigue **Onion Architecture** (Clean Architecture) con 5 capas:
 
 ```
-        ┌─────────────────────────────────────┐
-        │          PRESENTATION               │
-        │  ┌───────────────────────────────┐  │
-        │  │          BUSINESS             │  │
-        │  │  ┌─────────────────────────┐  │  │
-        │  │  │          DATA           │  │  │
-        │  │  │  ┌───────────────────┐  │  │  │
-        │  │  │  │      DOMAIN       │  │  │  │  ← Nucleo (sin deps)
-        │  │  │  └───────────────────┘  │  │  │
-        │  │  └─────────────────────────┘  │  │
-        │  └───────────────────────────────┘  │
-        └─────────────────────────────────────┘
-```
-
-**Cadena de dependencias (solo inmediatas):**
-```
-Presentation → Business → Data → Domain ← Common
+                 ┌──────────┐
+                 │  Domain  │  ← Nucleo (sin deps)
+                 └──────────┘
+                      ↑
+         ┌───────────┴───────────┐
+         │                       │
+    ┌────────┐             ┌─────────┐
+    │Business│             │  Data   │
+    └────────┘             └─────────┘
+         ↑                       ↑
+         └───────────┬───────────┘
+                     │
+              ┌─────────────┐
+              │ Presentation│  ← Composition Root
+              └─────────────┘
 ```
 
 | Capa | Proposito | Referencia Directa |
@@ -28,8 +26,8 @@ Presentation → Business → Data → Domain ← Common
 | **Domain** | Entidades, contratos, `Result<T,E>` | (ninguna) |
 | **Common** | Utilidades transversales | (ninguna) |
 | **Data** | Implementacion de acceso a datos | Domain, Common |
-| **Business** | Casos de uso, orquestacion | Data |
-| **Presentation** | UI con WPF + MVVM | Business |
+| **Business** | Casos de uso, CQRS handlers | **Domain** |
+| **Presentation** | UI + Composition Root | **Business, Data** |
 
 Cada capa tiene un archivo `LAYER.md` con documentacion detallada.
 

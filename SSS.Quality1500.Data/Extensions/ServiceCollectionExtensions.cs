@@ -14,8 +14,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDataServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // IDbfReader es un contrato de Domain, DbfReader es la implementacion en Data
+        // IDbfReader/IDbfWriter son contratos de Domain, implementaciones en Data
         services.AddTransient<IDbfReader, DbfReader>();
+        services.AddTransient<IDbfWriter, DbfWriter>();
         services.AddTransient<DataVersionService>();
 
         // Repositorio de configuracion de columnas (singleton para cache)

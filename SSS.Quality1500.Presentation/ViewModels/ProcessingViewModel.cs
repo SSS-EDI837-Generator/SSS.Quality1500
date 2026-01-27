@@ -3,9 +3,11 @@ namespace SSS.Quality1500.Presentation.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
+using SSS.Quality1500.Business.Commands.ProcessClaims;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Queries.ValidateDbf;
 using SSS.Quality1500.Domain.CQRS;
+using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -17,6 +19,8 @@ using System.IO;
 public partial class ProcessingViewModel : ObservableObject
 {
     private readonly IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>? _validateDbfHandler;
+    private readonly ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>? _processClaimsHandler;
+    private readonly IColumnConfigurationRepository? _columnConfigRepository;
 
     [ObservableProperty]
     private string _pageTitle = "Procesamiento de Archivos";
@@ -82,6 +86,12 @@ public partial class ProcessingViewModel : ObservableObject
     private ObservableCollection<string> _missingColumns = [];
 
     /// <summary>
+    /// Resultado del procesamiento de claims (para la vista de errores).
+    /// </summary>
+    [ObservableProperty]
+    private ClaimProcessingResult? _lastProcessingResult;
+
+    /// <summary>
     /// Cola de mensajes para el Snackbar de MaterialDesign.
     /// </summary>
     public SnackbarMessageQueue MessageQueue { get; } = new(TimeSpan.FromSeconds(4));
@@ -97,9 +107,14 @@ public partial class ProcessingViewModel : ObservableObject
     /// <summary>
     /// Runtime constructor with DI.
     /// </summary>
-    public ProcessingViewModel(IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>> validateDbfHandler)
+    public ProcessingViewModel(
+        IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>> validateDbfHandler,
+        ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>> processClaimsHandler,
+        IColumnConfigurationRepository columnConfigRepository)
     {
         _validateDbfHandler = validateDbfHandler;
+        _processClaimsHandler = processClaimsHandler;
+        _columnConfigRepository = columnConfigRepository;
         InitializeDefaultPath();
     }
 
@@ -335,31 +350,83 @@ public partial class ProcessingViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanProcessFile))]
     private async Task ProcessFileAsync()
     {
-        if (SelectedFile == null)
+        if (SelectedFile == null || _processClaimsHandler == null || _columnConfigRepository == null)
             return;
 
         IsProcessing = true;
         ProgressValue = 0;
         ShowProcessingResults = false;
+        LastProcessingResult = null;
         StatusMessage = $"Procesando {SelectedFile.FileName}...";
 
         try
         {
-            // Simulate processing - replace with actual DBF processing logic
-            for (int i = 0; i <= 100; i += 10)
+            // Load selected columns from configuration
+            Result<ColumnConfiguration, string> configResult = _columnConfigRepository.Load();
+            List<string> selectedColumns = configResult.IsSuccess && configResult.GetValueOrDefault()?.HasSelectedColumns == true
+                ? configResult.GetValueOrDefault()!.SelectedColumns
+                : [];
+
+            // Define date and ICD-10 columns to validate
+            // TODO: Move to configuration
+            List<string> dateColumns =
+            [
+                "V0FECSER", "V0FECINI", "V0FECFIN", "V0FECNAC",
+                "V0FECAUT", "V0FECING", "V0FECALTA"
+            ];
+
+            List<string> icd10Columns =
+            [
+                "V0ICD101", "V0ICD102", "V0ICD103", "V0ICD104",
+                "V0ICD105", "V0ICD106", "V0ICD107", "V0ICD108"
+            ];
+
+            ProgressValue = 10;
+
+            // Create and execute command
+            ProcessClaimsCommand command = new(
+                SelectedFile.FullPath,
+                SelectedImagesPath,
+                selectedColumns,
+                dateColumns,
+                icd10Columns);
+
+            ProgressValue = 20;
+            StatusMessage = "Validando registros...";
+
+            Result<ClaimProcessingResult, string> result = await _processClaimsHandler.HandleAsync(command);
+
+            ProgressValue = 90;
+
+            if (!result.IsSuccess)
             {
-                await Task.Delay(200);
-                ProgressValue = i;
+                StatusMessage = $"Error: {result.GetErrorOrDefault()}";
+                MessageQueue.Enqueue(result.GetErrorOrDefault() ?? "Error desconocido");
+                return;
             }
 
-            // Simulated results - replace with actual validation results
-            RecordsWithErrors = 3;
+            ClaimProcessingResult processingResult = result.GetValueOrDefault()!;
+            LastProcessingResult = processingResult;
+            RecordsWithErrors = processingResult.RecordsWithErrors;
+
+            ProgressValue = 100;
             ShowProcessingResults = true;
-            StatusMessage = $"Procesamiento completado. {RecordsWithErrors} registros con errores de {TotalRecords} totales.";
+
+            if (processingResult.AllRecordsValid)
+            {
+                StatusMessage = $"Procesamiento completado. Todos los {processingResult.TotalRecords} registros son válidos.";
+                MessageQueue.Enqueue("Todos los registros pasaron la validación.");
+            }
+            else
+            {
+                StatusMessage = $"Procesamiento completado. {RecordsWithErrors} registros con errores de {processingResult.TotalRecords} totales.";
+                MessageQueue.Enqueue($"{RecordsWithErrors} registros requieren revisión.");
+            }
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error durante el procesamiento: {ex.Message}";
+            MessageQueue.Enqueue($"Error: {ex.Message}");
         }
         finally
         {

@@ -21,6 +21,9 @@ public static class ServiceCollectionExtensions
         // Repositorio de configuracion de columnas (singleton para cache)
         services.AddSingleton<IColumnConfigurationRepository, JsonColumnConfigurationRepository>();
 
+        // Repositorio de codigos ICD-10 (singleton para cache)
+        services.AddSingleton<IIcd10Repository, Icd10Repository>();
+
         return services;
     }
 }

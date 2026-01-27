@@ -13,6 +13,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<EmbeddedResource Include="Resources\icd10-codes.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\SSS.Quality1500.Domain\SSS.Quality1500.Domain.csproj" />
 		<ProjectReference Include="..\SSS.Quality1500.Common\SSS.Quality1500.Common.csproj" />
 	</ItemGroup>

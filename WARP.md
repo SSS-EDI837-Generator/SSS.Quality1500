@@ -27,19 +27,33 @@ dotnet clean
 dotnet build --nologo -v quiet
 ```
 
-## Architecture
+## Architecture (Onion + CQRS)
 
-### Dependency Flow (innermost to outermost)
+### Dependency Flow
 ```
-Common ← Domain ← Data ← Business ← Presentation
+                 ┌──────────┐
+                 │  Domain  │  ← Core (no dependencies)
+                 └──────────┘
+                      ↑
+         ┌───────────┴───────────┐
+         │                       │
+    ┌────────┐             ┌─────────┐
+    │Business│             │  Data   │
+    └────────┘             └─────────┘
+         ↑                       ↑
+         └───────────┬───────────┘
+                     │
+              ┌─────────────┐
+              │ Presentation│  ← Composition Root
+              └─────────────┘
 ```
 
 ### Layer Responsibilities
 - **Common**: Transversal utilities only (environment detection, version info, lazy services). No business logic, NO dependency on other layers.
-- **Domain**: Entities, Value Objects, `Result<T,E>`, and interfaces (contracts). No framework dependencies.
-- **Data**: Implements Domain contracts (DBF readers via NDbfReader, SQLite via EF Core).
-- **Business**: Orchestrates use cases using Domain entities and Data implementations. Contains LoggerInitializer.
-- **Presentation**: WPF + MVVM with CommunityToolkit.Mvvm and MaterialDesignThemes.
+- **Domain**: Entities, Value Objects, `Result<T,E>`, CQRS interfaces, and contracts. No framework dependencies.
+- **Data**: Implements Domain contracts (DBF readers via NDbfReader, SQLite via EF Core). Depends on Domain + Common.
+- **Business**: CQRS handlers (Queries/Commands), orchestrates use cases using **Domain interfaces only**. Does NOT depend on Data.
+- **Presentation**: WPF + MVVM + **Composition Root** (registers both Business and Data services).
 
 Each layer has a `LAYER.md` with detailed documentation.
 
@@ -54,8 +68,13 @@ result.OnSuccess(data => Process(data))
 ```
 
 ### Dependency Injection
-Register services in each layer's `Extensions/ServiceCollectionExtensions.cs`:
-- `AddCommonServices()` → `AddDataServices(config)` → `AddBusinessServices(config)`
+**Presentation is the Composition Root** - registers all services:
+```csharp
+// Presentation/Extensions/ServiceCollectionExtensions.cs
+services.AddDataServices(config);    // Implements Domain interfaces
+services.AddBusinessServices(config); // Uses Domain interfaces
+services.AddCommonServices();
+```
 
 Contracts are defined in **Domain**, implementations in **Data**:
 ```csharp
@@ -63,6 +82,8 @@ Contracts are defined in **Domain**, implementations in **Data**:
 // Data: DbfReader (implementation)
 services.AddTransient<IDbfReader, DbfReader>();
 ```
+
+**Note:** Business does NOT call AddDataServices (would violate Onion Architecture).
 
 ### MVVM Rules
 - **No code-behind** (except `InitializeComponent`)
@@ -245,14 +266,14 @@ public class Service(ServiceConfig config, ILogger logger) { }
 
 ## Critical Architectural Rules
 
-### Dependency Matrix
+### Dependency Matrix (Onion Architecture)
 | Layer | Can Use | CANNOT Use |
 |-------|---------|------------|
 | **Common** | NuGet packages only | Domain, Data, Business, Presentation |
 | **Domain** | Nothing (pure core) | Common, Data, Business, Presentation |
 | **Data** | Domain, Common | Business, Presentation |
-| **Business** | Domain, Data, Common | Presentation |
-| **Presentation** | Domain, Business, Common | Data (use Business instead) |
+| **Business** | **Domain only** | Common, Data, Presentation |
+| **Presentation** | Business, Data (Composition Root) | - |
 
 ### Critical Violations to Avoid
 
@@ -266,25 +287,31 @@ using SSS.Quality1500.Common.Something; // VIOLATION
 namespace SSS.Quality1500.Data.Services;
 using SSS.Quality1500.Business.Models; // VIOLATION
 
-// Presentation depending on Data directly
-namespace SSS.Quality1500.Presentation.ViewModels;
-using SSS.Quality1500.Data.Services; // VIOLATION
+// Business depending on Data (violates Onion Architecture)
+namespace SSS.Quality1500.Business.Handlers;
+using SSS.Quality1500.Data.Services; // VIOLATION - use Domain interfaces instead
 ```
 
 **✅ CORRECT:**
 ```csharp
 // Domain defines contract
 namespace SSS.Quality1500.Domain.Interfaces;
-public interface IDataService { }
+public interface IDbfReader { }
 
 // Data implements Domain contract
 namespace SSS.Quality1500.Data.Services;
 using SSS.Quality1500.Domain.Interfaces;
-public class DataService : IDataService { }
+public class DbfReader : IDbfReader { }
 
-// Business uses both
-namespace SSS.Quality1500.Business.Services;
+// Business uses Domain interfaces only (not Data implementations)
+namespace SSS.Quality1500.Business.Handlers;
 using SSS.Quality1500.Domain.Interfaces;
+public class MyHandler(IDbfReader reader) { } // Injected via DI
+
+// Presentation wires everything (Composition Root)
+namespace SSS.Quality1500.Presentation.Extensions;
+using SSS.Quality1500.Data.Services;
+services.AddTransient<IDbfReader, DbfReader>(); // This is OK in Presentation
 ```
 
 ### Pre-Commit Verification

@@ -45,9 +45,24 @@ The codebase follows **Onion Architecture** (also known as Clean Architecture / 
         Dependencies → always point inward
 ```
 
-**Dependency Chain:**
+**Dependency Chain (Onion Architecture):**
 ```
-Presentation → Business → Data → Domain ← Common
+         ┌──────────┐
+         │  Domain  │  ← Core (no dependencies)
+         └──────────┘
+              ↑
+   ┌──────────┴──────────┐
+   │                     │
+┌────────┐          ┌─────────┐
+│Business│          │  Data   │
+│        │          │         │
+└────────┘          └─────────┘
+   ↑                     ↑
+   └──────────┬──────────┘
+              │
+       ┌─────────────┐
+       │ Presentation│  ← Composition Root
+       └─────────────┘
 ```
 
 ### Layer Responsibilities
@@ -57,7 +72,7 @@ Presentation → Business → Data → Domain ← Common
 | **Common** | Cross-cutting utilities (EnvironmentProvider, Version, LazyService) | NO business logic, NO dependency on other project layers |
 | **Domain** | Entities, value objects, `Result<T,E>`, interfaces (contracts) | NO framework dependencies, NO async in entities, defines WHAT not HOW |
 | **Data** | Implements Domain contracts (DBF readers via NDbfReader, SQLite via EF Core) | Implements interfaces from Domain, handles infrastructure exceptions |
-| **Business** | Orchestrates use cases, contains DTOs, mappers, and LoggerInitializer | Orchestrates (not implements) data access, NO UI dependencies |
+| **Business** | Orchestrates use cases, contains DTOs, mappers, and LoggerInitializer | **Only depends on Domain**, NO Data/Common/Presentation dependencies |
 | **Presentation** | WPF UI with MVVM pattern | Strict MVVM with NO code-behind (except `InitializeComponent`) |
 
 ### Critical Architectural Rules
@@ -79,7 +94,9 @@ Presentation → Business → Data → Domain ← Common
 
 4. **Dependency Injection**
    - Each layer has `Extensions/ServiceCollectionExtensions.cs`
-   - Chain: `AddCommonServices()` → `AddDataServices(config)` → `AddBusinessServices(config)` → `AddPresentationServices(config)`
+   - **Presentation is the Composition Root** - it registers all services
+   - In `AddPresentationServices`: `AddDataServices(config)` → `AddBusinessServices(config)` → `AddCommonServices()`
+   - Business does NOT call AddDataServices (would violate Onion Architecture)
 
 5. **No Redundant Transitive References**
    - Each project should only reference its **immediate dependency**, not transitive ones
@@ -156,8 +173,8 @@ public partial class ExampleViewModel : ObservableObject
 | **Common** | NuGet packages only | Domain, Data, Business, Presentation | `SSS.Quality1500.Common.*` |
 | **Domain** | Nothing (pure core) | Common, Data, Business, Presentation | `SSS.Quality1500.Domain.*` |
 | **Data** | Domain, Common | Business, Presentation | `SSS.Quality1500.Data.*` |
-| **Business** | Domain, Data, Common | Presentation | `SSS.Quality1500.Business.*` |
-| **Presentation** | Domain, Business, Common | Data (use Business instead) | `SSS.Quality1500.Presentation.*` |
+| **Business** | **Domain only** | Common, Data, Presentation | `SSS.Quality1500.Business.*` |
+| **Presentation** | Business, Data (Composition Root) | - | `SSS.Quality1500.Presentation.*` |
 
 ### Dependency Flow Diagram (Onion Architecture)
 
@@ -172,33 +189,30 @@ public partial class ExampleViewModel : ObservableObject
 └─────────────┘         └─────────────┘
        ↑                       ↑
        │                       │
-       └──────────┬────────────┘
-                  │
-          ┌───────────────┐
-          │     Data      │
-          │(Infrastructure)│
-          │ - DbfReader   │
-          │ - Repositories│
-          └───────────────┘
-                  ↑
-                  │
-          ┌───────────────┐
-          │   Business    │
-          │ (Application) │
-          │ - Services    │
-          │ - DTOs        │
-          │ - Logger      │
-          └───────────────┘
-                  ↑
-                  │
-          ┌───────────────┐
-          │ Presentation  │
-          │     (UI)      │
-          │ - ViewModels  │
-          │ - Views       │
-          └───────────────┘
+       │               ┌───────┴───────┐
+       │               │               │
+       │       ┌───────────────┐  ┌───────────────┐
+       └───────│     Data      │  │   Business    │
+               │(Infrastructure)│  │ (Application) │
+               │ - DbfReader   │  │ - Handlers    │
+               │ - Repositories│  │ - DTOs        │
+               └───────────────┘  └───────────────┘
+                       ↑                 ↑
+                       │                 │
+                       └────────┬────────┘
+                                │
+                       ┌───────────────┐
+                       │ Presentation  │
+                       │(Composition   │
+                       │    Root)      │
+                       │ - ViewModels  │
+                       │ - DI Wiring   │
+                       └───────────────┘
 
-    ↑ = dependency direction (always toward center)
+    ↑ = dependency direction
+    Business → Domain only (uses interfaces)
+    Data → Domain + Common (implements interfaces)
+    Presentation → Business + Data (wires everything)
 ```
 
 ### Onion Architecture Principles
@@ -242,60 +256,61 @@ namespace SSS.Quality1500.Data.Services;
 using SSS.Quality1500.Domain.Interfaces;
 public class DataService : IDataService { }
 
-// ✅ Business uses Domain and Data
-namespace SSS.Quality1500.Business.Services;
+// ✅ Business uses ONLY Domain interfaces (not Data implementations)
+namespace SSS.Quality1500.Business.Handlers;
 using SSS.Quality1500.Domain.Interfaces;
-using SSS.Quality1500.Data.Services;
+public class MyHandler(IDataService dataService) { } // Injected via DI
+
+// ✅ Presentation wires Data implementations to Domain interfaces
+namespace SSS.Quality1500.Presentation.Extensions;
+services.AddTransient<IDataService, DataService>(); // Data → Domain
+services.AddTransient<MyHandler>();                  // Business uses Domain
 
 // ✅ Namespace matches physical location
 // File: Domain/Constants/MyConstants.cs
 namespace SSS.Quality1500.Domain.Constants; // ✅ CORRECT
 ```
 
-### No Redundant Transitive References (ProjectReference)
+### ProjectReference Rules (Onion Architecture)
 
-Each `.csproj` must only reference its **immediate dependency**. Types from deeper layers are available transitively.
+In Onion Architecture, **Business and Data are sibling layers** - both depend on Domain, but NOT on each other.
+**Presentation is the Composition Root** and needs to reference both Business and Data to wire dependencies.
 
-**Dependency Chain:**
-```
-Presentation → Business → Data → Domain
-                                    ↑
-                    available transitively to all
-```
-
-**❌ WRONG - Redundant references in .csproj:**
+**❌ WRONG - Business depending on Data:**
 ```xml
-<!-- Presentation.csproj - WRONG -->
+<!-- Business.csproj - WRONG (violates Onion Architecture) -->
 <ItemGroup>
-  <ProjectReference Include="..\Business\Business.csproj" />
-  <ProjectReference Include="..\Domain\Domain.csproj" />  <!-- ❌ REDUNDANT -->
-</ItemGroup>
-
-<!-- Business.csproj - WRONG -->
-<ItemGroup>
-  <ProjectReference Include="..\Data\Data.csproj" />
-  <ProjectReference Include="..\Domain\Domain.csproj" />  <!-- ❌ REDUNDANT -->
+  <ProjectReference Include="..\Data\Data.csproj" />  <!-- ❌ VIOLATION -->
 </ItemGroup>
 ```
 
-**✅ CORRECT - Only immediate dependencies:**
+**✅ CORRECT - Onion Architecture:**
 ```xml
-<!-- Presentation.csproj - CORRECT -->
+<!-- Domain.csproj - Core, no dependencies -->
 <ItemGroup>
-  <ProjectReference Include="..\Business\Business.csproj" />
-  <!-- Domain types available via Business → Data → Domain -->
+  <!-- (none) -->
 </ItemGroup>
 
-<!-- Business.csproj - CORRECT -->
+<!-- Common.csproj - Utilities, no dependencies -->
 <ItemGroup>
-  <ProjectReference Include="..\Data\Data.csproj" />
-  <!-- Domain types available via Data → Domain -->
+  <!-- (none) -->
 </ItemGroup>
 
-<!-- Data.csproj - CORRECT (references Domain directly as immediate dependency) -->
+<!-- Data.csproj - Implements Domain interfaces -->
 <ItemGroup>
   <ProjectReference Include="..\Domain\Domain.csproj" />
   <ProjectReference Include="..\Common\Common.csproj" />
+</ItemGroup>
+
+<!-- Business.csproj - Uses Domain interfaces ONLY -->
+<ItemGroup>
+  <ProjectReference Include="..\Domain\Domain.csproj" />
+</ItemGroup>
+
+<!-- Presentation.csproj - Composition Root, wires everything -->
+<ItemGroup>
+  <ProjectReference Include="..\Business\Business.csproj" />
+  <ProjectReference Include="..\Data\Data.csproj" />
 </ItemGroup>
 ```
 
@@ -306,8 +321,8 @@ Presentation → Business → Data → Domain
 | Domain | (none) | - |
 | Common | (none) | - |
 | Data | Domain, Common | - |
-| Business | Data | Domain, Common |
-| Presentation | Business | Data, Domain, Common |
+| Business | **Domain only** | - |
+| Presentation | Business, Data | Domain, Common |
 
 ### Verification Checklist
 
@@ -320,8 +335,8 @@ Before committing code, verify:
 - [ ] `dotnet build` succeeds with 0 warnings
 
 **Quick .csproj reference check:**
-- `Presentation.csproj` → only `Business`
-- `Business.csproj` → only `Data`
+- `Presentation.csproj` → `Business` + `Data` (Composition Root)
+- `Business.csproj` → `Domain` only (NO Data reference!)
 - `Data.csproj` → `Domain` + `Common`
 - `Domain.csproj` → (none)
 - `Common.csproj` → (none)

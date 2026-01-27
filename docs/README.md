@@ -126,8 +126,12 @@ Para contexto específico de healthcare y validaciones, consulta los documentos 
 Soy el desarrollador principal de SSS.Quality1500, una aplicación WPF
 con Onion Architecture para verificación de calidad de CMS-1500 forms.
 
-Arquitectura:
-- 5 capas: Common ← Domain ← Data ← Business ← Presentation
+Arquitectura Onion:
+- Domain (centro, sin dependencias)
+- Common (utilidades, sin dependencias)
+- Business (solo Domain)
+- Data (Domain y Common)
+- Presentation (Business y Data - Composition Root)
 - Result Pattern en Domain
 - MVVM estricto con CommunityToolkit.Mvvm
 - WPF con MaterialDesignThemes

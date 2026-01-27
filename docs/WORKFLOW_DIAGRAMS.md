@@ -238,9 +238,9 @@ public class DbfValidationResult
 
 ---
 
-## Diagrama de Capas (Clean Architecture)
+## Diagrama de Capas (Onion Architecture)
 
-Este diagrama muestra como fluyen las dependencias entre las capas de la arquitectura:
+Este diagrama muestra la arquitectura Onion donde Business y Data son capas hermanas que ambas dependen de Domain:
 
 ```mermaid
 %%{init: {
@@ -252,7 +252,7 @@ Este diagrama muestra como fluyen las dependencias entre las capas de la arquite
 }}%%
 
 sequenceDiagram
-    box rgb(156,39,176) PRESENTATION
+    box rgb(156,39,176) PRESENTATION (Composition Root)
         participant P as Presentation
     end
 
@@ -264,27 +264,36 @@ sequenceDiagram
         participant D as Data
     end
 
+    box rgb(255,193,7) DOMAIN (Centro)
+        participant Dom as Domain
+    end
+
     box rgb(255,152,0) EXTERNAL
         participant E as External
     end
 
-    Note over P,E: Clean Architecture - Flujo de Dependencias
+    Note over P,E: Onion Architecture - Flujo de Dependencias
 
     rect rgb(243,229,245)
-        P->>B: Request DTO
+        Note over P: Composition Root: registra Business + Data
+        P->>B: Request via CQRS Handler
+        P->>D: Registra implementaciones de Domain
     end
 
     rect rgb(227,242,253)
-        B->>D: Query o Command
+        Note over B,Dom: Business usa interfaces de Domain
+        B->>Dom: Usa IDbfReader (contrato)
     end
 
     rect rgb(232,245,233)
+        Note over D,Dom: Data implementa interfaces de Domain
+        D->>Dom: Implementa IDbfReader
         D->>E: I/O Operation
         E-->>D: Raw Data
     end
 
     rect rgb(232,245,233)
-        D-->>B: Result Entity o Error
+        D-->>B: Result Entity o Error (via DI)
     end
 
     rect rgb(227,242,253)
@@ -292,8 +301,9 @@ sequenceDiagram
     end
 
     Note over P: UI actualiza con ObservableCollection
-    Note over B: Orquesta validaciones y logica de negocio
+    Note over B: Orquesta con interfaces de Domain (NO Data directo)
     Note over D: Implementa contratos definidos en Domain
+    Note over Dom: Define interfaces y Result<T,E>
     Note over E: Archivos DBF - NPI API
 ```
 
@@ -360,27 +370,35 @@ sequenceDiagram
 
 ---
 
-## Componentes por Capa
+## Componentes por Capa (Onion Architecture)
 
-### Presentation Layer (Purpura)
+### Domain Layer (Centro - Sin dependencias)
+- **Entities**: ClaimRecord, PatientInfo, ProviderInfo
+- **Value Objects**: Objetos inmutables de dominio
+- **Interfaces**: Contratos (IDbfReader, INpiApiClient) implementados por Data
+- **Result<T,E>**: Patron para manejo de errores
+- **CQRS**: IQueryHandler, ICommandHandler
+
+### Common Layer (Sin dependencias)
+- **Utilities**: EnvironmentProvider, VersionInfo
+- **Services**: LazyService
+
+### Business Layer (Depende solo de Domain)
+- **CQRS Handlers**: ValidateDbfHandler, ProcessClaimsHandler
+- **Services**: ValidationEngine (usa interfaces de Domain)
+- **Validators**: NpiFormatValidator, DateRangeValidator
+- **DTOs**: Objetos de transferencia
+
+### Data Layer (Depende de Domain y Common)
+- **Services**: DbfReader (implementa IDbfReader de Domain)
+- **ApiClients**: NpiApiClient (implementa INpiApiClient de Domain)
+- **Repositories**: Implementaciones de repositorios
+
+### Presentation Layer (Composition Root - Business y Data)
 - **Views**: WPF XAML con MaterialDesignThemes
 - **ViewModels**: CommunityToolkit.Mvvm con `[ObservableProperty]` y `[RelayCommand]`
 - **Services**: NavigationService, DialogService
-
-### Business Layer (Azul)
-- **Services**: ClaimProcessingService, ValidationEngine, ImageService
-- **Validators**: NpiFormatValidator, DateRangeValidator, etc.
-- **DTOs**: Objetos de transferencia entre capas
-
-### Data Layer (Verde)
-- **Services**: DbfReader (NDbfReader) - lectura y escritura de archivos DBF
-- **ApiClients**: NpiApiClient (HttpClient + Polly)
-
-### Domain Layer (Centro)
-- **Entities**: ClaimRecord, PatientInfo, ProviderInfo
-- **Value Objects**: Objetos inmutables de dominio
-- **Interfaces**: Contratos implementados por Data
-- **Result<T,E>**: Patron para manejo de errores
+- **DI Registration**: Registra servicios de Business Y Data
 
 ---
 

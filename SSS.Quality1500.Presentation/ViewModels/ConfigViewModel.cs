@@ -73,6 +73,7 @@ public partial class ConfigViewModel : ObservableObject
         Categories =
         [
             "Todas",
+            "Seleccionadas",
             "Documento",
             "Paciente",
             "Asegurado",
@@ -625,7 +626,11 @@ public partial class ConfigViewModel : ObservableObject
                 c.Description.Contains(search, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (SelectedCategory != "Todas")
+        if (SelectedCategory == "Seleccionadas")
+        {
+            filtered = filtered.Where(c => c.IsSelected);
+        }
+        else if (SelectedCategory != "Todas")
         {
             filtered = filtered.Where(c => c.Category == SelectedCategory);
         }

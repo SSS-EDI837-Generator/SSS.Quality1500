@@ -326,19 +326,20 @@ public interface IIcd10Repository
 
 | # | Tarea | Capa | Prioridad |
 |---|-------|------|-----------|
-| 11 | Crear ErrorReviewUserControl.xaml (diseño) | Presentation | Alta |
-| 12 | Crear ErrorReviewViewModel | Presentation | Alta |
-| 13 | Implementar visor de imágenes TIF | Presentation | Media |
-| 14 | Implementar navegación entre registros con errores | Presentation | Alta |
+| 11 | Botón "Ver Errores" en ProcessingView — visible solo cuando el procesamiento termina con errores (`RecordsWithErrors > 0`). Conecta `ViewErrors()` con navegación a ErrorReviewView. | Presentation | Alta |
+| 12 | Crear ErrorReviewUserControl.xaml (diseño) | Presentation | Alta |
+| 13 | Crear ErrorReviewViewModel | Presentation | Alta |
+| 14 | Implementar visor de imágenes TIF | Presentation | Media |
+| 15 | Implementar navegación entre registros con errores | Presentation | Alta |
 
 ### Día 4
 
 | # | Tarea | Capa | Prioridad |
 |---|-------|------|-----------|
-| 15 | Implementar edición de campos | Presentation | Alta |
-| 16 | Implementar guardado de cambios al DBF | Data | Alta |
-| 17 | Implementar revalidación de registro | Business | Media |
-| 18 | Pruebas de integración completas | Todos | Alta |
+| 16 | Implementar edición de campos | Presentation | Alta |
+| 17 | Implementar guardado de cambios al DBF | Data | Alta |
+| 18 | Implementar revalidación de registro | Business | Media |
+| 19 | Pruebas de integración completas | Todos | Alta |
 
 ---
 

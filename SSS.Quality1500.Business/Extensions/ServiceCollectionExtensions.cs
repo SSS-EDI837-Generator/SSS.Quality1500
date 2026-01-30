@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Commands.ProcessClaims;
+using SSS.Quality1500.Business.Queries.GetImagesFolder;
 using SSS.Quality1500.Business.Queries.GetVdeRecords;
 using SSS.Quality1500.Business.Queries.ValidateDate;
 using SSS.Quality1500.Business.Queries.ValidateDbf;
@@ -31,6 +32,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IVdeRecordService, VdeRecordService>();
 
         // Registrar Query Handlers (CQRS)
+        services.AddTransient<IQueryHandler<GetImagesFolderQuery, Result<string, string>>, GetImagesFolderHandler>();
         services.AddTransient<IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>, ValidateDbfHandler>();
         services.AddTransient<IQueryHandler<GetVdeRecordsQuery, Result<List<VdeRecordDto>, string>>, GetVdeRecordsHandler>();
         services.AddTransient<IQueryHandler<ValidateDateQuery, Result<bool, FieldValidationError>>, ValidateDateHandler>();

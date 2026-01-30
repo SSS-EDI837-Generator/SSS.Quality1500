@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using SSS.Quality1500.Business.Commands.ProcessClaims;
 using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Business.Queries.GetImagesFolder;
 using SSS.Quality1500.Business.Queries.ValidateDbf;
 using SSS.Quality1500.Domain.CQRS;
 using SSS.Quality1500.Domain.Interfaces;
@@ -18,6 +19,7 @@ using System.IO;
 /// </summary>
 public partial class ProcessingViewModel : ObservableObject
 {
+    private readonly IQueryHandler<GetImagesFolderQuery, Result<string, string>>? _getImagesFolderHandler;
     private readonly IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>? _validateDbfHandler;
     private readonly ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>? _processClaimsHandler;
     private readonly IColumnConfigurationRepository? _columnConfigRepository;
@@ -108,10 +110,12 @@ public partial class ProcessingViewModel : ObservableObject
     /// Runtime constructor with DI.
     /// </summary>
     public ProcessingViewModel(
+        IQueryHandler<GetImagesFolderQuery, Result<string, string>> getImagesFolderHandler,
         IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>> validateDbfHandler,
         ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>> processClaimsHandler,
         IColumnConfigurationRepository columnConfigRepository)
     {
+        _getImagesFolderHandler = getImagesFolderHandler;
         _validateDbfHandler = validateDbfHandler;
         _processClaimsHandler = processClaimsHandler;
         _columnConfigRepository = columnConfigRepository;
@@ -138,7 +142,37 @@ public partial class ProcessingViewModel : ObservableObject
     partial void OnSelectedFileChanged(DbfFileInfo? value)
     {
         ResetValidation();
+
+        if (value != null)
+            _ = LoadImagesFolderFromDbfAsync(value.FullPath);
+
         ValidateSelection();
+    }
+
+    private async Task LoadImagesFolderFromDbfAsync(string dbfFilePath)
+    {
+        if (_getImagesFolderHandler == null)
+            return;
+
+        try
+        {
+            GetImagesFolderQuery query = new(dbfFilePath);
+            Result<string, string> result = await _getImagesFolderHandler.HandleAsync(query);
+
+            if (!result.IsSuccess)
+                return;
+
+            string folderPath = result.GetValueOrDefault()!;
+
+            if (Directory.Exists(folderPath))
+                SelectedImagesPath = folderPath;
+            else
+                MessageQueue.Enqueue($"V0FILEPATH: '{folderPath}' - carpeta no encontrada.");
+        }
+        catch (Exception ex)
+        {
+            MessageQueue.Enqueue($"Error al leer ruta de imágenes: {ex.Message}");
+        }
     }
 
     private void ResetValidation()

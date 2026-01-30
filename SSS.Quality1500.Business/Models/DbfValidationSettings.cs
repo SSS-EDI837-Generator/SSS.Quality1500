@@ -12,6 +12,12 @@ public class DbfValidationSettings
     public const string SectionName = "DbfValidation";
 
     /// <summary>
+    /// Default folder path for DBF database files.
+    /// Loaded on startup as the initial SelectedPath.
+    /// </summary>
+    public string DefaultDatabasePath { get; set; } = string.Empty;
+
+    /// <summary>
     /// File filter pattern for DBF files in the selected folder.
     /// Default: "*.DBF" (all DBF files).
     /// Example: "SSS15*.DBF" (only SSS 1500 files).

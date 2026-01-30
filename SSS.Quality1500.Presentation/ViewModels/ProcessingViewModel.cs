@@ -128,12 +128,13 @@ public partial class ProcessingViewModel : ObservableObject
 
     private void InitializeDefaultPath()
     {
-        string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Base Datos");
-        if (Directory.Exists(defaultPath))
-        {
-            SelectedPath = defaultPath;
-            LoadAvailableFiles();
-        }
+        string defaultPath = _dbfSettings.DefaultDatabasePath;
+
+        if (string.IsNullOrWhiteSpace(defaultPath) || !Directory.Exists(defaultPath))
+            return;
+
+        SelectedPath = defaultPath;
+        LoadAvailableFiles();
     }
 
     partial void OnSelectedPathChanged(string value)

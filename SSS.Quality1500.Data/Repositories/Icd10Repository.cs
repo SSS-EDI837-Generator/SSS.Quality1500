@@ -9,6 +9,11 @@ using System.Text.Json;
 /// </summary>
 public class Icd10Repository : IIcd10Repository
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly Dictionary<string, string> _codes;
     private readonly HashSet<string> _normalizedCodes;
 
@@ -71,10 +76,7 @@ public class Icd10Repository : IIcd10Repository
         using StreamReader reader = new(stream);
         string json = reader.ReadToEnd();
 
-        Icd10Data? data = JsonSerializer.Deserialize<Icd10Data>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        Icd10Data? data = JsonSerializer.Deserialize<Icd10Data>(json, s_jsonOptions);
 
         return data?.Codes ?? new Dictionary<string, string>();
     }

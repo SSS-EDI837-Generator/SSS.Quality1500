@@ -188,7 +188,10 @@ public partial class ProcessingViewModel : ObservableObject
         ShowProcessingResults = false;
         TotalRecords = 0;
         TotalClaims = 0;
+        RecordsWithErrors = 0;
+        LastProcessingResult = null;
         ValidationErrorMessage = string.Empty;
+        StatusMessage = "Seleccione una carpeta y archivo DBF para procesar.";
         MissingColumns.Clear();
     }
 

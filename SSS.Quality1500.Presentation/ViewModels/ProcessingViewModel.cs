@@ -486,6 +486,8 @@ public partial class ProcessingViewModel : ObservableObject
     {
         LoadAvailableFiles();
         ResetValidation();
+        SelectedImagesPath = string.Empty;
+        TotalImages = 0;
     }
 }
 

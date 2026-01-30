@@ -9,11 +9,9 @@ using SSS.Quality1500.Domain.Models;
 /// <param name="DbfFilePath">Path to the DBF file to process.</param>
 /// <param name="ImagesFolderPath">Path to the folder containing TIF images.</param>
 /// <param name="SelectedColumns">List of column names selected for validation (from configuration).</param>
-/// <param name="DateColumns">Column names that contain dates to validate.</param>
-/// <param name="Icd10Columns">Column names that contain ICD-10 codes to validate.</param>
+/// <param name="ValidationPolicies">Validation policies per column (from configuration).</param>
 public record ProcessClaimsCommand(
     string DbfFilePath,
     string ImagesFolderPath,
     List<string> SelectedColumns,
-    List<string> DateColumns,
-    List<string> Icd10Columns) : ICommand<Result<ClaimProcessingResult, string>>;
+    List<ColumnValidationEntry> ValidationPolicies) : ICommand<Result<ClaimProcessingResult, string>>;

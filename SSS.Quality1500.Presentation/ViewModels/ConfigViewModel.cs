@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using SSS.Quality1500.Domain.Constants;
+using SSS.Quality1500.Domain.Enums;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 using SSS.Quality1500.Presentation.Models;
@@ -664,16 +665,24 @@ public partial class ConfigViewModel : ObservableObject
     [RelayCommand]
     private void SaveConfiguration()
     {
-        List<string> selectedColumns = AllColumns
+        List<ColumnValidationEntry> entries = AllColumns
             .Where(c => c.IsSelected)
-            .Select(c => c.ColumnName)
+            .Select(c => new ColumnValidationEntry
+            {
+                ColumnName = c.ColumnName,
+                Policy = new ValidationPolicy
+                {
+                    Type = c.ValidationType,
+                    Options = new Dictionary<string, string>(c.ValidationOptions)
+                }
+            })
             .ToList();
 
-        ColumnConfiguration config = ColumnConfiguration.WithColumns(selectedColumns);
+        ColumnConfiguration config = ColumnConfiguration.WithPolicies(entries);
         Result<bool, string> result = _configRepository.Save(config);
 
         result
-            .OnSuccess(_ => MessageQueue.Enqueue($"Configuracion guardada: {selectedColumns.Count} columnas seleccionadas"))
+            .OnSuccess(_ => MessageQueue.Enqueue($"Configuracion guardada: {entries.Count} columnas seleccionadas"))
             .OnFailure(error => MessageQueue.Enqueue($"Error al guardar: {error}"));
     }
 
@@ -691,6 +700,13 @@ public partial class ConfigViewModel : ObservableObject
             foreach (ColumnConfigItem column in AllColumns)
             {
                 column.IsSelected = savedColumns.Contains(column.ColumnName);
+
+                if (!column.IsSelected)
+                    continue;
+
+                ValidationPolicy policy = config.GetPolicy(column.ColumnName);
+                column.ValidationType = policy.Type;
+                column.ValidationOptions = new Dictionary<string, string>(policy.Options);
             }
 
             UpdateSelectedCount();

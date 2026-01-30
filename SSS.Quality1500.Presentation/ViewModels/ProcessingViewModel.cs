@@ -411,35 +411,26 @@ public partial class ProcessingViewModel : ObservableObject
 
         try
         {
-            // Load selected columns from configuration
+            // Load selected columns and validation policies from configuration
             Result<ColumnConfiguration, string> configResult = _columnConfigRepository.Load();
-            List<string> selectedColumns = configResult.IsSuccess && configResult.GetValueOrDefault()?.HasSelectedColumns == true
-                ? configResult.GetValueOrDefault()!.SelectedColumns
-                : [];
+            List<string> selectedColumns = [];
+            List<ColumnValidationEntry> validationPolicies = [];
 
-            // Define date and ICD-10 columns to validate
-            // TODO: Move to configuration
-            List<string> dateColumns =
-            [
-                "V0FECSER", "V0FECINI", "V0FECFIN", "V0FECNAC",
-                "V0FECAUT", "V0FECING", "V0FECALTA"
-            ];
-
-            List<string> icd10Columns =
-            [
-                "V0ICD101", "V0ICD102", "V0ICD103", "V0ICD104",
-                "V0ICD105", "V0ICD106", "V0ICD107", "V0ICD108"
-            ];
+            if (configResult.IsSuccess && configResult.GetValueOrDefault()?.HasSelectedColumns == true)
+            {
+                ColumnConfiguration config = configResult.GetValueOrDefault()!;
+                selectedColumns = config.SelectedColumns;
+                validationPolicies = config.ValidationPolicies;
+            }
 
             ProgressValue = 10;
 
-            // Create and execute command
+            // Create and execute command with policy-driven validation
             ProcessClaimsCommand command = new(
                 SelectedFile.FullPath,
                 SelectedImagesPath,
                 selectedColumns,
-                dateColumns,
-                icd10Columns);
+                validationPolicies);
 
             ProgressValue = 20;
             StatusMessage = "Validando registros...";

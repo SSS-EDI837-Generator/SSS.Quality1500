@@ -1,6 +1,7 @@
 namespace SSS.Quality1500.Data.Repositories;
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 
@@ -15,7 +16,8 @@ public sealed class JsonColumnConfigurationRepository : IColumnConfigurationRepo
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
 
     public JsonColumnConfigurationRepository()
@@ -59,7 +61,8 @@ public sealed class JsonColumnConfigurationRepository : IColumnConfigurationRepo
             {
                 Version = configuration.Version,
                 LastModified = DateTime.UtcNow,
-                SelectedColumns = configuration.SelectedColumns
+                SelectedColumns = configuration.SelectedColumns,
+                ValidationPolicies = configuration.ValidationPolicies
             };
 
             string json = JsonSerializer.Serialize(configToSave, JsonOptions);

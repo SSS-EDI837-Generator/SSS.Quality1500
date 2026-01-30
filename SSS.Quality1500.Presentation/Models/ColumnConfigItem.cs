@@ -1,6 +1,7 @@
 namespace SSS.Quality1500.Presentation.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using SSS.Quality1500.Domain.Enums;
 
 /// <summary>
 /// Represents a configurable column for VDE record validation.
@@ -43,4 +44,16 @@ public partial class ColumnConfigItem : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _description = string.Empty;
+
+    /// <summary>
+    /// Tipo de validacion asignada a esta columna.
+    /// </summary>
+    [ObservableProperty]
+    private ValidationType _validationType = ValidationType.None;
+
+    /// <summary>
+    /// Opciones especificas de la politica de validacion.
+    /// </summary>
+    [ObservableProperty]
+    private Dictionary<string, string> _validationOptions = [];
 }

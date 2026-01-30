@@ -6,10 +6,22 @@
              xmlns:local="clr-namespace:SSS.Quality1500.Presentation.Views"
              xmlns:vm="clr-namespace:SSS.Quality1500.Presentation.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:enums="clr-namespace:SSS.Quality1500.Domain.Enums;assembly=SSS.Quality1500.Domain"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="700" d:DesignWidth="900"
              Background="{DynamicResource MaterialDesign.Brush.Background}">
+
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="ValidationTypeValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:ValidationType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
 
     <Grid>
         <!-- Main Content -->
@@ -183,6 +195,20 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+
+                    <!-- Validation Type -->
+                    <DataGridTemplateColumn Header="Validacion" Width="130" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding Source={StaticResource ValidationTypeValues}}"
+                                          SelectedItem="{Binding ValidationType, UpdateSourceTrigger=PropertyChanged}"
+                                          IsEnabled="{Binding IsSelected}"
+                                          Style="{StaticResource MaterialDesignComboBox}"
+                                          Padding="4,2"
+                                          MinWidth="100"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                     <!-- Description -->
                     <DataGridTextColumn Header="Descripcion"

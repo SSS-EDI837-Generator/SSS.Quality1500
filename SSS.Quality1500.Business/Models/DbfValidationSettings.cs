@@ -18,11 +18,11 @@ public class DbfValidationSettings
     public string DefaultDatabasePath { get; set; } = string.Empty;
 
     /// <summary>
-    /// File filter pattern for DBF files in the selected folder.
-    /// Default: "*.DBF" (all DBF files).
-    /// Example: "SSS15*.DBF" (only SSS 1500 files).
+    /// File filter patterns for DBF files in the selected folder.
+    /// Default: ["*.DBF"] (all DBF files).
+    /// Example: ["SSS15*.DBF", "TS15*.DBF"]
     /// </summary>
-    public string FileFilterPattern { get; set; } = "*.DBF";
+    public List<string> FileFilterPatterns { get; set; } = [];
 
     /// <summary>
     /// Column name used to filter claims from total records.

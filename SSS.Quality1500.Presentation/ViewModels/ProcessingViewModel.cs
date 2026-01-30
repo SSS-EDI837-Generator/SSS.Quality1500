@@ -201,7 +201,15 @@ public partial class ProcessingViewModel : ObservableObject
 
         try
         {
-            string[] dbfFiles = Directory.GetFiles(SelectedPath, _dbfSettings.FileFilterPattern, SearchOption.TopDirectoryOnly);
+            List<string> patterns = _dbfSettings.FileFilterPatterns.Count > 0
+                ? _dbfSettings.FileFilterPatterns
+                : ["*.DBF"];
+
+            string[] dbfFiles = patterns
+                .SelectMany(pattern => Directory.GetFiles(SelectedPath, pattern, SearchOption.TopDirectoryOnly))
+                .Distinct()
+                .OrderBy(f => f)
+                .ToArray();
 
             foreach (string filePath in dbfFiles)
             {

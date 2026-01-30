@@ -12,6 +12,13 @@ public class DbfValidationSettings
     public const string SectionName = "DbfValidation";
 
     /// <summary>
+    /// File filter pattern for DBF files in the selected folder.
+    /// Default: "*.DBF" (all DBF files).
+    /// Example: "SSS15*.DBF" (only SSS 1500 files).
+    /// </summary>
+    public string FileFilterPattern { get; set; } = "*.DBF";
+
+    /// <summary>
     /// Column name used to filter claims from total records.
     /// Default: "V1PAGINA"
     /// </summary>

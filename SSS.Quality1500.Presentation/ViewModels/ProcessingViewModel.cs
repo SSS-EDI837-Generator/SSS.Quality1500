@@ -7,6 +7,7 @@ using SSS.Quality1500.Business.Commands.ProcessClaims;
 using SSS.Quality1500.Business.Models;
 using SSS.Quality1500.Business.Queries.GetImagesFolder;
 using SSS.Quality1500.Business.Queries.ValidateDbf;
+using Microsoft.Extensions.Options;
 using SSS.Quality1500.Domain.CQRS;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
@@ -23,6 +24,7 @@ public partial class ProcessingViewModel : ObservableObject
     private readonly IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>>? _validateDbfHandler;
     private readonly ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>? _processClaimsHandler;
     private readonly IColumnConfigurationRepository? _columnConfigRepository;
+    private readonly DbfValidationSettings _dbfSettings = new();
 
     [ObservableProperty]
     private string _pageTitle = "Procesamiento de Archivos";
@@ -113,12 +115,14 @@ public partial class ProcessingViewModel : ObservableObject
         IQueryHandler<GetImagesFolderQuery, Result<string, string>> getImagesFolderHandler,
         IQueryHandler<ValidateDbfQuery, Result<DbfValidationResult, string>> validateDbfHandler,
         ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>> processClaimsHandler,
-        IColumnConfigurationRepository columnConfigRepository)
+        IColumnConfigurationRepository columnConfigRepository,
+        IOptions<DbfValidationSettings> dbfSettings)
     {
         _getImagesFolderHandler = getImagesFolderHandler;
         _validateDbfHandler = validateDbfHandler;
         _processClaimsHandler = processClaimsHandler;
         _columnConfigRepository = columnConfigRepository;
+        _dbfSettings = dbfSettings.Value;
         InitializeDefaultPath();
     }
 
@@ -196,7 +200,7 @@ public partial class ProcessingViewModel : ObservableObject
 
         try
         {
-            string[] dbfFiles = Directory.GetFiles(SelectedPath, "*.DBF", SearchOption.TopDirectoryOnly);
+            string[] dbfFiles = Directory.GetFiles(SelectedPath, _dbfSettings.FileFilterPattern, SearchOption.TopDirectoryOnly);
 
             foreach (string filePath in dbfFiles)
             {

@@ -463,6 +463,9 @@ public partial class ProcessingViewModel : ObservableObject
                 StatusMessage = $"Procesamiento completado. {RecordsWithErrors} registros con errores de {processingResult.TotalRecords} totales.";
                 MessageQueue.Enqueue($"{RecordsWithErrors} registros requieren revisión.");
             }
+
+            if (!string.IsNullOrEmpty(processingResult.ReportFilePath))
+                StatusMessage += $" Reporte: {processingResult.ReportFilePath}";
         }
         catch (Exception ex)
         {

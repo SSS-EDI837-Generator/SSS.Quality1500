@@ -707,6 +707,8 @@ public partial class ConfigViewModel : ObservableObject
                 ValidationPolicy policy = config.GetPolicy(column.ColumnName);
                 column.ValidationType = policy.Type;
                 column.ValidationOptions = new Dictionary<string, string>(policy.Options);
+                column.DateFormat = policy.Options.GetValueOrDefault("DateFormat") ?? string.Empty;
+                column.AllowedValues = policy.Options.GetValueOrDefault("AllowedValues") ?? string.Empty;
             }
 
             UpdateSelectedCount();

@@ -1,11 +1,12 @@
 namespace SSS.Quality1500.Data.Repositories;
 
 using SSS.Quality1500.Domain.Interfaces;
-using System.Reflection;
 using System.Text.Json;
 
 /// <summary>
-/// Repository for ICD-10 code validation using embedded JSON resource.
+/// Repository for ICD-10 code validation using external JSON file.
+/// The file is located at Resources/icd10-codes.json relative to the application directory,
+/// allowing updates without recompilation.
 /// </summary>
 public class Icd10Repository : IIcd10Repository
 {
@@ -19,7 +20,7 @@ public class Icd10Repository : IIcd10Repository
 
     public Icd10Repository()
     {
-        _codes = LoadCodesFromResource();
+        _codes = LoadCodesFromFile();
         _normalizedCodes = new HashSet<string>(
             _codes.Keys.Select(NormalizeCode),
             StringComparer.OrdinalIgnoreCase);
@@ -59,23 +60,14 @@ public class Icd10Repository : IIcd10Repository
         return code.Replace(".", "").Replace(" ", "").ToUpperInvariant();
     }
 
-    private static Dictionary<string, string> LoadCodesFromResource()
+    private static Dictionary<string, string> LoadCodesFromFile()
     {
-        Assembly assembly = typeof(Icd10Repository).Assembly;
-        string resourceName = "SSS.Quality1500.Data.Resources.icd10-codes.json";
+        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "icd10-codes.json");
 
-        using Stream? stream = assembly.GetManifestResourceStream(resourceName);
-
-        if (stream is null)
-        {
-            // Return empty dictionary if resource not found
-            // In production, this should log a warning
+        if (!File.Exists(filePath))
             return new Dictionary<string, string>();
-        }
 
-        using StreamReader reader = new(stream);
-        string json = reader.ReadToEnd();
-
+        string json = File.ReadAllText(filePath);
         Icd10Data? data = JsonSerializer.Deserialize<Icd10Data>(json, s_jsonOptions);
 
         return data?.Codes ?? new Dictionary<string, string>();

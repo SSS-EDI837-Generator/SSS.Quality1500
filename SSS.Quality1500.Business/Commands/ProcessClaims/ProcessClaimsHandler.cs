@@ -5,6 +5,7 @@ using SSS.Quality1500.Domain.Enums;
 using SSS.Quality1500.Domain.Interfaces;
 using SSS.Quality1500.Domain.Models;
 using System.Data;
+using System.Globalization;
 
 /// <summary>
 /// Handler for processing claims and validating all records in a DBF file.
@@ -12,10 +13,12 @@ using System.Data;
 /// </summary>
 public class ProcessClaimsHandler(
     IDbfReader dbfReader,
-    IIcd10Repository icd10Repository) : ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>
+    IIcd10Repository icd10Repository,
+    IProcessingReportWriter reportWriter) : ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>
 {
     private readonly IDbfReader _dbfReader = dbfReader;
     private readonly IIcd10Repository _icd10Repository = icd10Repository;
+    private readonly IProcessingReportWriter _reportWriter = reportWriter;
 
     private const string ImageFileNameColumn = "V0IFNAME01";
 
@@ -62,6 +65,10 @@ public class ProcessClaimsHandler(
                 command.DbfFilePath,
                 command.ImagesFolderPath,
                 allResults);
+
+            Result<string, string> reportResult = _reportWriter.WriteReport(result);
+            if (reportResult.IsSuccess)
+                result = result.WithReportPath(reportResult.GetValueOrDefault()!);
 
             return Result<ClaimProcessingResult, string>.Ok(result);
         }
@@ -116,7 +123,7 @@ public class ProcessClaimsHandler(
             {
                 ValidationType.Date => ValidateDate(columnName, value, policy),
                 ValidationType.Icd10 => ValidateIcd10(columnName, value, policy),
-                ValidationType.Required => ValidateRequired(columnName, value),
+                ValidationType.Required => ValidateRequired(columnName, value, policy),
                 ValidationType.Npi => null,     // TODO: Implement when API is available
                 ValidationType.Member => null,  // TODO: Implement when API is available
                 _ => null
@@ -150,13 +157,24 @@ public class ProcessClaimsHandler(
         {
             dateValue = dt;
         }
-        else if (!DateTime.TryParse(value.ToString(), out dateValue))
+        else
         {
-            return FieldValidationError.InvalidFormat(
-                columnName,
-                GetDisplayName(columnName),
-                value,
-                $"Formato de fecha inválido: {value}");
+            string raw = value.ToString()!;
+            string? dateFormat = policy.Options.GetValueOrDefault("DateFormat");
+
+            bool parsed = dateFormat is not null
+                ? DateTime.TryParseExact(raw, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue)
+                : DateTime.TryParse(raw, out dateValue);
+
+            if (!parsed)
+            {
+                string hint = dateFormat is not null ? $" (formato esperado: {dateFormat})" : "";
+                return FieldValidationError.InvalidFormat(
+                    columnName,
+                    GetDisplayName(columnName),
+                    value,
+                    $"Formato de fecha inválido: {value}{hint}");
+            }
         }
 
         if (!allowFuture && dateValue.Date > DateTime.Today)
@@ -178,17 +196,35 @@ public class ProcessClaimsHandler(
         }
 
         string code = value.ToString()!.Trim();
+        string normalized = code.Length > 3 && !code.Contains('.')
+            ? code.Insert(3, ".")
+            : code;
 
-        if (!_icd10Repository.IsValidCode(code))
+        if (!_icd10Repository.IsValidCode(normalized))
             return FieldValidationError.InvalidCode(columnName, GetDisplayName(columnName), code, "ICD-10");
 
         return null;
     }
 
-    private static FieldValidationError? ValidateRequired(string columnName, object? value)
+    private static FieldValidationError? ValidateRequired(string columnName, object? value, ValidationPolicy policy)
     {
         if (value is null || string.IsNullOrWhiteSpace(value.ToString()))
             return FieldValidationError.Required(columnName, GetDisplayName(columnName));
+
+        if (!policy.Options.TryGetValue("AllowedValues", out string? allowed))
+            return null;
+
+        string trimmed = value.ToString()!.Trim();
+        HashSet<string> allowedSet = new(
+            allowed.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            StringComparer.OrdinalIgnoreCase);
+
+        if (!allowedSet.Contains(trimmed))
+            return FieldValidationError.InvalidFormat(
+                columnName,
+                GetDisplayName(columnName),
+                value,
+                $"Valor no permitido: {trimmed} (valores validos: {allowed})");
 
         return null;
     }

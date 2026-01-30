@@ -47,6 +47,11 @@ public sealed class ClaimProcessingResult
     public string ImagesFolderPath { get; init; } = string.Empty;
 
     /// <summary>
+    /// Path to the processing report file, if generated.
+    /// </summary>
+    public string? ReportFilePath { get; init; }
+
+    /// <summary>
     /// Whether all records passed validation.
     /// </summary>
     public bool AllRecordsValid => RecordsWithErrors == 0;
@@ -57,6 +62,23 @@ public sealed class ClaimProcessingResult
     public double SuccessRate => TotalRecords > 0
         ? Math.Round((double)ValidRecords / TotalRecords * 100, 2)
         : 0;
+
+    /// <summary>
+    /// Returns a copy with the report file path set.
+    /// </summary>
+    public ClaimProcessingResult WithReportPath(string path) =>
+        new()
+        {
+            TotalRecords = TotalRecords,
+            ValidRecords = ValidRecords,
+            RecordsWithErrors = RecordsWithErrors,
+            TotalFieldErrors = TotalFieldErrors,
+            ErrorRecords = ErrorRecords,
+            ProcessedAt = ProcessedAt,
+            SourceFilePath = SourceFilePath,
+            ImagesFolderPath = ImagesFolderPath,
+            ReportFilePath = path
+        };
 
     /// <summary>
     /// Creates an empty result for when processing hasn't started.

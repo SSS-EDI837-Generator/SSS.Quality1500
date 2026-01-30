@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              xmlns:enums="clr-namespace:SSS.Quality1500.Domain.Enums;assembly=SSS.Quality1500.Domain"
+             xmlns:models="clr-namespace:SSS.Quality1500.Presentation.Models"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:ConfigViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="700" d:DesignWidth="900"
@@ -206,6 +207,34 @@
                                           Style="{StaticResource MaterialDesignComboBox}"
                                           Padding="4,2"
                                           MinWidth="100"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Date Format (enabled only when IsSelected and ValidationType == Date) -->
+                    <DataGridTemplateColumn Header="Formato" Width="130" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{x:Static models:ColumnConfigItem.AvailableDateFormats}"
+                                          SelectedItem="{Binding DateFormat, UpdateSourceTrigger=PropertyChanged}"
+                                          IsEnabled="{Binding IsDateFormatEnabled}"
+                                          Style="{StaticResource MaterialDesignComboBox}"
+                                          Padding="4,2"
+                                          MinWidth="100"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Allowed Values (enabled only when IsSelected and ValidationType == Required) -->
+                    <DataGridTemplateColumn Header="Valores" Width="120" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding AllowedValues, UpdateSourceTrigger=PropertyChanged}"
+                                         IsEnabled="{Binding IsAllowedValuesEnabled}"
+                                         materialDesign:HintAssist.Hint="ej: 0,9"
+                                         Style="{StaticResource MaterialDesignTextBox}"
+                                         Padding="4,2"
+                                         MinWidth="80"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

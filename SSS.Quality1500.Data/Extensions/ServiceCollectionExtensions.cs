@@ -25,6 +25,9 @@ public static class ServiceCollectionExtensions
         // Repositorio de codigos ICD-10 (singleton para cache)
         services.AddSingleton<IIcd10Repository, Icd10Repository>();
 
+        // Escritor de reportes de procesamiento
+        services.AddTransient<IProcessingReportWriter, ProcessingReportWriter>();
+
         return services;
     }
 }

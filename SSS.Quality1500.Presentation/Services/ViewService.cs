@@ -16,6 +16,7 @@ public class ViewService(IServiceProvider serviceProvider) : IViewService
             "About" => CreateFrameworkElement<AboutUserControl>(),
             "Config" => CreateFrameworkElement<ConfigUserControl>(),
             "Processing" => CreateFrameworkElement<ProcessingUserControl>(),
+            "Icd10" => CreateFrameworkElement<Icd10UserControl>(),
             _ => throw new ArgumentException($"View {viewName} not found")
         };
     }

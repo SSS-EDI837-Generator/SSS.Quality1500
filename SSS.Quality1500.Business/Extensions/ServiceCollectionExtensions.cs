@@ -3,9 +3,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SSS.Quality1500.Business.Models;
+using SSS.Quality1500.Business.Commands.AddIcd10Code;
 using SSS.Quality1500.Business.Commands.ProcessClaims;
+using SSS.Quality1500.Business.Commands.RemoveIcd10Code;
 using SSS.Quality1500.Business.Queries.GetImagesFolder;
 using SSS.Quality1500.Business.Queries.GetVdeRecords;
+using SSS.Quality1500.Business.Queries.SearchIcd10Codes;
 using SSS.Quality1500.Business.Queries.ValidateDate;
 using SSS.Quality1500.Business.Queries.ValidateDbf;
 using SSS.Quality1500.Business.Queries.ValidateIcd10;
@@ -38,8 +41,13 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IQueryHandler<ValidateDateQuery, Result<bool, FieldValidationError>>, ValidateDateHandler>();
         services.AddTransient<IQueryHandler<ValidateIcd10Query, Result<bool, FieldValidationError>>, ValidateIcd10Handler>();
 
+        // Registrar Query Handler: ICD-10 search
+        services.AddTransient<IQueryHandler<SearchIcd10CodesQuery, Result<Icd10SearchResult, string>>, SearchIcd10CodesHandler>();
+
         // Registrar Command Handlers (CQRS)
         services.AddTransient<ICommandHandler<ProcessClaimsCommand, Result<ClaimProcessingResult, string>>, ProcessClaimsHandler>();
+        services.AddTransient<ICommandHandler<AddIcd10CodeCommand, Result<bool, string>>, AddIcd10CodeHandler>();
+        services.AddTransient<ICommandHandler<RemoveIcd10CodeCommand, Result<bool, string>>, RemoveIcd10CodeHandler>();
 
         // Registrar LoggerInitializer como Singleton
         // Nota: Si ya existe una instancia en App.xaml.cs, se puede reutilizar

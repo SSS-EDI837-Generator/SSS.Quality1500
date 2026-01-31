@@ -58,6 +58,13 @@ public partial class MainViewModel : BaseMainWindowsService
     }
 
     [RelayCommand]
+    private void ShowIcd10()
+    {
+        StatusMessage = "ICD-10";
+        CurrentView = _viewService.GetView("Icd10");
+    }
+
+    [RelayCommand]
     private void Exit()
     {
         OnClosing?.Invoke();

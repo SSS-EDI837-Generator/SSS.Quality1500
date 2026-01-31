@@ -152,6 +152,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<AboutViewModel>();
         services.AddSingleton<ProcessingUserControl>();
         services.AddSingleton<ProcessingViewModel>();
+        services.AddSingleton<Icd10UserControl>();
+        services.AddSingleton<Icd10ViewModel>();
         services.AddScoped<ConfigUserControl>();
         services.AddScoped<ConfigViewModel>();
 

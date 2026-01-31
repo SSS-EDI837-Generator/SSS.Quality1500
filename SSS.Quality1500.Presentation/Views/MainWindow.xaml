@@ -28,6 +28,7 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Config" Command="{Binding ShowConfigCommand}" />
                 <MenuItem Header="_Processing" Command="{Binding ShowProcessingCommand}" />
+                <MenuItem Header="_ICD-10" Command="{Binding ShowIcd10Command}" />
                 <MenuItem Header="_Ayuda" Command="{Binding ShowAboutCommand}" />
                 <Separator />
                 <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
